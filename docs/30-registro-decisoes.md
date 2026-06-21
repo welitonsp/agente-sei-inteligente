@@ -70,3 +70,15 @@ Risco: Mais processo, menos improviso.
 Arquivos afetados: `docs/28`.  
 Proximo passo: Configurar protecao da branch main quando o codigo iniciar.
 
+## DEC-0005
+
+Data: 2026-06-21  
+Responsavel: Chefe do projeto  
+Status: APROVADA  
+Contexto: O projeto passara a usar Claude Code como agente de desenvolvimento assistido.  
+Decisao: Criar e usar prompt mestre operacional para Claude Code, obrigando leitura da documentacao, respeito a matriz de conformidade, politica de dados, regras Git/IA e documentacao continua.  
+Motivo: Evitar que o agente de codigo execute fora do escopo, pule seguranca ou perca rastreabilidade.  
+Impacto: Claude Code deve iniciar pela fundacao tecnica e manter SEI real, robozinho real e IA externa com conteudo vivo fora do MVP.  
+Risco: Prompt nao substitui revisao humana nem testes.  
+Arquivos afetados: `docs/34-prompt-claude-code.md`, `README.md`.  
+Proximo passo: Usar o prompt ao iniciar sessoes de desenvolvimento.

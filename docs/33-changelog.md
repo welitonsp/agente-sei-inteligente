@@ -15,6 +15,7 @@ Todas as entregas relevantes do projeto devem ser registradas aqui.
 7. Checklist de processos de desenvolvimento.
 8. Regras de Git, IA, Commit, Push, PR e Merge.
 9. Regra de documentacao continua.
+10. Prompt mestre para Claude Code.
 
 ### Alterado
 
@@ -31,4 +32,3 @@ Todas as entregas relevantes do projeto devem ser registradas aqui.
 1. Nao ha codigo de aplicacao.
 2. Knowledge base do 19 CRPM ainda usa templates.
 3. Robozinho real/extensao esta fora do MVP.
-

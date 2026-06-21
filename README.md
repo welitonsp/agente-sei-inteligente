@@ -71,6 +71,7 @@ A versao 1 sera considerada pronta quando o agente conseguir:
 | [docs/27-checklist-processos-desenvolvimento.md](docs/27-checklist-processos-desenvolvimento.md) | Checklist de processos para desenvolvimento |
 | [docs/28-regras-git-ia.md](docs/28-regras-git-ia.md) | Regras de commit, push, PR e merge com uso de IA |
 | [docs/29-regra-documentacao-continua.md](docs/29-regra-documentacao-continua.md) | Regra para documentar processos, decisoes e mudancas continuamente |
+| [docs/34-prompt-claude-code.md](docs/34-prompt-claude-code.md) | Prompt mestre para Claude Code executar o projeto |
 
 ## Estrutura-alvo
 
