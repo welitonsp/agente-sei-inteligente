@@ -3,6 +3,12 @@
 .env.*
 !.env.example
 
+# Google OAuth secrets and token caches
+client_secret*.json
+credentials*.json
+token*.json
+*.token
+
 # Local database and generated data
 data/
 *.db

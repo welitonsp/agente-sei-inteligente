@@ -33,8 +33,12 @@ class Settings(BaseSettings):
     # URL privada do feed iCal (SEGREDO; somente leitura da agenda). Fica apenas
     # no .env local, nunca versionada.
     google_calendar_ics_url: str = ""
-    # Backend de calendario: dry_run (simulacao) ou google (OAuth real, futuro).
+    # Backend de calendario: dry_run (simulacao) ou google (OAuth real).
     calendar_backend: str = "dry_run"
+    # Credenciais OAuth (SEGREDOS; apenas no .env local).
+    google_client_id: str = ""
+    google_client_secret: str = ""
+    google_refresh_token: str = ""
 
     # Origem dos convidados (Oficiais).
     #   google_contacts -> resolve e-mails a partir de um marcador/label do
