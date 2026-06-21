@@ -70,6 +70,7 @@ A versao 1 sera considerada pronta quando o agente conseguir:
 | [docs/26-matriz-conformidade.md](docs/26-matriz-conformidade.md) | Conformidades, nao conformidades e liberacao por fase |
 | [docs/27-checklist-processos-desenvolvimento.md](docs/27-checklist-processos-desenvolvimento.md) | Checklist de processos para desenvolvimento |
 | [docs/28-regras-git-ia.md](docs/28-regras-git-ia.md) | Regras de commit, push, PR e merge com uso de IA |
+| [docs/29-regra-documentacao-continua.md](docs/29-regra-documentacao-continua.md) | Regra para documentar processos, decisoes e mudancas continuamente |
 
 ## Estrutura-alvo
 
