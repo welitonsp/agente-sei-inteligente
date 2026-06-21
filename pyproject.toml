@@ -1,0 +1,10 @@
+[project]
+name = "agente-sei-inteligente"
+version = "0.1.0"
+description = "Agente administrativo assistivo do 19 CRPM (apoio ao SEI, sem atos oficiais)."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
