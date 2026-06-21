@@ -68,6 +68,7 @@ A versao 1 sera considerada pronta quando o agente conseguir:
 | [docs/24-contratos-das-skills.md](docs/24-contratos-das-skills.md) | Entradas, saidas e validacoes de cada skill |
 | [docs/25-politica-dados-sei.md](docs/25-politica-dados-sei.md) | Politica para textos, PDFs e dados extraidos do SEI |
 | [docs/26-matriz-conformidade.md](docs/26-matriz-conformidade.md) | Conformidades, nao conformidades e liberacao por fase |
+| [docs/27-checklist-processos-desenvolvimento.md](docs/27-checklist-processos-desenvolvimento.md) | Checklist de processos para desenvolvimento |
 
 ## Estrutura-alvo
 
