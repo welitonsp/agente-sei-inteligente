@@ -82,3 +82,55 @@ Impacto: Claude Code deve iniciar pela fundacao tecnica e manter SEI real, roboz
 Risco: Prompt nao substitui revisao humana nem testes.  
 Arquivos afetados: `docs/34-prompt-claude-code.md`, `README.md`.  
 Proximo passo: Usar o prompt ao iniciar sessoes de desenvolvimento.
+
+## DEC-0006
+
+Data: 2026-06-21  
+Responsavel: Chefe do projeto  
+Status: APROVADA  
+Contexto: A camada de inteligencia precisa de um provedor de IA padrao.  
+Decisao: Adotar Claude (Anthropic) como provedor de IA padrao, dentro de uma camada configuravel (`AI_PROVIDER`).  
+Motivo: Forte raciocinio administrativo/juridico e baixa alucinacao para resumos e minutas fieis.  
+Impacto: A futura `app/intelligence/` usara cliente Claude; guard e permissoes continuam sendo a barreira final, nunca o prompt. IDs Gemini do `.env.example` devem ser ignorados/corrigidos se houver uso futuro.  
+Risco: Dependencia de API externa; mitigada por camada configuravel e proibicao de conteudo vivo do SEI em IA externa (DEC-0003).  
+Arquivos afetados: `.env.example`, `docs/26`, `docs/33`.  
+Proximo passo: Implementar cliente Claude apenas na Etapa 7, com conteudo autorizado.
+
+## DEC-0007
+
+Data: 2026-06-21  
+Responsavel: Chefe do projeto  
+Status: APROVADA  
+Contexto: A criacao de eventos pode gerar duplicidade com a agenda real existente.  
+Decisao: Usar o feed iCal privado (somente leitura) para checar duplicidade antes de criar/simular evento, mantendo `CALENDAR_BACKEND=dry_run` por enquanto.  
+Motivo: Evitar eventos duplicados sem precisar de escrita; o ICS nao cria, nao altera e nao convida.  
+Impacto: `agenda_service` consulta o ICS; equivalencia por titulo, data, hora, local e numero do processo. Falha de acesso ou ICS ausente tem fallback seguro (nao bloqueia).  
+Risco: URL do ICS e segredo; tratada apenas no `.env`, nunca versionada/logada.  
+Arquivos afetados: `app/integrations/ics_reader.py`, `app/integrations/agenda_service.py`, `.env.example`, `.gitignore`.  
+Proximo passo: Apos OAuth, cruzar dedup ICS com criacao real.
+
+## DEC-0008
+
+Data: 2026-06-21  
+Responsavel: Chefe do projeto  
+Status: APROVADA  
+Contexto: Para criar eventos reais e convidar Oficiais e preciso autenticar no Google.  
+Decisao: Usar credencial OAuth "Desktop app" com escopos minimos `calendar.events` e `contacts.readonly`; o agente nunca guarda senha, apenas o refresh token no `.env` local. Sem credenciais completas, o sistema permanece em dry-run.  
+Motivo: Menor privilegio, sem conta de servico ampla, preservando seguranca.  
+Impacto: Responsavel roda consentimento uma vez (`google_oauth_setup.py`); `runtime` liga o backend real automaticamente quando ha credenciais e `CALENDAR_BACKEND=google`.  
+Risco: Refresh token e segredo; em app "Testing" expira em 7 dias (mitigar publicando o app).  
+Arquivos afetados: `app/integrations/google_auth.py`, `app/integrations/runtime.py`, `scripts/google_oauth_setup.py`, `.env.example`, `.gitignore`.  
+Proximo passo: Concluir consentimento e validar com `google_validate.py`.
+
+## DEC-0009
+
+Data: 2026-06-21  
+Responsavel: Chefe do projeto  
+Status: APROVADA  
+Contexto: O grupo "OFICIAIS" e um marcador do Google Contatos com contatos individuais, nao um e-mail de grupo.  
+Decisao: Resolver os convidados a partir do marcador `OFICIAIS` via People API (`OFFICERS_SOURCE=google_contacts`), extraindo os e-mails individuais; `OFFICERS_GROUP_EMAIL` deixa de ser obrigatorio.  
+Motivo: Refletir a realidade do cadastro e permitir convite individual rastreavel.  
+Impacto: Sem e-mails resolvidos, nao cria evento de convocacao; auditoria registra somente a quantidade de convidados, nunca os e-mails.  
+Risco: Depende de credenciais People API; em dry-run usa lista estatica para simular.  
+Arquivos afetados: `app/integrations/contacts_resolver.py`, `app/integrations/agenda_service.py`, `.env.example`.  
+Proximo passo: Validar contagem real de Oficiais apos OAuth.

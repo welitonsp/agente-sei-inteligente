@@ -58,15 +58,15 @@ Objetivo: criar o esqueleto tecnico seguro antes de qualquer IA ou integracao ex
 
 | Item | Status |
 | --- | --- |
-| Criar estrutura `app/` | NAO_INICIADO |
-| Criar `app/core/config.py` | NAO_INICIADO |
-| Criar `app/core/permissions.py` | NAO_INICIADO |
-| Criar `app/sei/sei_action_guard.py` | NAO_INICIADO |
-| Criar `app/core/logger.py` | NAO_INICIADO |
-| Criar `app/storage/database.py` | NAO_INICIADO |
-| Criar modelos SQLite iniciais | NAO_INICIADO |
-| Criar repositorios de auditoria | NAO_INICIADO |
-| Criar testes de permissoes | NAO_INICIADO |
+| Criar estrutura `app/` | CONCLUIDO |
+| Criar `app/core/config.py` | CONCLUIDO |
+| Criar `app/core/permissions.py` | CONCLUIDO |
+| Criar `app/sei/sei_action_guard.py` | CONCLUIDO |
+| Criar `app/core/logger.py` | CONCLUIDO (`app/core/logging.py`) |
+| Criar `app/storage/database.py` | CONCLUIDO (`app/storage/db.py`) |
+| Criar modelos SQLite iniciais | CONCLUIDO (`app/storage/models.py`) |
+| Criar repositorios de auditoria | CONCLUIDO (`app/core/audit.py`) |
+| Criar testes de permissoes | CONCLUIDO (81 testes; TEST-0002) |
 | Criar CI basico no GitHub Actions | NAO_INICIADO |
 
 ### Aceite
@@ -89,7 +89,7 @@ Objetivo: criar uma interface simples para operar sem acessar diretamente o SEI.
 
 | Item | Status |
 | --- | --- |
-| Fundacao tecnica aprovada | BLOQUEADO |
+| Fundacao tecnica aprovada | APROVADO |
 | Politica de dados SEI aprovada | APROVADO |
 | Modo sem SEI real aprovado | APROVADO |
 
@@ -208,21 +208,21 @@ Objetivo: criar agenda e compromissos fora do SEI.
 
 | Item | Status |
 | --- | --- |
-| Guardiao de seguranca funcionando | BLOQUEADO |
-| Logs funcionando | BLOQUEADO |
-| Credenciais Google configuradas | BLOQUEADO |
-| Grupo de Oficiais definido | BLOQUEADO |
+| Guardiao de seguranca funcionando | APROVADO |
+| Logs funcionando | APROVADO |
+| Credenciais Google configuradas | EM_ANDAMENTO (PROC-0004) |
+| Grupo de Oficiais definido | APROVADO (marcador OFICIAIS via People API, DEC-0009) |
 
 ### Execucao
 
 | Item | Status |
 | --- | --- |
-| Criar servico Google Agenda | NAO_INICIADO |
-| Criar evento de teste | NAO_INICIADO |
-| Adicionar grupo de Oficiais | NAO_INICIADO |
-| Preencher observacao padronizada | NAO_INICIADO |
-| Criar chave de duplicidade | NAO_INICIADO |
-| Bloquear evento duplicado | NAO_INICIADO |
+| Criar servico Google Agenda | CONCLUIDO (dry-run) |
+| Criar evento de teste | CONCLUIDO (simulado; real apos OAuth) |
+| Adicionar grupo de Oficiais | CONCLUIDO (resolve e-mails do marcador OFICIAIS) |
+| Preencher observacao padronizada | CONCLUIDO |
+| Criar chave de duplicidade | CONCLUIDO (local + ICS) |
+| Bloquear evento duplicado | CONCLUIDO (status=duplicate) |
 
 ### Aceite
 

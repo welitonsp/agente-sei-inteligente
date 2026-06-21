@@ -71,7 +71,12 @@ A versao 1 sera considerada pronta quando o agente conseguir:
 | [docs/27-checklist-processos-desenvolvimento.md](docs/27-checklist-processos-desenvolvimento.md) | Checklist de processos para desenvolvimento |
 | [docs/28-regras-git-ia.md](docs/28-regras-git-ia.md) | Regras de commit, push, PR e merge com uso de IA |
 | [docs/29-regra-documentacao-continua.md](docs/29-regra-documentacao-continua.md) | Regra para documentar processos, decisoes e mudancas continuamente |
+| [docs/30-registro-decisoes.md](docs/30-registro-decisoes.md) | Registro oficial de decisoes (DEC-XXXX) |
+| [docs/31-registro-processos.md](docs/31-registro-processos.md) | Registro de processos internos (PROC-XXXX) |
+| [docs/32-registro-testes-homologacao.md](docs/32-registro-testes-homologacao.md) | Registro de testes e homologacao (TEST-XXXX) |
+| [docs/33-changelog.md](docs/33-changelog.md) | Changelog das entregas |
 | [docs/34-prompt-claude-code.md](docs/34-prompt-claude-code.md) | Prompt mestre para Claude Code executar o projeto |
+| [docs/35-handoff-retomada.md](docs/35-handoff-retomada.md) | Handoff: ponto de parada e como retomar em outra estacao |
 
 ## Estrutura-alvo
 

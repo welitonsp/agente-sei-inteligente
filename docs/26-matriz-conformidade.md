@@ -65,16 +65,16 @@ Com escopo limitado a:
 
 | ID | Item | Status | Lacuna | Acao necessaria |
 | --- | --- | --- | --- | --- |
-| P-01 | Fundacao tecnica | Parcialmente conforme | Esta documentada, mas nao implementada | Criar `app/`, `permissions.py`, `sei_action_guard.py`, logs, banco e testes |
-| P-02 | Banco de dados | Parcialmente conforme | Modelo documentado; schema ainda nao criado | Implementar SQLite em `data/agente_sei.db` |
+| P-01 | Fundacao tecnica | Conforme | Implementada e testada (81 testes; TEST-0002) | Adicionar CI no GitHub Actions |
+| P-02 | Banco de dados | Conforme | SQLite com 8 entidades em `app/storage/models.py`; `scripts/init_db.py` | Migrar para PostgreSQL apenas se necessario |
 | P-03 | Skills especialistas | Parcialmente conforme | Contratos existem; codigo nao existe | Implementar classes/funcoes e testes por skill |
 | P-04 | Knowledge base do 19 CRPM | Parcialmente conforme | Arquivos sao templates com exemplos | Preencher unidades, Alto Comando, palavras-chave e regras reais |
 | P-05 | Prompts aprovados | Parcialmente conforme | Apenas prompt base existe | Criar prompts por skill |
-| P-06 | Google Agenda | Parcialmente conforme | Padrao documentado; credenciais e codigo ausentes | Implementar servico isolado e teste |
+| P-06 | Google Agenda | Parcialmente conforme | Servico implementado e testado em dry-run; falta concluir OAuth real | Concluir credenciais OAuth (PROC-0004) e homologar evento real |
 | P-07 | Telegram | Parcialmente conforme | Padrao documentado; bot/token/codigo ausentes | Implementar envio isolado e teste |
 | P-08 | PDF | Parcialmente conforme | Estrategia documentada; extrator nao implementado | Implementar upload, extracao e tratamento OCR necessario |
-| P-09 | IA/RAG | Parcialmente conforme | Estrategia definida; provedor e modo final pendentes | Decidir local vs externo e implementar retriever |
-| P-10 | Modelos Gemini | Parcialmente conforme | IDs atuais existem, mas devem ser validados na inicializacao | Validar via configuracao e teste de conectividade antes de usar |
+| P-09 | IA/RAG | Parcialmente conforme | Provedor padrao decidido: Claude (DEC-0006); retriever ainda nao implementado | Implementar cliente Claude e retriever na Etapa 7 |
+| P-10 | Modelos Gemini | Parcialmente conforme | IDs do `.env.example` sao invalidos; provedor padrao agora e Claude | Corrigir/remover IDs Gemini se houver uso futuro |
 | P-11 | Observabilidade de LLM | Parcialmente conforme | Logs existem no desenho; tracing de prompts nao definido | Definir se sera Phoenix, LangSmith ou log local sanitizado |
 | P-12 | Avaliacao automatizada de IA | Parcialmente conforme | Plano de testes existe; RAGAS/TruLens ou avaliador proprio nao definido | Adicionar avaliacao de fidelidade e ausencia de invencao |
 | P-13 | Autenticacao do painel | Parcialmente conforme | Necessidade documentada; mecanismo nao escolhido | Definir login local, usuarios e perfis |
@@ -85,7 +85,7 @@ Com escopo limitado a:
 | ID | Item | Status | Motivo | Correcao |
 | --- | --- | --- | --- | --- |
 | NC-01 | Operacao real do agente | Nao conforme | Nao existe codigo de aplicacao | Implementar MVP e homologar |
-| NC-02 | Gate automatico de seguranca | Nao conforme | Testes de bloqueio documentados, mas inexistentes em CI | Criar testes e workflow antes de integrar acoes externas |
+| NC-02 | Gate automatico de seguranca | Parcialmente conforme | Testes de bloqueio existem e passam localmente; falta workflow de CI | Criar GitHub Actions para rodar o gate em todo PR |
 | NC-03 | Triagem automatica 19 CRPM | Nao conforme | Dados mestres reais ausentes | Preencher `knowledge_base/fluxos_19crpm/` |
 | NC-04 | Direcionamento para unidade responsavel | Nao conforme | Sem regras reais, o agente poderia inventar | Bloquear decisao automatica ate regras reais |
 | NC-05 | Definicao de "criar arquivo" | Nao conforme | Termo ainda ambiguo | Definir se e minuta `.docx`, PDF, texto, pasta ou registro |
@@ -110,8 +110,8 @@ Com escopo limitado a:
 | Fase | Status | Condicao |
 | --- | --- | --- |
 | Etapa 1 - Documentacao | Conforme | Concluida |
-| Etapa 2 - Fundacao tecnica | Liberada | Pode iniciar agora |
-| Etapa 3 - Google Agenda | Condicionada | Apos guardiao, logs e banco |
+| Etapa 2 - Fundacao tecnica | Conforme | Implementada e testada (81 testes) |
+| Etapa 3 - Google Agenda | Em andamento | Servico pronto em dry-run; falta OAuth real |
 | Etapa 4 - Telegram | Condicionada | Apos logs e politica de mensagem |
 | Etapa 5 - E-mail | Condicionada | Apos decisao do provedor e credenciais |
 | Etapa 6 - PDF | Condicionada | Pode iniciar com upload local e dados anonimizados |
