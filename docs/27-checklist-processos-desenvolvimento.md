@@ -162,8 +162,8 @@ Objetivo: implementar as primeiras skills sem depender de IA externa sensivel.
 | --- | --- |
 | `sei-leitor-readonly` | NAO_INICIADO |
 | `resumidor-administrativo` | NAO_INICIADO |
-| `triagem-19crpm` | BLOQUEADO |
-| `roteador-unidades-19crpm` | BLOQUEADO |
+| `triagem-19crpm` | CONCLUIDO prototipo por regras locais; uso real depende da KB |
+| `roteador-unidades-19crpm` | CONCLUIDO prototipo por regras locais; uso real depende da KB |
 | `extrator-prazos` | NAO_INICIADO |
 | `extrator-eventos` | NAO_INICIADO |
 | `minutador-administrativo` | NAO_INICIADO |
@@ -186,11 +186,11 @@ Objetivo: alimentar o agente com regras reais.
 
 | Arquivo | Status |
 | --- | --- |
-| `unidades_19crpm.csv` | BLOQUEADO |
-| `unidades_alto_comando.csv` | BLOQUEADO |
-| `regras_direcionamento.md` | BLOQUEADO |
-| `palavras_chave_19crpm.md` | BLOQUEADO |
-| `modelos_resposta.md` | BLOQUEADO |
+| `unidades_19crpm.csv` | TEMPLATE_CRIADO; preenchimento real pendente |
+| `unidades_alto_comando.csv` | TEMPLATE_CRIADO; preenchimento real pendente |
+| `regras_direcionamento.csv` | TEMPLATE_CRIADO; preenchimento real pendente |
+| `palavras_chave_19crpm.csv` | TEMPLATE_CRIADO; preenchimento real pendente |
+| `modelos_resposta.md` | TEMPLATE_CRIADO; preenchimento real pendente |
 
 ### Aceite
 
@@ -489,6 +489,40 @@ PROTOTIPO_IMPLEMENTADO
 5. Concluir processo.
 6. Inventar unidade, fundamento legal, autoridade ou prazo.
 
+## Checklist 15 - Knowledge base local 19 CRPM
+
+Objetivo: permitir triagem e roteamento por regras locais, sem IA paga e sem
+inventar unidade responsavel.
+
+Status atual:
+
+```text
+PROTOTIPO_IMPLEMENTADO_SEM_DADOS_REAIS
+```
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Criar pasta `knowledge_base/fluxos_19crpm/` | CONCLUIDO |
+| Criar templates CSV/Markdown | CONCLUIDO |
+| Criar loader da knowledge base | CONCLUIDO (`app/intelligence/knowledge_base.py`) |
+| Criar triagem local por regras | CONCLUIDO (`app/intelligence/local_triage.py`) |
+| Endpoint `POST /api/triage-local` | CONCLUIDO |
+| Botao de triagem no painel | CONCLUIDO |
+| Botao de triagem no desktop | CONCLUIDO |
+| Nao inventar unidade sem regra | CONCLUIDO por teste |
+| Sugerir unidade com regra ficticia valida | CONCLUIDO por teste |
+| Preencher dados reais do 19 CRPM | NAO_INICIADO |
+| Homologar 5 casos anonimizados | NAO_INICIADO |
+
+### Proibido nesta fase
+
+1. Inventar unidade responsavel.
+2. Roteamento automatico sem regra real.
+3. Tramitacao automatica no SEI.
+4. Usar dado real sensivel sem revisao.
+
 ### Proibido nesta restricao
 
 1. Contratar API paga.
@@ -510,6 +544,7 @@ Checklist 9 - Robozinho/extensao SEI read-only, somente prototipo e homologacao
 Checklist 12 - Agente 19 Desktop com navegador seguro, somente prototipo e homologacao
 Checklist 13 - Estrategia zero custo
 Checklist 14 - Minutador local zero custo, homologacao e melhoria das regras
+Checklist 15 - Knowledge base local, preenchimento real e homologacao
 ```
 
 Nao iniciar agora sem nova autorizacao:

@@ -82,6 +82,7 @@ Com escopo limitado a:
 | P-15 | Agente 19 Desktop seguro | Parcialmente conforme | Prototipo implementado sem captura de credenciais; falta homologacao/autorizacao institucional | Homologar em ambiente institucional com exemplos anonimizados |
 | P-16 | Restricao de custo zero | Conforme | DEC-0012 registrada; sem API paga, assinatura, RPA pago ou hospedagem paga | Manter como restricao permanente |
 | P-17 | Minutador local zero custo | Parcialmente conforme | Prototipo por regras/templates implementado; falta homologacao com exemplos reais anonimizados | Preencher knowledge base do 19 CRPM e homologar minutas |
+| P-18 | Knowledge base local 19 CRPM | Parcialmente conforme | Estrutura e motor criados; dados reais ainda ausentes | Preencher CSVs reais e homologar roteamento |
 
 ## Nao conformidades atuais
 
@@ -123,6 +124,7 @@ Com escopo limitado a:
 | Etapa 9 - SEI read-only | Em prototipo | Extensao read-only criada; uso real depende de autorizacao/homologacao |
 | Fase 37.2 - Desktop seguro | Em prototipo | `app.desktop` criado; login fica na pagina oficial do SEI; uso real depende de homologacao/autorizacao |
 | Fase 39 - Minutador local zero custo | Em prototipo | Rascunhos locais por regras/templates; sem escrita no SEI; falta homologacao |
+| Fase 40 - Knowledge base local 19 CRPM | Em prototipo | Loader e triagem por regras criados; dados reais ainda pendentes |
 | Etapa 10 - Minutador SEI assistido | Nao liberada | Minutas apenas fora do SEI por enquanto |
 | Etapa 11 - Operacao v1 | Nao liberada | Depende de homologacao completa |
 

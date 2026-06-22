@@ -171,3 +171,18 @@ Evidencia: `tests/test_local_minutador.py`, painel local e desktop usando `POST 
 Status: APROVADO
 Problemas encontrados: Nenhum bloqueante.
 Proximo passo: Homologar minutas com exemplos anonimizados do 19 CRPM.
+
+## TEST-0011
+
+Data: 2026-06-22
+Versao/commit: branch `feat/fundacao-agenda-ics`
+Ambiente: Local Windows, Python 3.13, `.venv`, pytest
+Responsavel: Engenharia do projeto
+Caso testado: Knowledge base local e triagem/roteamento por regras.
+Entrada usada: CSVs vazios versionados e fixtures temporarias com regras ficticias.
+Resultado esperado: Sem regras, nao inventar unidade; com regra valida ficticia, sugerir unidade/tipo/providencia; se a unidade da regra nao estiver cadastrada, nao sugerir unidade.
+Resultado obtido: `scripts/check_no_secrets.py` OK; 123 testes passando.
+Evidencia: `tests/test_local_knowledge_base.py`, endpoint `POST /api/triage-local`; execucao local de `python scripts/check_no_secrets.py .` e `python -m pytest`.
+Status: APROVADO
+Problemas encontrados: Nenhum bloqueante.
+Proximo passo: Preencher knowledge base real e homologar com casos anonimizados.

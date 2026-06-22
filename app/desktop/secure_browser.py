@@ -32,7 +32,12 @@ SECURITY_NOTICE = (
     "e não pratica atos oficiais."
 )
 
-ALLOWED_ENDPOINTS = {"/api/import-text", "/api/import-pdf", "/api/generate-draft"}
+ALLOWED_ENDPOINTS = {
+    "/api/import-text",
+    "/api/import-pdf",
+    "/api/generate-draft",
+    "/api/triage-local",
+}
 CREDENTIAL_KEY_FRAGMENTS = (
     "senha",
     "password",
@@ -201,6 +206,24 @@ def generate_draft_via_backend(
     return _post_json("/api/generate-draft", payload, backend_origin=backend_origin)
 
 
+def triage_via_backend(
+    *,
+    assunto: str,
+    texto: str,
+    processo_sei: str = "",
+    usuario_local: str = "",
+    backend_origin: str = LOCAL_BACKEND_ORIGIN,
+) -> dict[str, Any]:
+    payload = {
+        "assunto": assunto,
+        "texto": texto,
+        "processo_sei": processo_sei,
+        "usuario_local": usuario_local,
+        "origem": "desktop_navegador_seguro",
+    }
+    return _post_json("/api/triage-local", payload, backend_origin=backend_origin)
+
+
 def format_analysis_result(payload: dict[str, Any]) -> str:
     """Formata a resposta local para copiar/colar fora do SEI."""
     resultado = payload.get("resultado", {}) if isinstance(payload, dict) else {}
@@ -257,6 +280,27 @@ def format_draft_result(payload: dict[str, Any]) -> str:
                 "Observacao: copie para o SEI somente apos revisar. "
                 "O Agente 19 nao assina nem tramita."
             ),
+        ]
+    )
+
+
+def format_triage_result(payload: dict[str, Any]) -> str:
+    resultado = payload.get("resultado", {}) if isinstance(payload, dict) else {}
+    pendentes = payload.get("campos_pendentes", []) if isinstance(payload, dict) else []
+    return "\n".join(
+        [
+            "Agente 19 - Triagem local",
+            f"Interesse 19 CRPM: {resultado.get('interesse_19crpm', '')}",
+            f"Unidade sugerida: {resultado.get('unidade_sugerida') or 'indefinida'}",
+            f"Tipo de minuta: {resultado.get('tipo_minuta_sugerido') or 'indefinido'}",
+            f"Providencia: {resultado.get('providencia_sugerida', '')}",
+            f"Regra aplicada: {resultado.get('regra_aplicada') or 'nenhuma'}",
+            f"Confianca: {payload.get('confianca', '')}",
+            f"Campos pendentes: {', '.join(map(str, pendentes)) if pendentes else 'nenhum'}",
+            "",
+            str(resultado.get("justificativa", "")).strip(),
+            "",
+            "Observacao: se nao houver regra clara, nao direcione automaticamente.",
         ]
     )
 
@@ -366,7 +410,7 @@ class SecureDesktopApp:
 
         buttons = tk.Frame(agent_frame)
         buttons.grid(row=5, column=0, columnspan=2, sticky="ew", padx=12, pady=8)
-        for index in range(5):
+        for index in range(6):
             buttons.columnconfigure(index, weight=1)
         tk.Button(buttons, text="Analisar texto", command=self._analyze_text).grid(
             row=0, column=0, sticky="ew", padx=(0, 6)
@@ -377,11 +421,14 @@ class SecureDesktopApp:
         tk.Button(buttons, text="Analisar PDF", command=self._analyze_pdf).grid(
             row=0, column=2, sticky="ew", padx=6
         )
-        tk.Button(buttons, text="Gerar minuta", command=self._generate_draft).grid(
+        tk.Button(buttons, text="Triagem local", command=self._triage_local).grid(
             row=0, column=3, sticky="ew", padx=(6, 0)
         )
-        tk.Button(buttons, text="Copiar resultado", command=self._copy_result).grid(
+        tk.Button(buttons, text="Gerar minuta", command=self._generate_draft).grid(
             row=0, column=4, sticky="ew", padx=(6, 0)
+        )
+        tk.Button(buttons, text="Copiar resultado", command=self._copy_result).grid(
+            row=0, column=5, sticky="ew", padx=(6, 0)
         )
 
         self.pdf_label_var = tk.StringVar(value="Nenhum PDF selecionado.")
@@ -470,6 +517,24 @@ class SecureDesktopApp:
                 backend_origin=self.backend_origin,
             )
             self._show_result(format_draft_result(draft))
+        except Exception as exc:
+            self._show_error(exc)
+
+    def _triage_local(self) -> None:
+        if not self.last_analysis:
+            self.status_var.set("Analise texto ou PDF antes de executar triagem.")
+            return
+        payload = self._payload_base()
+        resultado = self.last_analysis.get("resultado", {})
+        try:
+            triage = triage_via_backend(
+                assunto=payload["titulo"],
+                texto=str(resultado.get("resumo_executivo", "")),
+                processo_sei=payload["processo_sei"],
+                usuario_local=payload["usuario_local"],
+                backend_origin=self.backend_origin,
+            )
+            self._show_result(format_triage_result(triage))
         except Exception as exc:
             self._show_error(exc)
 

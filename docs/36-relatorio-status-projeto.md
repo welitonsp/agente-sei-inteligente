@@ -3,7 +3,7 @@
 Data: 2026-06-22
 Branch: `feat/fundacao-agenda-ics`
 PR: https://github.com/welitonsp/agente-sei-inteligente/pull/1
-Status geral: fundacao tecnica, painel local, intake texto/PDF, Agente 19 Desktop seguro, estrategia zero custo, minutador local zero custo e prototipo de extensao SEI read-only implementados. Operacao real ainda depende de homologacao e autorizacoes.
+Status geral: fundacao tecnica, painel local, intake texto/PDF, Agente 19 Desktop seguro, estrategia zero custo, minutador local zero custo, knowledge base local 19 CRPM e prototipo de extensao SEI read-only implementados. Operacao real ainda depende de homologacao e autorizacoes.
 
 ## 1. Resumo executivo
 
@@ -58,7 +58,7 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 - [x] Pipeline roda em Python 3.11 e 3.13.
 - [x] Scanner de segredos criado em `scripts/check_no_secrets.py`.
 - [x] Scanner bloqueia `.env`, tokens, client secrets, URL ICS e chaves concretas.
-- [x] Suite automatizada com 117 testes passando.
+- [x] Suite automatizada com 123 testes passando.
 - [x] PR #1 aberto em modo draft.
 - [x] Checks remotos aprovados no GitHub Actions.
 
@@ -137,6 +137,19 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 - [x] Revisao humana obrigatoria.
 - [x] Acoes oficiais bloqueadas no contrato.
 - [x] Auditoria sem texto integral.
+
+### Knowledge base local 19 CRPM
+
+- [x] Pasta local `knowledge_base/fluxos_19crpm/` criada.
+- [x] Templates de unidades, palavras-chave e regras criados.
+- [x] Loader local de CSV criado.
+- [x] Triagem/roteamento por regras criado.
+- [x] Endpoint `POST /api/triage-local` criado.
+- [x] Botao de triagem no painel local.
+- [x] Botao de triagem no desktop.
+- [x] Sem regra real, retorna `indefinido` e nao inventa unidade.
+- [ ] Preencher dados reais do 19 CRPM.
+- [ ] Homologar com 5 casos anonimizados.
 
 ### Extensao SEI read-only
 
@@ -337,10 +350,11 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 1. Testar o Agente 19 Desktop com SEI aberto pela URL oficial, usando somente caso anonimizado ou conteudo nao sensivel.
 2. Registrar o resultado em `docs/32-registro-testes-homologacao.md`.
 3. Homologar minutas com exemplos anonimizados do 19 CRPM.
-4. Preencher a knowledge base do 19 CRPM para melhorar triagem, roteamento e escolha de minuta.
-5. Implementar OCR gratuito/local ou autenticacao local do painel, conforme prioridade operacional.
-6. Concluir o OAuth Google e validar agenda real em modo controlado, apenas se usar recursos gratuitos/institucionais ja existentes.
-7. Manter a extensao Chrome/Edge como recurso futuro opcional, dependente de autorizacao institucional.
+4. Preencher os CSVs reais da knowledge base do 19 CRPM.
+5. Homologar triagem/roteamento com 5 casos anonimizados.
+6. Implementar OCR gratuito/local ou autenticacao local do painel, conforme prioridade operacional.
+7. Concluir o OAuth Google e validar agenda real em modo controlado, apenas se usar recursos gratuitos/institucionais ja existentes.
+8. Manter a extensao Chrome/Edge como recurso futuro opcional, dependente de autorizacao institucional.
 
 ## 7. Como testar o que ja existe
 

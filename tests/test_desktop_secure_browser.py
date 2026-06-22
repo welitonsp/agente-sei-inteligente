@@ -45,6 +45,7 @@ def test_desktop_permite_apenas_endpoints_locais_previstos():
         "/api/import-text",
         "/api/import-pdf",
         "/api/generate-draft",
+        "/api/triage-local",
     }
 
 
@@ -154,3 +155,24 @@ def test_formatacao_minuta_reforca_revisao_e_sem_assinatura():
     assert "Minuta local preliminar" in formatted
     assert "DESPACHO" in formatted
     assert "nao assina nem tramita" in formatted
+
+
+def test_formatacao_triagem_reforca_indefinido_sem_regra():
+    payload = {
+        "resultado": {
+            "interesse_19crpm": "indefinido",
+            "unidade_sugerida": "",
+            "tipo_minuta_sugerido": "",
+            "providencia_sugerida": "Preencher knowledge base.",
+            "regra_aplicada": "",
+            "justificativa": "Knowledge base sem regras.",
+        },
+        "confianca": 0.0,
+        "campos_pendentes": ["knowledge_base_regras"],
+    }
+
+    formatted = secure_browser.format_triage_result(payload)
+
+    assert "Triagem local" in formatted
+    assert "Unidade sugerida: indefinida" in formatted
+    assert "nao direcione automaticamente" in formatted

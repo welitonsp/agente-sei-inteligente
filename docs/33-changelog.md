@@ -2,6 +2,25 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.3.7-knowledge-base-local-19crpm] - 2026-06-22
+
+### Adicionado
+
+1. Estrutura `knowledge_base/fluxos_19crpm/` com CSVs locais.
+2. Carregador em `app/intelligence/knowledge_base.py`.
+3. Triagem e roteamento por regras em `app/intelligence/local_triage.py`.
+4. Endpoint local `POST /api/triage-local`.
+5. Botao `Triagem local` no painel e no desktop.
+6. Documento da Fase 40 em `docs/40-fase-knowledge-base-local-19crpm.md`.
+7. Testes automatizados em `tests/test_local_knowledge_base.py`.
+
+### Seguranca
+
+1. Sem regras reais, o sistema retorna `indefinido`.
+2. Unidade responsavel nao e inventada.
+3. Sugestao exige revisao humana obrigatoria.
+4. A triagem nao executa ato oficial no SEI.
+
 ## [0.3.6-minutador-local-zero-custo] - 2026-06-22
 
 ### Adicionado

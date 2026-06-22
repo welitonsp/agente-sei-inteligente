@@ -39,7 +39,9 @@ def test_index_tem_campos_minimos_do_checklist():
     assert "Campos pendentes" in html
     assert "/api/import-pdf" in html
     assert "/api/generate-draft" in html
+    assert "/api/triage-local" in html
     assert "Gerar minuta local" in html
+    assert "Triagem local" in html
 
 
 def test_create_import_text_response_retorna_resultado_estruturado(db_env):
@@ -103,3 +105,19 @@ def test_create_draft_response_gera_minuta_local(db_env):
 
     with db.session_scope() as session:
         assert session.query(models.AuditLog).count() >= 1
+
+
+def test_create_triage_response_sem_regras_nao_inventa_unidade(db_env):
+    response = local_app.create_triage_response(
+        {
+            "assunto": "Apoio administrativo",
+            "texto": "Solicitacao de apoio administrativo.",
+            "processo_sei": "2026.000301",
+        }
+    )
+
+    assert response["status"] == "precisa_revisao"
+    assert response["resultado"]["interesse_19crpm"] == "indefinido"
+    assert response["resultado"]["unidade_sugerida"] == ""
+    assert response["revisao_humana_obrigatoria"] is True
+    assert "DECIDIR_UNIDADE_SEM_REGRA" in response["acoes_bloqueadas"]

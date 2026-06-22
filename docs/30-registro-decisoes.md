@@ -186,3 +186,16 @@ Impacto: O Agente 19 passa a gerar rascunhos copiaveis fora do SEI, sem criar do
 Risco: Classificacao por regras pode ter baixa confianca; mitigacao por placeholders, alertas e revisao humana obrigatoria.
 Arquivos afetados: `app/intelligence/local_minutador.py`, `knowledge_base/templates_minutas/`, `app/dashboard/local_app.py`, `app/desktop/secure_browser.py`, `tests/test_local_minutador.py`, `docs/39`.
 Proximo passo: Preencher knowledge base real do 19 CRPM e melhorar regras de classificacao/roteamento.
+
+## DEC-0014
+
+Data: 2026-06-22
+Responsavel: Chefe do projeto
+Status: APROVADA
+Contexto: Para melhorar triagem, roteamento e escolha de minuta sem IA paga, o projeto precisa de regras locais do 19 CRPM.
+Decisao: Criar knowledge base local em CSV/Markdown e motor de triagem por regras. Sem regra real clara, retornar `indefinido` e exigir revisao humana.
+Motivo: Evitar invencao de unidade responsavel e manter custo zero.
+Impacto: O Agente 19 passa a ter endpoint de triagem local e botoes no painel/desktop, mas ainda depende de preenchimento real da base para operar com maior confianca.
+Risco: Base vazia ou incompleta gera baixa utilidade; mitigacao por campos pendentes, baixa confianca e revisao obrigatoria.
+Arquivos afetados: `knowledge_base/fluxos_19crpm/`, `app/intelligence/knowledge_base.py`, `app/intelligence/local_triage.py`, `tests/test_local_knowledge_base.py`, `docs/40`.
+Proximo passo: Preencher unidades e regras reais do 19 CRPM com revisao do responsavel.

@@ -1,30 +1,20 @@
-# Fluxos 19 CRPM
+# Knowledge base local do 19 CRPM
 
-Esta pasta deve armazenar as regras internas que permitem ao agente filtrar processos e documentos de interesse do 19 CRPM.
+Esta pasta guarda regras locais e gratuitas para triagem, roteamento e escolha
+de minuta.
 
-## Arquivos futuros
+Regra de seguranca:
 
-```text
-unidades_19crpm.csv
-unidades_alto_comando.csv
-regras_direcionamento.md
-palavras_chave_19crpm.md
-modelos_resposta.md
-```
+1. Nao preencher com dados sensiveis reais sem revisao.
+2. Nao inventar unidade.
+3. Se uma regra nao existir ou estiver ambigua, o sistema deve responder
+   `indefinido` e exigir revisao humana.
+4. Toda regra real deve ser revisada pelo responsavel do projeto.
 
-Os arquivos acima ja existem como templates. Eles devem ser preenchidos com dados reais antes de ativar a triagem automatica.
+Arquivos:
 
-## Dados necessarios
-
-Para o robozinho SEI funcionar corretamente, precisamos cadastrar:
-
-1. Unidades pertencentes ao 19 CRPM.
-2. Unidades de Alto Comando relevantes.
-3. Assuntos que geram providencia.
-4. Assuntos meramente informativos.
-5. Regras para escolher a unidade responsavel.
-6. Modelos de minuta por tipo de demanda.
-
-## Regra
-
-O agente nao deve inventar direcionamento. Se nao houver regra suficiente para escolher uma unidade, deve marcar como `revisao_humana_obrigatoria`.
+- `unidades_19crpm.csv`: unidades internas que podem receber providencia.
+- `unidades_alto_comando.csv`: unidades externas/alto comando relevantes.
+- `palavras_chave_19crpm.csv`: palavras-chave para identificar interesse.
+- `regras_direcionamento.csv`: regras que sugerem unidade, tipo de minuta e providencia.
+- `modelos_resposta.md`: orientacoes locais para respostas.

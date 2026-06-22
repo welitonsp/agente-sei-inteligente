@@ -28,10 +28,11 @@ Repositorio: https://github.com/welitonsp/agente-sei-inteligente
 | Extensao SEI read-only | PROTOTIPO | `browser_extension/`, `tests/test_browser_extension_contract.py` |
 | Agente 19 Desktop seguro | PROTOTIPO | `app/desktop/`, `tests/test_desktop_secure_browser.py` |
 | Minutador local zero custo | PROTOTIPO | `app/intelligence/local_minutador.py`, `knowledge_base/templates_minutas/`, `tests/test_local_minutador.py` |
+| Knowledge base local 19 CRPM | PROTOTIPO sem dados reais | `knowledge_base/fluxos_19crpm/`, `app/intelligence/knowledge_base.py`, `app/intelligence/local_triage.py` |
 | Scripts | CONCLUIDO | `scripts/init_db.py`, `scripts/google_oauth_setup.py`, `scripts/google_validate.py` |
 | PR e CI | PR #1 draft aberto; CI aprovado | https://github.com/welitonsp/agente-sei-inteligente/pull/1 |
 | Gate de segredos | CONCLUIDO | `.github/workflows/ci.yml`, `scripts/check_no_secrets.py` |
-| Testes | 117 passando | `tests/` |
+| Testes | 123 passando | `tests/` |
 
 Modo atual: **dry-run** (simulacao). Nenhum evento real e criado ate o OAuth
 estar completo no `.env`.
@@ -99,7 +100,7 @@ set PYTHONPATH=.
 .venv\Scripts\python.exe -m pytest
 ```
 
-Esperado: scanner sem segredos concretos e 117 testes passando.
+Esperado: scanner sem segredos concretos e 123 testes passando.
 
 ### 4.1. Rodar o painel MVP local
 

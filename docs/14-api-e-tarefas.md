@@ -136,6 +136,25 @@ Exemplo:
 Regra: gera somente rascunho local copiavel. Nao cria documento no SEI, nao
 assina, nao tramita, nao envia processo e exige revisao humana.
 
+### Triagem local 19 CRPM
+
+```text
+POST /api/triage-local
+```
+
+Exemplo:
+
+```json
+{
+  "assunto": "Apoio administrativo",
+  "texto": "Resumo da demanda",
+  "processo_sei": "2026.000000"
+}
+```
+
+Regra: consulta apenas a knowledge base local. Se nao houver regra clara, nao
+sugere unidade e retorna revisao humana obrigatoria.
+
 ### Enviar alerta
 
 ```text

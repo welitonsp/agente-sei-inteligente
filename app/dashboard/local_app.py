@@ -16,6 +16,7 @@ from typing import Any
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger, log_event
 from app.intelligence.local_minutador import DraftRequest, generate_draft
+from app.intelligence.local_triage import TriageRequest, analyze_triage
 from app.intake.manual_text import ManualTextRequest, analyze_text
 from app.intake.pdf_upload import PdfUploadRequest, analyze_pdf
 from app.storage.db import init_db
@@ -339,7 +340,12 @@ INDEX_HTML = """<!doctype html>
             <pre id="pending"></pre>
           </div>
           <button id="draft-button" type="button" disabled>Gerar minuta local</button>
+          <button id="triage-button" type="button" disabled>Triagem local</button>
           <button id="copy-draft" type="button" disabled>Copiar minuta</button>
+          <div class="field">
+            <label>Triagem e roteamento</label>
+            <pre id="triage"></pre>
+          </div>
           <div class="field">
             <label>Minuta local</label>
             <pre id="draft"></pre>
@@ -357,8 +363,10 @@ INDEX_HTML = """<!doctype html>
     const result = document.getElementById("result");
     const errorBox = document.getElementById("error");
     const draftButton = document.getElementById("draft-button");
+    const triageButton = document.getElementById("triage-button");
     const copyDraft = document.getElementById("copy-draft");
     const draftBox = document.getElementById("draft");
+    const triageBox = document.getElementById("triage");
     let lastAnalysis = null;
 
     function setText(id, value) {
@@ -383,6 +391,7 @@ INDEX_HTML = """<!doctype html>
       badge.className = "status ok";
       lastAnalysis = payload;
       draftButton.disabled = false;
+      triageButton.disabled = false;
       setText("status", payload.status);
       setText("review", payload.revisao_humana_obrigatoria ? "Obrigatoria" : "Nao");
       setText("confidence", String(payload.confianca ?? ""));
@@ -394,6 +403,7 @@ INDEX_HTML = """<!doctype html>
       setText("deadline", deadline.ha_prazo ? `${deadline.data_limite || ""} ${deadline.hora_limite || ""} ${deadline.risco || ""}` : "Nao confirmado");
       setText("pending", (payload.campos_pendentes || []).join("\\n") || "Nenhum");
       setText("draft", "");
+      setText("triage", "");
       copyDraft.disabled = true;
     }
 
@@ -471,6 +481,45 @@ INDEX_HTML = """<!doctype html>
       }
     });
 
+    triageButton.addEventListener("click", async () => {
+      if (!lastAnalysis) return;
+      triageButton.disabled = true;
+      badge.textContent = "Triando";
+      const data = lastAnalysis.resultado || {};
+      const payload = {
+        processo_sei: document.getElementById("processo").value,
+        usuario_local: document.getElementById("usuario").value,
+        assunto: document.getElementById("titulo").value,
+        texto: data.resumo_executivo || ""
+      };
+      try {
+        const response = await fetch("/api/triage-local", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload)
+        });
+        const triagePayload = await response.json();
+        if (!response.ok) {
+          showError(triagePayload.error?.message || "Falha na triagem.");
+          return;
+        }
+        triageBox.textContent = formatTriage(triagePayload);
+        const result = triagePayload.resultado || {};
+        if (result.unidade_sugerida) {
+          document.getElementById("unidade").value = result.unidade_sugerida;
+        }
+        if (result.tipo_minuta_sugerido) {
+          document.getElementById("tipo-minuta").value = result.tipo_minuta_sugerido;
+        }
+        badge.textContent = "Triagem pronta";
+        badge.className = "status ok";
+      } catch (err) {
+        showError("Falha de comunicacao na triagem.");
+      } finally {
+        triageButton.disabled = false;
+      }
+    });
+
     copyDraft.addEventListener("click", async () => {
       const text = draftBox.textContent || "";
       if (!text) return;
@@ -505,6 +554,23 @@ INDEX_HTML = """<!doctype html>
         `Providencia sugerida: ${data.providencia_sugerida || ""}`,
         `Campos pendentes: ${(payload.campos_pendentes || []).join(", ") || "nenhum"}`,
         `Alertas: ${(data.alertas || []).join(" | ")}`
+      ];
+      return lines.join("\\n");
+    }
+
+    function formatTriage(payload) {
+      const data = payload.resultado || {};
+      const lines = [
+        `Interesse 19 CRPM: ${data.interesse_19crpm || ""}`,
+        `Unidade sugerida: ${data.unidade_sugerida || "indefinida"}`,
+        `Tipo de minuta: ${data.tipo_minuta_sugerido || "indefinido"}`,
+        `Providencia: ${data.providencia_sugerida || ""}`,
+        `Regra aplicada: ${data.regra_aplicada || "nenhuma"}`,
+        `Confianca: ${payload.confianca ?? ""}`,
+        `Revisao humana: ${payload.revisao_humana_obrigatoria ? "obrigatoria" : "nao informada"}`,
+        `Campos pendentes: ${(payload.campos_pendentes || []).join(", ") || "nenhum"}`,
+        "",
+        data.justificativa || ""
       ];
       return lines.join("\\n");
     }
@@ -563,6 +629,19 @@ def create_draft_response(payload: dict[str, Any]) -> dict[str, Any]:
     return generate_draft(request).to_contract()
 
 
+def create_triage_response(payload: dict[str, Any]) -> dict[str, Any]:
+    """Executa triagem/roteamento local por regras, sem inventar unidade."""
+    request = TriageRequest(
+        assunto=str(payload.get("assunto") or payload.get("titulo") or ""),
+        texto=str(payload.get("texto", "")),
+        processo_sei=str(payload.get("processo_sei", "")),
+        usuario_local=str(payload.get("usuario_local", "")),
+        estacao=str(payload.get("estacao", "")),
+        origem=str(payload.get("origem") or "dashboard_local"),
+    )
+    return analyze_triage(request).to_contract()
+
+
 class DashboardHandler(BaseHTTPRequestHandler):
     server_version = "AgenteSeiDashboard/0.1"
 
@@ -576,12 +655,19 @@ class DashboardHandler(BaseHTTPRequestHandler):
         self.send_error(HTTPStatus.NOT_FOUND)
 
     def do_POST(self) -> None:  # noqa: N802 - API stdlib
-        if self.path not in ("/api/import-text", "/api/import-pdf", "/api/generate-draft"):
+        if self.path not in (
+            "/api/import-text",
+            "/api/import-pdf",
+            "/api/generate-draft",
+            "/api/triage-local",
+        ):
             self.send_error(HTTPStatus.NOT_FOUND)
             return
         try:
             payload = self._read_json()
-            if self.path == "/api/generate-draft":
+            if self.path == "/api/triage-local":
+                result = create_triage_response(payload)
+            elif self.path == "/api/generate-draft":
                 result = create_draft_response(payload)
             elif self.path == "/api/import-pdf":
                 result = create_import_pdf_response(payload)
