@@ -73,13 +73,14 @@ Com escopo limitado a:
 | P-06 | Google Agenda | Parcialmente conforme | Servico implementado e testado em dry-run; falta concluir OAuth real | Concluir credenciais OAuth (PROC-0004) e homologar evento real |
 | P-07 | Telegram | Parcialmente conforme | Padrao documentado; bot/token/codigo ausentes | Implementar envio isolado e teste |
 | P-08 | PDF | Parcialmente conforme | Estrategia documentada; extrator nao implementado | Implementar upload, extracao e tratamento OCR necessario |
-| P-09 | IA/RAG | Parcialmente conforme | Provedor padrao decidido: Claude (DEC-0006); retriever ainda nao implementado | Implementar cliente Claude e retriever na Etapa 7 |
-| P-10 | Modelos Gemini | Parcialmente conforme | IDs do `.env.example` sao invalidos; provedor padrao agora e Claude | Corrigir/remover IDs Gemini se houver uso futuro |
+| P-09 | IA/RAG | Parcialmente conforme | DEC-0012 define custo zero como padrao; IA paga deixa de ser caminho padrao | Priorizar regras locais, templates, OCR gratuito e modelo local opcional |
+| P-10 | Modelos pagos/externos | Parcialmente conforme | DEC-0012 remove IA paga do caminho padrao | Usar apenas se houver autorizacao formal, custo zero ou recurso institucional existente |
 | P-11 | Observabilidade de LLM | Parcialmente conforme | Logs existem no desenho; tracing de prompts nao definido | Definir se sera Phoenix, LangSmith ou log local sanitizado |
 | P-12 | Avaliacao automatizada de IA | Parcialmente conforme | Plano de testes existe; RAGAS/TruLens ou avaliador proprio nao definido | Adicionar avaliacao de fidelidade e ausencia de invencao |
 | P-13 | Autenticacao do painel | Parcialmente conforme | Necessidade documentada; mecanismo nao escolhido | Definir login local, usuarios e perfis |
 | P-14 | Retencao de logs | Parcialmente conforme | Politica geral existe; prazo institucional falta | Definir prazo e responsavel por auditoria |
 | P-15 | Agente 19 Desktop seguro | Parcialmente conforme | Prototipo implementado sem captura de credenciais; falta homologacao/autorizacao institucional | Homologar em ambiente institucional com exemplos anonimizados |
+| P-16 | Restricao de custo zero | Conforme | DEC-0012 registrada; sem API paga, assinatura, RPA pago ou hospedagem paga | Manter como restricao permanente |
 
 ## Nao conformidades atuais
 

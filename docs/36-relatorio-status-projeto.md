@@ -3,13 +3,16 @@
 Data: 2026-06-22
 Branch: `feat/fundacao-agenda-ics`
 PR: https://github.com/welitonsp/agente-sei-inteligente/pull/1
-Status geral: fundacao tecnica, painel local, intake texto/PDF, Agente 19 Desktop seguro e prototipo de extensao SEI read-only implementados. Operacao real ainda depende de homologacao e autorizacoes.
+Status geral: fundacao tecnica, painel local, intake texto/PDF, Agente 19 Desktop seguro, estrategia zero custo e prototipo de extensao SEI read-only implementados. Operacao real ainda depende de homologacao e autorizacoes.
 
 ## 1. Resumo executivo
 
 O projeto ja possui uma base tecnica segura para operar como assistente administrativo do 19 CRPM. O sistema ainda nao esta liberado para operacao real com dados sensiveis, mas ja consegue receber texto/PDF fornecido pelo usuario, gerar analise estruturada basica, registrar auditoria sem salvar texto integral, simular integracao com agenda, abrir o Agente 19 como desktop local seguro e aparecer dentro da tela do SEI por uma extensao read-only quando autorizada.
 
 Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SEI continuam manuais e sob responsabilidade do servidor logado.
+
+Restricao financeira permanente: o projeto deve operar com custo zero por
+padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 
 ## 2. Checklist do que ja foi executado
 
@@ -26,6 +29,7 @@ Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SE
 - [x] Handoff de retomada criado.
 - [x] Relatorio de status consolidado criado neste arquivo.
 - [x] Fase 37.2 documentada em `docs/37-fase-desktop-navegador-seguro.md`.
+- [x] Estrategia zero custo documentada em `docs/38-estrategia-zero-custo-sei.md`.
 
 ### Fundacao tecnica e seguranca
 
@@ -288,6 +292,15 @@ Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SE
 - [ ] Criar teste manual documentado da extensao.
 - [ ] Criar politica de versao e releases.
 
+### Estrategia zero custo
+
+- [ ] Implementar minutador por templates locais.
+- [ ] Criar templates locais de oficio, despacho, informacao e encaminhamento.
+- [ ] Criar classificacao por regras antes de IA paga.
+- [ ] Avaliar OCR gratuito/local.
+- [ ] Avaliar modelo local gratuito somente se houver hardware/autorizacao.
+- [ ] Manter IA externa paga fora do caminho padrao.
+
 ## 5. O que continua proibido
 
 - [ ] Automatizar login no SEI.
@@ -311,10 +324,11 @@ Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SE
 
 1. Testar o Agente 19 Desktop com SEI aberto pela URL oficial, usando somente caso anonimizado ou conteudo nao sensivel.
 2. Registrar o resultado em `docs/32-registro-testes-homologacao.md`.
-3. Concluir o OAuth Google e validar agenda real em modo controlado.
+3. Implementar minutador por templates locais, sem IA paga.
 4. Preencher a knowledge base do 19 CRPM para liberar triagem e roteamento.
-5. Manter a extensao Chrome/Edge como recurso futuro opcional, dependente de autorizacao institucional.
-6. Implementar OCR real ou autenticacao local do painel, conforme prioridade operacional.
+5. Concluir o OAuth Google e validar agenda real em modo controlado, apenas se usar recursos gratuitos/institucionais ja existentes.
+6. Manter a extensao Chrome/Edge como recurso futuro opcional, dependente de autorizacao institucional.
+7. Implementar OCR gratuito/local ou autenticacao local do painel, conforme prioridade operacional.
 
 ## 7. Como testar o que ja existe
 

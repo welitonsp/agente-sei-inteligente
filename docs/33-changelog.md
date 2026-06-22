@@ -2,6 +2,27 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.3.5-estrategia-zero-custo] - 2026-06-22
+
+### Adicionado
+
+1. Estrategia zero custo em `docs/38-estrategia-zero-custo-sei.md`.
+2. Decisao DEC-0012 registrando que o projeto nao deve depender de servico
+   pago, API paga, assinatura, RPA pago ou hospedagem paga.
+
+### Alterado
+
+1. Caminho de IA passa a priorizar regras locais, templates, OCR gratuito e
+   modelo local opcional, conforme hardware e autorizacao.
+2. Minutador por templates locais passa a ser a proxima entrega recomendada
+   antes de qualquer IA paga.
+
+### Seguranca
+
+1. Conteudo real do SEI continua proibido em IA externa sem autorizacao formal.
+2. Escrita no SEI continua proibida sem homologacao; quando liberada, no maximo
+   minuta/rascunho sem assinatura.
+
 ## [0.3.4-desktop-navegador-seguro] - 2026-06-22
 
 ### Adicionado

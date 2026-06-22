@@ -87,14 +87,14 @@ Proximo passo: Usar o prompt ao iniciar sessoes de desenvolvimento.
 
 Data: 2026-06-21  
 Responsavel: Chefe do projeto  
-Status: APROVADA  
+Status: SUPERADA PARCIALMENTE pela DEC-0012
 Contexto: A camada de inteligencia precisa de um provedor de IA padrao.  
 Decisao: Adotar Claude (Anthropic) como provedor de IA padrao, dentro de uma camada configuravel (`AI_PROVIDER`).  
 Motivo: Forte raciocinio administrativo/juridico e baixa alucinacao para resumos e minutas fieis.  
 Impacto: A futura `app/intelligence/` usara cliente Claude; guard e permissoes continuam sendo a barreira final, nunca o prompt. IDs Gemini do `.env.example` devem ser ignorados/corrigidos se houver uso futuro.  
 Risco: Dependencia de API externa; mitigada por camada configuravel e proibicao de conteudo vivo do SEI em IA externa (DEC-0003).  
 Arquivos afetados: `.env.example`, `docs/26`, `docs/33`.  
-Proximo passo: Implementar cliente Claude apenas na Etapa 7, com conteudo autorizado.
+Proximo passo: Nao implementar cliente pago por padrao. A DEC-0012 determina custo zero; priorizar regras locais, templates, OCR gratuito e modelo local opcional.
 
 ## DEC-0007
 
@@ -160,3 +160,16 @@ Impacto: O login ocorre exclusivamente na pagina oficial `https://sei.go.gov.br/
 Risco: Uso com navegador interno ou janela separada ainda precisa de homologacao/autorizacao institucional antes de producao real.
 Arquivos afetados: `app/desktop/`, `tests/test_desktop_secure_browser.py`, `docs/27`, `docs/33`, `docs/36`, `docs/37`.
 Proximo passo: Homologar o desktop com exemplos anonimizados e confirmar se o SEI deve abrir em navegador separado ou WebView institucional.
+
+## DEC-0012
+
+Data: 2026-06-22
+Responsavel: Chefe do projeto
+Status: APROVADA
+Contexto: O chefe do projeto informou que nao ha orcamento para pagar por qualquer servico.
+Decisao: O Agente 19 deve seguir estrategia zero custo por padrao: sem API paga, sem assinatura, sem ferramenta RPA paga, sem hospedagem paga e sem dependencia financeira.
+Motivo: Tornar o projeto viavel na realidade operacional atual.
+Impacto: IA externa paga deixa de ser caminho padrao; priorizar regras locais, templates, SQLite, PDF/OCR gratuito, desktop local e eventual modelo local gratuito se houver hardware/autorizacao.
+Risco: Analises podem ser menos sofisticadas que modelos pagos; mitigacao por knowledge base real, templates bem feitos, revisao humana e evolucao incremental.
+Arquivos afetados: `docs/27`, `docs/30`, `docs/33`, `docs/36`, `docs/38`.
+Proximo passo: Implementar minutador por templates locais antes de qualquer IA paga ou integracao onerosa.

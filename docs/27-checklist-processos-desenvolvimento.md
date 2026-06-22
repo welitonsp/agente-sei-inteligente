@@ -425,6 +425,39 @@ PROTOTIPO_IMPLEMENTADO
 6. Inserir conteudo no SEI sem acao humana.
 7. Burlar politica institucional de extensao ou navegador.
 
+## Checklist 13 - Estrategia zero custo
+
+Objetivo: garantir que o projeto nao dependa de servico pago.
+
+Status atual:
+
+```text
+APROVADO_COMO_RESTRICAO_PERMANENTE
+```
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Registrar decisao de orcamento zero | CONCLUIDO (`DEC-0012`) |
+| Proibir API paga como caminho padrao | CONCLUIDO |
+| Priorizar regras locais/templates | APROVADO |
+| Priorizar SQLite e execucao local | APROVADO |
+| Priorizar OCR gratuito/local | APROVADO |
+| Modelo local gratuito | CONDICIONADO a hardware/autorizacao |
+| Ferramenta RPA paga | PROIBIDO |
+| Hospedagem paga | PROIBIDO |
+| Minutador por templates locais | PROXIMA_ENTREGA_RECOMENDADA |
+
+### Proibido nesta restricao
+
+1. Contratar API paga.
+2. Usar cartao de credito.
+3. Depender de assinatura mensal.
+4. Contratar RPA pago.
+5. Hospedar em servico pago.
+6. Enviar conteudo real do SEI para IA externa sem autorizacao formal.
+
 ## Decisao de continuidade
 
 Pode continuar agora:
@@ -435,6 +468,7 @@ Checklist 3 - Leitura de PDF e texto
 Checklist 6 - Google Agenda, conclusao do OAuth
 Checklist 9 - Robozinho/extensao SEI read-only, somente prototipo e homologacao
 Checklist 12 - Agente 19 Desktop com navegador seguro, somente prototipo e homologacao
+Checklist 13 - Estrategia zero custo e minutador por templates locais
 ```
 
 Nao iniciar agora sem nova autorizacao:
@@ -445,4 +479,5 @@ Login automatico no SEI
 Uso institucional da extensao sem homologacao
 IA externa com conteudo real do SEI
 Triagem automatica sem knowledge base real
+API paga ou servico com assinatura
 ```

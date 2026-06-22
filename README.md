@@ -2,9 +2,9 @@
 
 Documentacao-base do projeto de um agente administrativo inteligente para apoiar a rotina do 19 CRPM com e-mail institucional, PDF, Google Agenda, alertas em celular, minutas administrativas e uso assistido do SEI.
 
-Versao documental: 0.3.4
+Versao documental: 0.3.5
 Data: 2026-06-22
-Status: Fundacao tecnica + Agenda dry-run + painel local texto/PDF + desktop seguro + extensao SEI read-only opcional
+Status: Fundacao tecnica + Agenda dry-run + painel local texto/PDF + desktop seguro + estrategia zero custo
 
 ## Objetivo
 
@@ -79,6 +79,7 @@ A versao 1 sera considerada pronta quando o agente conseguir:
 | [docs/35-handoff-retomada.md](docs/35-handoff-retomada.md) | Handoff: ponto de parada e como retomar em outra estacao |
 | [docs/36-relatorio-status-projeto.md](docs/36-relatorio-status-projeto.md) | Relatorio consolidado do que foi feito, do que o sistema faz e do que falta |
 | [docs/37-fase-desktop-navegador-seguro.md](docs/37-fase-desktop-navegador-seguro.md) | Fase 37.2: Agente 19 Desktop com navegador seguro |
+| [docs/38-estrategia-zero-custo-sei.md](docs/38-estrategia-zero-custo-sei.md) | Estrategia zero custo para leitura, analise e minuta SEI |
 
 ## Estrutura-alvo
 
