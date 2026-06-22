@@ -2,6 +2,25 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.3.6-minutador-local-zero-custo] - 2026-06-22
+
+### Adicionado
+
+1. Minutador local em `app/intelligence/local_minutador.py`.
+2. Templates locais em `knowledge_base/templates_minutas/`.
+3. Endpoint local `POST /api/generate-draft`.
+4. Botao `Gerar minuta local` no painel MVP.
+5. Botao `Gerar minuta` no Agente 19 Desktop.
+6. Documento da Fase 39 em `docs/39-fase-minutador-local-zero-custo.md`.
+7. Testes automatizados em `tests/test_local_minutador.py`.
+
+### Seguranca
+
+1. Minutas sao rascunhos locais e exigem revisao humana.
+2. O sistema nao escreve no SEI, nao cria documento oficial e nao assina.
+3. Auditoria registra metadados, tipo e confianca, sem persistir texto integral.
+4. Acoes oficiais permanecem bloqueadas no contrato.
+
 ## [0.3.5-estrategia-zero-custo] - 2026-06-22
 
 ### Adicionado

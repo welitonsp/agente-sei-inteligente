@@ -156,3 +156,18 @@ Evidencia: `tests/test_desktop_secure_browser.py`, execucao local de `python scr
 Status: APROVADO
 Problemas encontrados: Nenhum bloqueante.
 Proximo passo: Homologar manualmente o desktop em ambiente institucional com exemplos anonimizados.
+
+## TEST-0010
+
+Data: 2026-06-22
+Versao/commit: branch `feat/fundacao-agenda-ics`
+Ambiente: Local Windows, Python 3.13, `.venv`, pytest
+Responsavel: Engenharia do projeto
+Caso testado: Minutador local zero custo por regras e templates.
+Entrada usada: Textos e metadados ficticios/anonimizados para despacho, oficio, informacao e encaminhamento.
+Resultado esperado: Gerar rascunho local com revisao humana obrigatoria, acoes oficiais bloqueadas, campos pendentes quando faltar dado e auditoria sem texto integral.
+Resultado obtido: `scripts/check_no_secrets.py` OK; 117 testes passando.
+Evidencia: `tests/test_local_minutador.py`, painel local e desktop usando `POST /api/generate-draft`; execucao local de `python scripts/check_no_secrets.py .` e `python -m pytest`.
+Status: APROVADO
+Problemas encontrados: Nenhum bloqueante.
+Proximo passo: Homologar minutas com exemplos anonimizados do 19 CRPM.

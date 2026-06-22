@@ -115,6 +115,27 @@ Exemplo:
 }
 ```
 
+### Gerar minuta local zero custo
+
+```text
+POST /api/generate-draft
+```
+
+Exemplo:
+
+```json
+{
+  "assunto": "Apoio administrativo",
+  "resumo": "pedido de apoio para atividade institucional",
+  "processo_sei": "2026.000000",
+  "tipo_minuta": "despacho",
+  "unidade_destino": "PM/19 CRPM"
+}
+```
+
+Regra: gera somente rascunho local copiavel. Nao cria documento no SEI, nao
+assina, nao tramita, nao envia processo e exige revisao humana.
+
 ### Enviar alerta
 
 ```text
@@ -190,4 +211,3 @@ GRANT_SEI_ACCESS
 4. Exibir historico da demanda.
 5. Permitir edicao humana antes de agenda e minuta.
 6. Manter o usuario informado quando uma tarefa falhar ou for bloqueada.
-

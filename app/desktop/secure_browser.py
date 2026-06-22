@@ -32,7 +32,7 @@ SECURITY_NOTICE = (
     "e não pratica atos oficiais."
 )
 
-ALLOWED_ENDPOINTS = {"/api/import-text", "/api/import-pdf"}
+ALLOWED_ENDPOINTS = {"/api/import-text", "/api/import-pdf", "/api/generate-draft"}
 CREDENTIAL_KEY_FRAGMENTS = (
     "senha",
     "password",
@@ -173,6 +173,34 @@ def analyze_pdf_via_backend(
     return _post_json("/api/import-pdf", payload, backend_origin=backend_origin)
 
 
+def generate_draft_via_backend(
+    *,
+    assunto: str,
+    resumo: str,
+    processo_sei: str = "",
+    usuario_local: str = "",
+    unidade_destino: str = "",
+    destinatario: str = "",
+    tipo_minuta: str = "",
+    prazo: str = "",
+    evento: str = "",
+    backend_origin: str = LOCAL_BACKEND_ORIGIN,
+) -> dict[str, Any]:
+    payload = {
+        "assunto": assunto,
+        "resumo": resumo,
+        "processo_sei": processo_sei,
+        "usuario_local": usuario_local,
+        "unidade_destino": unidade_destino,
+        "destinatario": destinatario,
+        "tipo_minuta": tipo_minuta,
+        "prazo": prazo,
+        "evento": evento,
+        "origem": "desktop_navegador_seguro",
+    }
+    return _post_json("/api/generate-draft", payload, backend_origin=backend_origin)
+
+
 def format_analysis_result(payload: dict[str, Any]) -> str:
     """Formata a resposta local para copiar/colar fora do SEI."""
     resultado = payload.get("resultado", {}) if isinstance(payload, dict) else {}
@@ -204,6 +232,35 @@ def format_analysis_result(payload: dict[str, Any]) -> str:
     )
 
 
+def format_draft_result(payload: dict[str, Any]) -> str:
+    """Formata a minuta local para copia manual."""
+    resultado = payload.get("resultado", {}) if isinstance(payload, dict) else {}
+    alertas = resultado.get("alertas", []) if isinstance(resultado, dict) else []
+    pendentes = payload.get("campos_pendentes", []) if isinstance(payload, dict) else []
+    return "\n".join(
+        [
+            "Agente 19 - Minuta local preliminar",
+            f"Tipo: {resultado.get('tipo_minuta', '')}",
+            f"Confianca: {payload.get('confianca', '')}",
+            (
+                "Revisao humana: "
+                f"{'obrigatoria' if payload.get('revisao_humana_obrigatoria') else 'nao informada'}"
+            ),
+            "",
+            str(resultado.get("texto", "")).strip(),
+            "",
+            f"Providencia sugerida: {resultado.get('providencia_sugerida', '')}",
+            f"Campos pendentes: {', '.join(map(str, pendentes)) if pendentes else 'nenhum'}",
+            f"Alertas: {' | '.join(map(str, alertas)) if alertas else 'nenhum'}",
+            "",
+            (
+                "Observacao: copie para o SEI somente apos revisar. "
+                "O Agente 19 nao assina nem tramita."
+            ),
+        ]
+    )
+
+
 def run() -> None:
     """Sobe backend local e abre a janela desktop."""
     start_backend_if_needed()
@@ -226,6 +283,7 @@ class SecureDesktopApp:
         self.root.minsize(860, 560)
         self.pdf_path: Path | None = None
         self.last_result = ""
+        self.last_analysis: dict[str, Any] | None = None
 
         self.notice_var = tk.StringVar(value=SECURITY_NOTICE)
         self.status_var = tk.StringVar(value="Backend local: 127.0.0.1")
@@ -308,7 +366,7 @@ class SecureDesktopApp:
 
         buttons = tk.Frame(agent_frame)
         buttons.grid(row=5, column=0, columnspan=2, sticky="ew", padx=12, pady=8)
-        for index in range(4):
+        for index in range(5):
             buttons.columnconfigure(index, weight=1)
         tk.Button(buttons, text="Analisar texto", command=self._analyze_text).grid(
             row=0, column=0, sticky="ew", padx=(0, 6)
@@ -319,8 +377,11 @@ class SecureDesktopApp:
         tk.Button(buttons, text="Analisar PDF", command=self._analyze_pdf).grid(
             row=0, column=2, sticky="ew", padx=6
         )
-        tk.Button(buttons, text="Copiar resultado", command=self._copy_result).grid(
+        tk.Button(buttons, text="Gerar minuta", command=self._generate_draft).grid(
             row=0, column=3, sticky="ew", padx=(6, 0)
+        )
+        tk.Button(buttons, text="Copiar resultado", command=self._copy_result).grid(
+            row=0, column=4, sticky="ew", padx=(6, 0)
         )
 
         self.pdf_label_var = tk.StringVar(value="Nenhum PDF selecionado.")
@@ -352,6 +413,7 @@ class SecureDesktopApp:
                 usuario_local=payload["usuario_local"],
                 backend_origin=self.backend_origin,
             )
+            self.last_analysis = result
             self._show_result(format_analysis_result(result))
         except Exception as exc:
             self._show_error(exc)
@@ -382,7 +444,32 @@ class SecureDesktopApp:
                 usuario_local=payload["usuario_local"],
                 backend_origin=self.backend_origin,
             )
+            self.last_analysis = result
             self._show_result(format_analysis_result(result))
+        except Exception as exc:
+            self._show_error(exc)
+
+    def _generate_draft(self) -> None:
+        if not self.last_analysis:
+            self.status_var.set("Analise texto ou PDF antes de gerar minuta.")
+            return
+        payload = self._payload_base()
+        resultado = self.last_analysis.get("resultado", {})
+        event = resultado.get("evento", {}) if isinstance(resultado, dict) else {}
+        deadline = resultado.get("prazo", {}) if isinstance(resultado, dict) else {}
+        prazo = _format_deadline(deadline) if deadline.get("ha_prazo") else ""
+        evento = _format_event(event) if event.get("ha_evento") else ""
+        try:
+            draft = generate_draft_via_backend(
+                assunto=payload["titulo"],
+                resumo=str(resultado.get("resumo_executivo", "")),
+                processo_sei=payload["processo_sei"],
+                usuario_local=payload["usuario_local"],
+                prazo=prazo,
+                evento=evento,
+                backend_origin=self.backend_origin,
+            )
+            self._show_result(format_draft_result(draft))
         except Exception as exc:
             self._show_error(exc)
 

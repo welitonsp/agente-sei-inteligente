@@ -447,7 +447,47 @@ APROVADO_COMO_RESTRICAO_PERMANENTE
 | Modelo local gratuito | CONDICIONADO a hardware/autorizacao |
 | Ferramenta RPA paga | PROIBIDO |
 | Hospedagem paga | PROIBIDO |
-| Minutador por templates locais | PROXIMA_ENTREGA_RECOMENDADA |
+| Minutador por templates locais | CONCLUIDO prototipo (`app/intelligence/local_minutador.py`) |
+
+## Checklist 14 - Minutador local zero custo
+
+Objetivo: gerar rascunhos administrativos por regras e templates locais, sem IA
+paga e sem escrita no SEI.
+
+Status atual:
+
+```text
+PROTOTIPO_IMPLEMENTADO
+```
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Criar motor local de minuta | CONCLUIDO (`app/intelligence/local_minutador.py`) |
+| Criar templates locais | CONCLUIDO (`knowledge_base/templates_minutas/`) |
+| Tipo despacho | CONCLUIDO |
+| Tipo oficio | CONCLUIDO |
+| Tipo informacao | CONCLUIDO |
+| Tipo encaminhamento | CONCLUIDO |
+| Classificar tipo por regras | CONCLUIDO prototipo |
+| Endpoint `POST /api/generate-draft` | CONCLUIDO |
+| Botao no painel local | CONCLUIDO |
+| Botao no desktop | CONCLUIDO |
+| Copiar resultado | CONCLUIDO |
+| Revisao humana obrigatoria | CONCLUIDO |
+| Bloquear acoes oficiais no contrato | CONCLUIDO |
+| Auditoria sem texto integral | CONCLUIDO |
+| Homologar com exemplos anonimizados do 19 CRPM | NAO_INICIADO |
+
+### Proibido nesta fase
+
+1. Criar documento oficial no SEI.
+2. Assinar.
+3. Tramitar.
+4. Enviar processo.
+5. Concluir processo.
+6. Inventar unidade, fundamento legal, autoridade ou prazo.
 
 ### Proibido nesta restricao
 
@@ -468,7 +508,8 @@ Checklist 3 - Leitura de PDF e texto
 Checklist 6 - Google Agenda, conclusao do OAuth
 Checklist 9 - Robozinho/extensao SEI read-only, somente prototipo e homologacao
 Checklist 12 - Agente 19 Desktop com navegador seguro, somente prototipo e homologacao
-Checklist 13 - Estrategia zero custo e minutador por templates locais
+Checklist 13 - Estrategia zero custo
+Checklist 14 - Minutador local zero custo, homologacao e melhoria das regras
 ```
 
 Nao iniciar agora sem nova autorizacao:

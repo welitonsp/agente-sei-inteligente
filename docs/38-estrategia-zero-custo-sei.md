@@ -21,13 +21,13 @@ Servicos externos so podem ser usados quando:
 
 ### Fase 38.1 - Manual seguro, custo zero
 
-- [ ] Usuario abre o SEI manualmente.
-- [ ] Usuario baixa/exporta PDF manualmente.
-- [ ] Usuario envia PDF/texto ao Agente 19 Desktop.
-- [ ] Agente analisa localmente.
-- [ ] Agente informa do que se trata.
-- [ ] Agente sugere se a resposta parece oficio, despacho, encaminhamento ou informacao.
-- [ ] Agente sugere texto preliminar fora do SEI.
+- [x] Usuario abre o SEI manualmente.
+- [x] Usuario baixa/exporta PDF manualmente.
+- [x] Usuario envia PDF/texto ao Agente 19 Desktop.
+- [x] Agente analisa localmente.
+- [x] Agente informa do que se trata.
+- [x] Agente sugere se a resposta parece oficio, despacho, encaminhamento ou informacao.
+- [x] Agente sugere texto preliminar fora do SEI.
 - [ ] Usuario revisa, copia e cria manualmente no SEI.
 - [ ] Usuario assina/tramita apenas se decidir.
 
@@ -112,13 +112,15 @@ gerado pelo Agente 19 e colar manualmente no SEI.
 | Agenda | Google existente/dry-run, sem contratar servico |
 | Alertas | Telegram gratuito, se autorizado |
 
-## Proxima entrega tecnica sugerida
+## Entrega tecnica concluida
 
-Implementar primeiro o **minutador por templates locais**, sem IA paga:
+Foi implementado o **minutador por templates locais**, sem IA paga:
 
-1. criar knowledge base minima do 19 CRPM;
-2. criar templates de oficio, despacho, informacao e encaminhamento;
-3. classificar o tipo provavel por regras;
-4. gerar texto preliminar;
-5. mostrar confianca e pendencias;
-6. copiar resultado para uso manual no SEI.
+1. templates de oficio, despacho, informacao e encaminhamento;
+2. classificacao de tipo provavel por regras;
+3. texto preliminar;
+4. confianca e pendencias;
+5. copia do resultado para uso manual no SEI.
+
+Proximo passo: homologar com exemplos anonimizados e preencher a knowledge base
+real do 19 CRPM para melhorar triagem/roteamento.

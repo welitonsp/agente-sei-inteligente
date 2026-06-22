@@ -3,7 +3,7 @@
 Data: 2026-06-22
 Branch: `feat/fundacao-agenda-ics`
 PR: https://github.com/welitonsp/agente-sei-inteligente/pull/1
-Status geral: fundacao tecnica, painel local, intake texto/PDF, Agente 19 Desktop seguro, estrategia zero custo e prototipo de extensao SEI read-only implementados. Operacao real ainda depende de homologacao e autorizacoes.
+Status geral: fundacao tecnica, painel local, intake texto/PDF, Agente 19 Desktop seguro, estrategia zero custo, minutador local zero custo e prototipo de extensao SEI read-only implementados. Operacao real ainda depende de homologacao e autorizacoes.
 
 ## 1. Resumo executivo
 
@@ -58,7 +58,7 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 - [x] Pipeline roda em Python 3.11 e 3.13.
 - [x] Scanner de segredos criado em `scripts/check_no_secrets.py`.
 - [x] Scanner bloqueia `.env`, tokens, client secrets, URL ICS e chaves concretas.
-- [x] Suite automatizada com 107 testes passando.
+- [x] Suite automatizada com 117 testes passando.
 - [x] PR #1 aberto em modo draft.
 - [x] Checks remotos aprovados no GitHub Actions.
 
@@ -125,6 +125,18 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 - [x] Botao de copiar resultado.
 - [x] Bloqueio de campos/payloads com credenciais.
 - [x] Teste automatizado contra campo de senha/login SEI.
+
+### Minutador local zero custo
+
+- [x] Motor local por regras/templates criado.
+- [x] Templates locais de despacho, oficio, informacao e encaminhamento criados.
+- [x] Endpoint `POST /api/generate-draft` criado.
+- [x] Botao de minuta no painel local.
+- [x] Botao de minuta no desktop.
+- [x] Resultado copiavel.
+- [x] Revisao humana obrigatoria.
+- [x] Acoes oficiais bloqueadas no contrato.
+- [x] Auditoria sem texto integral.
 
 ### Extensao SEI read-only
 
@@ -294,9 +306,9 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 
 ### Estrategia zero custo
 
-- [ ] Implementar minutador por templates locais.
-- [ ] Criar templates locais de oficio, despacho, informacao e encaminhamento.
-- [ ] Criar classificacao por regras antes de IA paga.
+- [x] Implementar minutador por templates locais.
+- [x] Criar templates locais de oficio, despacho, informacao e encaminhamento.
+- [x] Criar classificacao por regras antes de IA paga.
 - [ ] Avaliar OCR gratuito/local.
 - [ ] Avaliar modelo local gratuito somente se houver hardware/autorizacao.
 - [ ] Manter IA externa paga fora do caminho padrao.
@@ -324,11 +336,11 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 
 1. Testar o Agente 19 Desktop com SEI aberto pela URL oficial, usando somente caso anonimizado ou conteudo nao sensivel.
 2. Registrar o resultado em `docs/32-registro-testes-homologacao.md`.
-3. Implementar minutador por templates locais, sem IA paga.
-4. Preencher a knowledge base do 19 CRPM para liberar triagem e roteamento.
-5. Concluir o OAuth Google e validar agenda real em modo controlado, apenas se usar recursos gratuitos/institucionais ja existentes.
-6. Manter a extensao Chrome/Edge como recurso futuro opcional, dependente de autorizacao institucional.
-7. Implementar OCR gratuito/local ou autenticacao local do painel, conforme prioridade operacional.
+3. Homologar minutas com exemplos anonimizados do 19 CRPM.
+4. Preencher a knowledge base do 19 CRPM para melhorar triagem, roteamento e escolha de minuta.
+5. Implementar OCR gratuito/local ou autenticacao local do painel, conforme prioridade operacional.
+6. Concluir o OAuth Google e validar agenda real em modo controlado, apenas se usar recursos gratuitos/institucionais ja existentes.
+7. Manter a extensao Chrome/Edge como recurso futuro opcional, dependente de autorizacao institucional.
 
 ## 7. Como testar o que ja existe
 

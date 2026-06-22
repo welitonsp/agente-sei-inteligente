@@ -38,6 +38,8 @@ def test_index_tem_campos_minimos_do_checklist():
     assert "Revisao humana" in html
     assert "Campos pendentes" in html
     assert "/api/import-pdf" in html
+    assert "/api/generate-draft" in html
+    assert "Gerar minuta local" in html
 
 
 def test_create_import_text_response_retorna_resultado_estruturado(db_env):
@@ -77,3 +79,27 @@ def test_create_import_text_response_nao_retorna_texto_integral(db_env):
     blob = str(response)
     assert marcador not in blob
     assert response["resultado"]["text_hash"]
+
+
+def test_create_draft_response_gera_minuta_local(db_env):
+    db, models = db_env
+
+    response = local_app.create_draft_response(
+        {
+            "assunto": "Apoio administrativo",
+            "resumo": "pedido de apoio para atividade institucional",
+            "processo_sei": "2026.000300",
+            "tipo_minuta": "despacho",
+            "unidade_destino": "PM/19 CRPM",
+            "usuario_local": "operador.local",
+        }
+    )
+
+    assert response["status"] == "precisa_revisao"
+    assert response["revisao_humana_obrigatoria"] is True
+    assert response["resultado"]["tipo_minuta"] == "despacho"
+    assert "DESPACHO" in response["resultado"]["texto"]
+    assert "ASSINAR_DOCUMENTO" in response["acoes_bloqueadas"]
+
+    with db.session_scope() as session:
+        assert session.query(models.AuditLog).count() >= 1

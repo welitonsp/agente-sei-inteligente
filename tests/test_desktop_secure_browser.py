@@ -40,6 +40,14 @@ def test_backend_do_desktop_e_somente_127_0_0_1():
             secure_browser.validate_backend_origin(origin)
 
 
+def test_desktop_permite_apenas_endpoints_locais_previstos():
+    assert secure_browser.ALLOWED_ENDPOINTS == {
+        "/api/import-text",
+        "/api/import-pdf",
+        "/api/generate-draft",
+    }
+
+
 def test_campos_do_desktop_nao_incluem_login_ou_senha_sei():
     field_names = {field.name.lower() for field in secure_browser.AGENT_INPUT_FIELDS}
     field_labels = {field.label.lower() for field in secure_browser.AGENT_INPUT_FIELDS}
@@ -126,3 +134,23 @@ def test_formatacao_resultado_traz_resumo_tipo_providencia_e_copia_manual():
     assert "Tipo provavel: Demanda com possivel evento" in formatted
     assert "Providencia sugerida:" in formatted
     assert "atos oficiais no SEI devem ser praticados manualmente" in formatted
+
+
+def test_formatacao_minuta_reforca_revisao_e_sem_assinatura():
+    payload = {
+        "resultado": {
+            "tipo_minuta": "despacho",
+            "texto": "DESPACHO\n\nTexto preliminar.",
+            "providencia_sugerida": "encaminhar para providencias",
+            "alertas": ["Revisao humana obrigatoria."],
+        },
+        "confianca": 0.55,
+        "revisao_humana_obrigatoria": True,
+        "campos_pendentes": ["unidade_destino"],
+    }
+
+    formatted = secure_browser.format_draft_result(payload)
+
+    assert "Minuta local preliminar" in formatted
+    assert "DESPACHO" in formatted
+    assert "nao assina nem tramita" in formatted

@@ -15,6 +15,7 @@ from typing import Any
 
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger, log_event
+from app.intelligence.local_minutador import DraftRequest, generate_draft
 from app.intake.manual_text import ManualTextRequest, analyze_text
 from app.intake.pdf_upload import PdfUploadRequest, analyze_pdf
 from app.storage.db import init_db
@@ -127,7 +128,7 @@ INDEX_HTML = """<!doctype html>
       font-size: 13px;
     }
 
-    input, textarea {
+    input, select, textarea {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 6px;
@@ -281,6 +282,22 @@ INDEX_HTML = """<!doctype html>
           <label for="titulo">Titulo</label>
           <input id="titulo" name="titulo" autocomplete="off" required>
         </div>
+        <div class="row">
+          <div class="field">
+            <label for="unidade">Unidade/destinatario</label>
+            <input id="unidade" name="unidade_destino" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="tipo-minuta">Tipo de minuta</label>
+            <select id="tipo-minuta" name="tipo_minuta">
+              <option value="">Automatico</option>
+              <option value="despacho">Despacho</option>
+              <option value="oficio">Oficio</option>
+              <option value="informacao">Informacao</option>
+              <option value="encaminhamento">Encaminhamento</option>
+            </select>
+          </div>
+        </div>
         <div class="field">
           <label for="texto">Texto copiado</label>
           <textarea id="texto" name="texto"></textarea>
@@ -321,6 +338,12 @@ INDEX_HTML = """<!doctype html>
             <label>Campos pendentes</label>
             <pre id="pending"></pre>
           </div>
+          <button id="draft-button" type="button" disabled>Gerar minuta local</button>
+          <button id="copy-draft" type="button" disabled>Copiar minuta</button>
+          <div class="field">
+            <label>Minuta local</label>
+            <pre id="draft"></pre>
+          </div>
         </div>
         <div id="error" class="error" hidden></div>
       </div>
@@ -333,6 +356,10 @@ INDEX_HTML = """<!doctype html>
     const empty = document.getElementById("empty");
     const result = document.getElementById("result");
     const errorBox = document.getElementById("error");
+    const draftButton = document.getElementById("draft-button");
+    const copyDraft = document.getElementById("copy-draft");
+    const draftBox = document.getElementById("draft");
+    let lastAnalysis = null;
 
     function setText(id, value) {
       document.getElementById(id).textContent = value || "";
@@ -354,6 +381,8 @@ INDEX_HTML = """<!doctype html>
       errorBox.hidden = true;
       badge.textContent = payload.status || "Recebido";
       badge.className = "status ok";
+      lastAnalysis = payload;
+      draftButton.disabled = false;
       setText("status", payload.status);
       setText("review", payload.revisao_humana_obrigatoria ? "Obrigatoria" : "Nao");
       setText("confidence", String(payload.confianca ?? ""));
@@ -364,6 +393,8 @@ INDEX_HTML = """<!doctype html>
       setText("event", event.ha_evento ? `${event.data || ""} ${event.horario_inicio || ""} ${event.local || ""}` : "Nao confirmado");
       setText("deadline", deadline.ha_prazo ? `${deadline.data_limite || ""} ${deadline.hora_limite || ""} ${deadline.risco || ""}` : "Nao confirmado");
       setText("pending", (payload.campos_pendentes || []).join("\\n") || "Nenhum");
+      setText("draft", "");
+      copyDraft.disabled = true;
     }
 
     form.addEventListener("submit", async (ev) => {
@@ -400,6 +431,56 @@ INDEX_HTML = """<!doctype html>
       }
     });
 
+    draftButton.addEventListener("click", async () => {
+      if (!lastAnalysis) return;
+      draftButton.disabled = true;
+      badge.textContent = "Gerando minuta";
+      const data = lastAnalysis.resultado || {};
+      const event = data.evento || {};
+      const deadline = data.prazo || {};
+      const payload = {
+        processo_sei: document.getElementById("processo").value,
+        usuario_local: document.getElementById("usuario").value,
+        assunto: document.getElementById("titulo").value,
+        unidade_destino: document.getElementById("unidade").value,
+        destinatario: document.getElementById("unidade").value,
+        tipo_minuta: document.getElementById("tipo-minuta").value,
+        resumo: data.resumo_executivo || "",
+        prazo: deadline.ha_prazo ? `${deadline.data_limite || ""} ${deadline.hora_limite || ""}` : "",
+        evento: event.ha_evento ? `${event.data || ""} ${event.horario_inicio || ""} ${event.local || ""}` : ""
+      };
+      try {
+        const response = await fetch("/api/generate-draft", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload)
+        });
+        const draftPayload = await response.json();
+        if (!response.ok) {
+          showError(draftPayload.error?.message || "Falha ao gerar minuta.");
+          return;
+        }
+        draftBox.textContent = formatDraft(draftPayload);
+        copyDraft.disabled = false;
+        badge.textContent = "Minuta pronta";
+        badge.className = "status ok";
+      } catch (err) {
+        showError("Falha de comunicacao ao gerar minuta.");
+      } finally {
+        draftButton.disabled = false;
+      }
+    });
+
+    copyDraft.addEventListener("click", async () => {
+      const text = draftBox.textContent || "";
+      if (!text) return;
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+      }
+      badge.textContent = "Minuta copiada";
+      badge.className = "status ok";
+    });
+
     function fileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -410,6 +491,22 @@ INDEX_HTML = """<!doctype html>
         reader.onerror = () => reject(reader.error);
         reader.readAsDataURL(file);
       });
+    }
+
+    function formatDraft(payload) {
+      const data = payload.resultado || {};
+      const lines = [
+        `Tipo: ${data.tipo_minuta || ""}`,
+        `Confianca: ${payload.confianca ?? ""}`,
+        `Revisao humana: ${payload.revisao_humana_obrigatoria ? "obrigatoria" : "nao informada"}`,
+        "",
+        data.texto || "",
+        "",
+        `Providencia sugerida: ${data.providencia_sugerida || ""}`,
+        `Campos pendentes: ${(payload.campos_pendentes || []).join(", ") || "nenhum"}`,
+        `Alertas: ${(data.alertas || []).join(" | ")}`
+      ];
+      return lines.join("\\n");
     }
   </script>
 </body>
@@ -446,6 +543,26 @@ def create_import_pdf_response(payload: dict[str, Any]) -> dict[str, Any]:
     return analyze_pdf(request).to_contract()
 
 
+def create_draft_response(payload: dict[str, Any]) -> dict[str, Any]:
+    """Gera minuta local por template, sem salvar ou escrever no SEI."""
+    request = DraftRequest(
+        assunto=str(payload.get("assunto") or payload.get("titulo") or ""),
+        resumo=str(payload.get("resumo", "")),
+        texto_base=str(payload.get("texto_base", "")),
+        processo_sei=str(payload.get("processo_sei", "")),
+        tipo_minuta=str(payload.get("tipo_minuta", "")),
+        unidade_destino=str(payload.get("unidade_destino", "")),
+        destinatario=str(payload.get("destinatario", "")),
+        providencia=str(payload.get("providencia", "")),
+        prazo=str(payload.get("prazo", "")),
+        evento=str(payload.get("evento", "")),
+        usuario_local=str(payload.get("usuario_local", "")),
+        estacao=str(payload.get("estacao", "")),
+        origem=str(payload.get("origem") or "dashboard_local"),
+    )
+    return generate_draft(request).to_contract()
+
+
 class DashboardHandler(BaseHTTPRequestHandler):
     server_version = "AgenteSeiDashboard/0.1"
 
@@ -459,12 +576,14 @@ class DashboardHandler(BaseHTTPRequestHandler):
         self.send_error(HTTPStatus.NOT_FOUND)
 
     def do_POST(self) -> None:  # noqa: N802 - API stdlib
-        if self.path not in ("/api/import-text", "/api/import-pdf"):
+        if self.path not in ("/api/import-text", "/api/import-pdf", "/api/generate-draft"):
             self.send_error(HTTPStatus.NOT_FOUND)
             return
         try:
             payload = self._read_json()
-            if self.path == "/api/import-pdf":
+            if self.path == "/api/generate-draft":
+                result = create_draft_response(payload)
+            elif self.path == "/api/import-pdf":
                 result = create_import_pdf_response(payload)
             else:
                 result = create_import_text_response(payload)

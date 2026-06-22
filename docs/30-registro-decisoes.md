@@ -173,3 +173,16 @@ Impacto: IA externa paga deixa de ser caminho padrao; priorizar regras locais, t
 Risco: Analises podem ser menos sofisticadas que modelos pagos; mitigacao por knowledge base real, templates bem feitos, revisao humana e evolucao incremental.
 Arquivos afetados: `docs/27`, `docs/30`, `docs/33`, `docs/36`, `docs/38`.
 Proximo passo: Implementar minutador por templates locais antes de qualquer IA paga ou integracao onerosa.
+
+## DEC-0013
+
+Data: 2026-06-22
+Responsavel: Chefe do projeto
+Status: APROVADA
+Contexto: A proxima fase apos a estrategia zero custo e gerar minutas administrativas sem contratar servico de IA.
+Decisao: Implementar minutador local por regras e templates, com tipos despacho, oficio, informacao e encaminhamento.
+Motivo: Entregar valor operacional imediato, mantendo custo zero e revisao humana.
+Impacto: O Agente 19 passa a gerar rascunhos copiaveis fora do SEI, sem criar documento oficial, sem assinar, sem tramitar e sem enviar processo.
+Risco: Classificacao por regras pode ter baixa confianca; mitigacao por placeholders, alertas e revisao humana obrigatoria.
+Arquivos afetados: `app/intelligence/local_minutador.py`, `knowledge_base/templates_minutas/`, `app/dashboard/local_app.py`, `app/desktop/secure_browser.py`, `tests/test_local_minutador.py`, `docs/39`.
+Proximo passo: Preencher knowledge base real do 19 CRPM e melhorar regras de classificacao/roteamento.
