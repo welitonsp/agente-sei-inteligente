@@ -23,6 +23,7 @@ env/
 *.log
 tmp/
 temp/
+downloads/
 
 # OS/editor
 .DS_Store
