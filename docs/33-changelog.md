@@ -2,6 +2,33 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.3-intake-texto-local] - 2026-06-22
+
+### Adicionado
+
+1. Fluxo backend `IMPORT_TEXT` em `app/intake/manual_text.py` para receber texto
+   colado no MVP externo/local, sem acessar o SEI real.
+2. Persistencia segura de metadados em `Process` e `Document`: hash do texto,
+   titulo, origem, classificacao e resumo estrutural; texto integral nao e
+   persistido por padrao.
+3. Extracao local simples de evento, prazo, data, horario e local para apoiar a
+   futura tela de revisao administrativa.
+4. Testes automatizados do intake manual (`tests/test_manual_text_intake.py`).
+
+### Seguranca
+
+1. Fluxo passa pelo guardiao (`LER_DOCUMENTO` e `RESUMIR`) antes de registrar a
+   analise.
+2. Auditoria registra metadados, hash e contagens, sem gravar o texto colado.
+3. Toda analise local retorna `revisao_humana_obrigatoria=true`.
+4. Suite local ampliada para 89 testes passando.
+
+### Riscos conhecidos
+
+1. Ainda nao ha tela web consumindo o backend de texto colado.
+2. Extracao e heuristica; baixa confianca permanece em revisao humana.
+3. PDF, OCR, IA/RAG e triagem 19 CRPM real continuam pendentes.
+
 ## [0.2.1-ci-gate] - 2026-06-22
 
 ### Adicionado
@@ -66,7 +93,7 @@ Todas as entregas relevantes do projeto devem ser registradas aqui.
 1. CI no GitHub Actions configurado em 2026-06-22 e aprovado no PR #1.
 2. Knowledge base do 19 CRPM ainda usa templates.
 3. OAuth do Google pendente de conclusao (client secret + refresh token).
-4. Sem PR aberto ainda; merge para `main` pendente de revisao humana.
+4. PR #1 aberto em modo draft; merge para `main` pendente de revisao humana.
 
 ## [0.1-docs] - 2026-06-21
 

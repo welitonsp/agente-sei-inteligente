@@ -81,3 +81,18 @@ Evidencia: Execucao local de `python scripts/check_no_secrets.py .` e `python -m
 Status: APROVADO  
 Problemas encontrados: Scanner inicialmente gerou falso positivo em atributos de teste (`google_client_secret`/`google_refresh_token`) e o teste de import precisava registrar o modulo em `sys.modules`; ambos corrigidos.  
 Proximo passo: Configurar protecao da branch `main` e concluir o OAuth real.
+
+## TEST-0005
+
+Data: 2026-06-22
+Versao/commit: branch `feat/fundacao-agenda-ics`
+Ambiente: Local Windows, Python 3.13, `.venv`, pytest
+Responsavel: Engenharia do projeto
+Caso testado: Intake manual de texto (`IMPORT_TEXT`) para o MVP externo/local.
+Entrada usada: Textos ficticios/anonimos com evento, prazo e marcador sensivel de teste.
+Resultado esperado: Nao acessar SEI real; nao persistir texto integral; registrar hash/metadados; exigir revisao humana; detectar evento/prazo simples.
+Resultado obtido: `scripts/check_no_secrets.py` OK; 89 testes passando; texto integral e marcador sensivel nao apareceram em documento nem auditoria.
+Evidencia: `tests/test_manual_text_intake.py`, execucao local de `python scripts/check_no_secrets.py .` e `python -m pytest`.
+Status: APROVADO
+Problemas encontrados: Nenhum bloqueante.
+Proximo passo: Criar API/tela MVP para acionar `manual_text.analyze_text` e exibir resultado estruturado.

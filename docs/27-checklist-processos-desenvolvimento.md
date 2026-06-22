@@ -98,14 +98,14 @@ Objetivo: criar uma interface simples para operar sem acessar diretamente o SEI.
 | Item | Status |
 | --- | --- |
 | Criar tela inicial do painel | NAO_INICIADO |
-| Campo `Numero do processo SEI` | NAO_INICIADO |
-| Campo `Texto copiado do SEI` | NAO_INICIADO |
+| Campo `Numero do processo SEI` | EM_ANDAMENTO (backend recebe em `ManualTextRequest`) |
+| Campo `Texto copiado do SEI` | EM_ANDAMENTO (backend `app/intake/manual_text.py`) |
 | Upload de PDF | NAO_INICIADO |
 | Botao `Analisar para o 19 CRPM` | NAO_INICIADO |
-| Exibir resultado estruturado | NAO_INICIADO |
-| Exibir revisao humana obrigatoria | NAO_INICIADO |
+| Exibir resultado estruturado | EM_ANDAMENTO (contrato backend pronto; falta UI) |
+| Exibir revisao humana obrigatoria | EM_ANDAMENTO (backend sempre retorna revisao obrigatoria; falta UI) |
 | Exibir documentos nao lidos/OCR necessario | NAO_INICIADO |
-| Registrar log da analise | NAO_INICIADO |
+| Registrar log da analise | CONCLUIDO no backend de texto manual (TEST-0005) |
 
 ### Aceite
 
@@ -124,7 +124,7 @@ Objetivo: processar documentos fornecidos pelo servidor.
 | Item | Status |
 | --- | --- |
 | Painel MVP criado | BLOQUEADO |
-| Politica de dados local/efemera implementada | BLOQUEADO |
+| Politica de dados local/efemera implementada | EM_ANDAMENTO para texto manual (sem texto integral; hash/metadados) |
 
 ### Execucao
 
@@ -133,8 +133,8 @@ Objetivo: processar documentos fornecidos pelo servidor.
 | Extrair texto de PDF pesquisavel | NAO_INICIADO |
 | Detectar PDF sem texto | NAO_INICIADO |
 | Marcar OCR necessario | NAO_INICIADO |
-| Gerar hash do documento/texto | NAO_INICIADO |
-| Criar inventario de documentos | NAO_INICIADO |
+| Gerar hash do documento/texto | EM_ANDAMENTO para texto manual (TEST-0005) |
+| Criar inventario de documentos | EM_ANDAMENTO para texto manual (`Document` com metadados) |
 | Marcar documento como lido/parcial/nao_lido | NAO_INICIADO |
 
 ### Aceite

@@ -22,10 +22,11 @@ Repositorio: https://github.com/welitonsp/agente-sei-inteligente
 | Convidados via marcador OFICIAIS | CONCLUIDO | `app/integrations/contacts_resolver.py` |
 | Dedup contra calendario real (ICS) | CONCLUIDO | `app/integrations/ics_reader.py` |
 | Cliente OAuth real (Calendar+People) | Codigo pronto | `app/integrations/google_auth.py`, `app/integrations/runtime.py` |
+| Intake texto manual | CONCLUIDO no backend | `app/intake/manual_text.py`, `tests/test_manual_text_intake.py` |
 | Scripts | CONCLUIDO | `scripts/init_db.py`, `scripts/google_oauth_setup.py`, `scripts/google_validate.py` |
 | PR e CI | PR #1 draft aberto; CI aprovado | https://github.com/welitonsp/agente-sei-inteligente/pull/1 |
 | Gate de segredos | CONCLUIDO | `.github/workflows/ci.yml`, `scripts/check_no_secrets.py` |
-| Testes | 84 passando | `tests/` |
+| Testes | 89 passando | `tests/` |
 
 Modo atual: **dry-run** (simulacao). Nenhum evento real e criado ate o OAuth
 estar completo no `.env`.
@@ -93,7 +94,7 @@ set PYTHONPATH=.
 .venv\Scripts\python.exe -m pytest
 ```
 
-Esperado: scanner sem segredos concretos e 84 testes passando.
+Esperado: scanner sem segredos concretos e 89 testes passando.
 
 ### 5. Concluir o OAuth (itens pendentes acima)
 
@@ -119,4 +120,4 @@ escrita a agenda). Cole o refresh token impresso no `.env`.
 2. Primeiro evento real de teste com aprovacao humana e convite aos OFICIAIS.
 3. Registrar a homologacao em `docs/32-registro-testes-homologacao.md`.
 4. Depois: Etapa C (Telegram) e/ou painel web acionando
-   `runtime.schedule_official_event`.
+   `manual_text.analyze_text` e `runtime.schedule_official_event`.

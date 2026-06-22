@@ -2,9 +2,9 @@
 
 Documentacao-base do projeto de um agente administrativo inteligente para apoiar a rotina do 19 CRPM com e-mail institucional, PDF, Google Agenda, alertas em celular, minutas administrativas e uso assistido do SEI.
 
-Versao documental: 0.1  
-Data: 2026-06-21  
-Status: Fundacao documental
+Versao documental: 0.3
+Data: 2026-06-22
+Status: Fundacao tecnica + Agenda dry-run + intake de texto manual
 
 ## Objetivo
 
