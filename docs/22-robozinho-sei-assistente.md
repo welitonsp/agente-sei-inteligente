@@ -264,7 +264,12 @@ Se documento e apenas informativo e nao menciona area do 19 CRPM -> arquivar com
 
 ## MVP recomendado
 
-Antes de criar extensao real, construir um prototipo no painel web:
+Historico: o painel web foi construido primeiro como base segura e backend local.
+Em 2026-06-22, a decisao DEC-0010 autorizou o inicio de um prototipo de
+extensao read-only dentro da tela do SEI, sem login, sem cookie, sem clique
+automatico e sem ato oficial.
+
+Painel/base local:
 
 1. Campo `Numero do processo SEI`.
 2. Campo `Texto copiado do SEI`.
@@ -275,13 +280,13 @@ Antes de criar extensao real, construir um prototipo no painel web:
 7. Botao `Criar agenda`.
 8. Botao `Enviar alerta`.
 
-Depois, evoluir para:
+Evolucao read-only iniciada:
 
-1. Extensao de navegador read-only.
-2. Botao flutuante.
-3. Painel lateral.
-4. Leitura automatica da pagina atual.
-5. Analise de documentos do processo.
+1. Extensao de navegador read-only - prototipo criado em `browser_extension/`.
+2. Botao flutuante - prototipo criado.
+3. Painel lateral - prototipo criado.
+4. Leitura da pagina atual/trecho selecionado apos acao do usuario - prototipo criado.
+5. Analise de documentos do processo - pendente para OCR/RAG e homologacao.
 
 Busca automatica por numero de processo deve continuar fora do MVP. Se algum dia for autorizada, devera ser tratada como funcionalidade separada, com testes proprios e sem qualquer permissao de ato oficial.
 

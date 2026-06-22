@@ -20,7 +20,7 @@ REGRAS ABSOLUTAS
 3. Nao digite usuario ou senha do servidor.
 4. Nao armazene senha, cookie, token, sessao, HTML completo do SEI ou credencial pessoal.
 5. Nao implemente navegacao automatica por numero de processo no SEI.
-6. Nao implemente extensao real do robozinho ainda.
+6. Nao implemente extensao que faca login, navegue sozinha, clique no SEI ou execute ato oficial; somente prototipo read-only autorizado pela DEC-0010.
 7. Nao envie conteudo real extraido do SEI para IA externa.
 8. Nao implemente WebServices de escrita do SEI.
 9. Nao invente unidade responsavel do 19 CRPM sem regra real.
@@ -46,7 +46,7 @@ Antes de propor ou alterar codigo, leia no minimo:
 
 ESCOPO AUTORIZADO AGORA
 
-O projeto esta liberado apenas para:
+O projeto esta liberado para:
 
 1. Etapa 2 - Fundacao tecnica.
 2. Estrutura inicial `app/`.
@@ -59,13 +59,14 @@ O projeto esta liberado apenas para:
 9. Repositorios de auditoria.
 10. Testes de permissoes e bloqueios.
 11. CI basico de testes.
-12. Painel MVP externo/local somente depois da fundacao minima.
+12. Painel MVP externo/local.
+13. Extensao Chrome/Edge read-only dentro da tela do SEI, somente para captura da pagina atual/trecho selecionado e envio ao backend local.
 
 FORA DO MVP
 
 Nao iniciar:
 
-1. Extensao real do robozinho.
+1. Uso real institucional da extensao sem autorizacao/homologacao.
 2. Playwright conectado ao SEI real.
 3. Busca automatica no SEI por numero de processo.
 4. Escrita no SEI.
@@ -189,7 +190,7 @@ Quando terminar uma tarefa, responda com:
 
 NAO FAZER
 
-Nao avance para Agenda, Telegram, IA/RAG, robozinho real ou SEI read-only antes de:
+Nao avance para Telegram, IA/RAG, robozinho com clique no SEI ou uso real homologado da extensao antes de:
 
 1. `permissions.py` implementado.
 2. `sei_action_guard.py` implementado.
@@ -207,9 +208,9 @@ Use quando a sessao ja conhece o projeto:
 ```text
 Continue o projeto Agente SEI Inteligente - 19 CRPM seguindo README.md, docs/26, docs/27, docs/28, docs/29 e docs/34.
 
-Escopo atual autorizado: fundacao tecnica, permissoes, guardiao SEI, SQLite, logs, auditoria, testes e CI.
+Escopo atual autorizado: fundacao tecnica, permissoes, guardiao SEI, SQLite, logs, auditoria, testes, CI, painel/backend local e prototipo de extensao read-only dentro da tela do SEI.
 
-Nao implemente: robozinho real, login/navegacao no SEI, extensao, Playwright no SEI, WebServices de escrita ou IA externa com conteudo real do SEI.
+Nao implemente: robozinho com clique/ato oficial, login/navegacao automatica no SEI, Playwright no SEI real, WebServices de escrita, uso institucional sem homologacao ou IA externa com conteudo real do SEI.
 
 Antes de alterar: git status, leia docs relevantes, proponha plano curto.
 Depois de alterar: rode testes, atualize docs/registros/changelog quando aplicavel e resuma arquivos/testes/pendencias.
@@ -230,4 +231,3 @@ Depois de alterar: rode testes, atualize docs/registros/changelog quando aplicav
 [ ] Confirmei que robozinho real esta fora do MVP
 [ ] Confirmei que dados reais do SEI nao vao para IA externa
 ```
-
