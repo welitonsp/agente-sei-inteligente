@@ -38,11 +38,11 @@ Objetivo: Permitir que servidor cole texto ou envie PDF para analise sem acesso 
 Entrada: Numero do processo, texto copiado ou PDF baixado pelo servidor.  
 Saida: Resumo, prazo, evento, unidade sugerida ou revisao humana obrigatoria.  
 Responsavel: Engenharia do projeto.  
-Ferramentas: `app/intake/manual_text.py`, `app/dashboard/local_app.py`, painel web, extrator PDF, skills administrativas.
-Evidencias: Resultado estruturado, log e teste com exemplo anonimizado (TEST-0005, TEST-0006).
+Ferramentas: `app/intake/manual_text.py`, `app/intake/pdf_upload.py`, `app/dashboard/local_app.py`, painel web, extrator PDF, skills administrativas.
+Evidencias: Resultado estruturado, log e teste com exemplo anonimizado (TEST-0005, TEST-0006, TEST-0007).
 Criterio de aceite: Nao pesquisar/navegar/clicar no SEI.  
 Bloqueios: Dados reais sem autorizacao; unidade sem regra real.  
-Status: EM_ANDAMENTO. Texto colado concluido no backend e no painel MVP local; PDF/OCR, autenticacao e triagem real ainda pendentes.
+Status: EM_ANDAMENTO. Texto colado e upload PDF pesquisavel concluidos no painel MVP local; OCR real, autenticacao e triagem real ainda pendentes.
 
 ## PROC-0003
 

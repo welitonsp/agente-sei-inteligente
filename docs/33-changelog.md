@@ -2,6 +2,36 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.3.2-pdf-local] - 2026-06-22
+
+### Adicionado
+
+1. Upload/análise local de PDF em `app/intake/pdf_upload.py`, usando `pypdf`
+   para extrair texto de PDFs pesquisáveis.
+2. Detecção de PDF sem texto extraível, com `status_leitura=ocr_necessario`.
+3. Endpoint local `POST /api/import-pdf` e campo de upload no painel MVP.
+4. Persistência segura de hash/metadados/resumo estrutural de PDF, sem salvar
+   texto integral.
+5. Testes automatizados do fluxo PDF (`tests/test_pdf_upload_intake.py`).
+
+### Alterado
+
+1. `requirements.txt`: adiciona `pypdf`.
+2. Painel local passa a aceitar texto colado ou PDF.
+
+### Segurança
+
+1. Upload PDF passa pelo guardião antes de leitura/resumo.
+2. Auditoria registra hash, quantidade de páginas e contagem de caracteres, sem
+   registrar texto integral.
+3. Suite local ampliada para 97 testes passando.
+
+### Riscos conhecidos
+
+1. OCR ainda não executa reconhecimento; apenas marca `ocr_necessario`.
+2. Autenticação do painel local continua pendente.
+3. Triagem real do 19 CRPM segue bloqueada até preencher a knowledge base.
+
 ## [0.3.1-painel-local-texto] - 2026-06-22
 
 ### Adicionado

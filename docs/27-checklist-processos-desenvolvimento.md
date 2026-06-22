@@ -100,11 +100,11 @@ Objetivo: criar uma interface simples para operar sem acessar diretamente o SEI.
 | Criar tela inicial do painel | CONCLUIDO (`app/dashboard/local_app.py`; TEST-0006) |
 | Campo `Numero do processo SEI` | CONCLUIDO (`ManualTextRequest` + painel local) |
 | Campo `Texto copiado do SEI` | CONCLUIDO (`app/intake/manual_text.py` + painel local) |
-| Upload de PDF | NAO_INICIADO |
+| Upload de PDF | CONCLUIDO para MVP local (`app/intake/pdf_upload.py`; TEST-0007) |
 | Botao `Analisar para o 19 CRPM` | CONCLUIDO no painel local |
 | Exibir resultado estruturado | CONCLUIDO no painel local |
 | Exibir revisao humana obrigatoria | CONCLUIDO no painel local |
-| Exibir documentos nao lidos/OCR necessario | NAO_INICIADO |
+| Exibir documentos nao lidos/OCR necessario | CONCLUIDO para PDF sem texto (`status_leitura=ocr_necessario`) |
 | Registrar log da analise | CONCLUIDO no backend de texto manual (TEST-0005) |
 
 ### Aceite
@@ -123,19 +123,19 @@ Objetivo: processar documentos fornecidos pelo servidor.
 
 | Item | Status |
 | --- | --- |
-| Painel MVP criado | EM_ANDAMENTO para texto manual (PDF/upload pendente) |
-| Politica de dados local/efemera implementada | EM_ANDAMENTO para texto manual (sem texto integral; hash/metadados) |
+| Painel MVP criado | EM_ANDAMENTO para texto/PDF (autenticacao e views completas pendentes) |
+| Politica de dados local/efemera implementada | EM_ANDAMENTO para texto/PDF (sem texto integral; hash/metadados) |
 
 ### Execucao
 
 | Item | Status |
 | --- | --- |
-| Extrair texto de PDF pesquisavel | NAO_INICIADO |
-| Detectar PDF sem texto | NAO_INICIADO |
-| Marcar OCR necessario | NAO_INICIADO |
-| Gerar hash do documento/texto | EM_ANDAMENTO para texto manual (TEST-0005) |
-| Criar inventario de documentos | EM_ANDAMENTO para texto manual (`Document` com metadados) |
-| Marcar documento como lido/parcial/nao_lido | NAO_INICIADO |
+| Extrair texto de PDF pesquisavel | CONCLUIDO com `pypdf` (TEST-0007) |
+| Detectar PDF sem texto | CONCLUIDO (TEST-0007) |
+| Marcar OCR necessario | CONCLUIDO como status; OCR real pendente |
+| Gerar hash do documento/texto | CONCLUIDO para texto/PDF (TEST-0005, TEST-0007) |
+| Criar inventario de documentos | CONCLUIDO para texto/PDF (`Document` com metadados) |
+| Marcar documento como lido/parcial/nao_lido | EM_ANDAMENTO (`lido`, `ocr_necessario`, `nao_lido`) |
 
 ### Aceite
 

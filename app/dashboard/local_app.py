@@ -7,6 +7,7 @@ processo por numero e nao executa ato oficial.
 
 from __future__ import annotations
 
+import base64
 import json
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -15,6 +16,7 @@ from typing import Any
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger, log_event
 from app.intake.manual_text import ManualTextRequest, analyze_text
+from app.intake.pdf_upload import PdfUploadRequest, analyze_pdf
 from app.storage.db import init_db
 
 
@@ -133,6 +135,10 @@ INDEX_HTML = """<!doctype html>
       font: inherit;
       color: var(--ink);
       background: #fff;
+    }
+
+    input[type="file"] {
+      padding: 8px;
     }
 
     textarea {
@@ -277,7 +283,11 @@ INDEX_HTML = """<!doctype html>
         </div>
         <div class="field">
           <label for="texto">Texto copiado</label>
-          <textarea id="texto" name="texto" required></textarea>
+          <textarea id="texto" name="texto"></textarea>
+        </div>
+        <div class="field">
+          <label for="pdf">PDF</label>
+          <input id="pdf" name="pdf" type="file" accept="application/pdf">
         </div>
         <button id="submit" type="submit">Analisar para o 19 CRPM</button>
       </form>
@@ -296,6 +306,8 @@ INDEX_HTML = """<!doctype html>
             <div class="metric"><span>Revisao humana</span><strong id="review"></strong></div>
             <div class="metric"><span>Confianca</span><strong id="confidence"></strong></div>
             <div class="metric"><span>Hash</span><strong id="hash"></strong></div>
+            <div class="metric"><span>Leitura</span><strong id="reading"></strong></div>
+            <div class="metric"><span>Paginas</span><strong id="pages"></strong></div>
           </div>
           <div class="field">
             <label>Resumo</label>
@@ -345,7 +357,9 @@ INDEX_HTML = """<!doctype html>
       setText("status", payload.status);
       setText("review", payload.revisao_humana_obrigatoria ? "Obrigatoria" : "Nao");
       setText("confidence", String(payload.confianca ?? ""));
-      setText("hash", data.text_hash || "");
+      setText("hash", data.text_hash || data.file_hash || "");
+      setText("reading", data.status_leitura || "texto_colado");
+      setText("pages", data.page_count ? String(data.page_count) : "");
       setText("summary", data.resumo_executivo || "");
       setText("event", event.ha_evento ? `${event.data || ""} ${event.horario_inicio || ""} ${event.local || ""}` : "Nao confirmado");
       setText("deadline", deadline.ha_prazo ? `${deadline.data_limite || ""} ${deadline.hora_limite || ""} ${deadline.risco || ""}` : "Nao confirmado");
@@ -358,9 +372,17 @@ INDEX_HTML = """<!doctype html>
       badge.textContent = "Analisando";
       badge.className = "status";
       const formData = new FormData(form);
+      const file = document.getElementById("pdf").files[0];
       const body = Object.fromEntries(formData.entries());
+      delete body.pdf;
       try {
-        const response = await fetch("/api/import-text", {
+        let endpoint = "/api/import-text";
+        if (file) {
+          endpoint = "/api/import-pdf";
+          body.filename = file.name;
+          body.content_base64 = await fileToBase64(file);
+        }
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify(body)
@@ -377,6 +399,18 @@ INDEX_HTML = """<!doctype html>
         submit.disabled = false;
       }
     });
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const value = String(reader.result || "");
+          resolve(value.includes(",") ? value.split(",", 2)[1] : value);
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+    }
   </script>
 </body>
 </html>
@@ -396,6 +430,22 @@ def create_import_text_response(payload: dict[str, Any]) -> dict[str, Any]:
     return analyze_text(request).to_contract()
 
 
+def create_import_pdf_response(payload: dict[str, Any]) -> dict[str, Any]:
+    """Executa upload de PDF local e devolve o contrato serializavel."""
+    raw_b64 = str(payload.get("content_base64", ""))
+    content = base64.b64decode(raw_b64, validate=True) if raw_b64 else b""
+    request = PdfUploadRequest(
+        filename=str(payload.get("filename", "")),
+        content=content,
+        titulo=str(payload.get("titulo", "")),
+        processo_sei=str(payload.get("processo_sei", "")),
+        usuario_local=str(payload.get("usuario_local", "")),
+        estacao=str(payload.get("estacao", "")),
+        origem="dashboard_local",
+    )
+    return analyze_pdf(request).to_contract()
+
+
 class DashboardHandler(BaseHTTPRequestHandler):
     server_version = "AgenteSeiDashboard/0.1"
 
@@ -409,15 +459,24 @@ class DashboardHandler(BaseHTTPRequestHandler):
         self.send_error(HTTPStatus.NOT_FOUND)
 
     def do_POST(self) -> None:  # noqa: N802 - API stdlib
-        if self.path != "/api/import-text":
+        if self.path not in ("/api/import-text", "/api/import-pdf"):
             self.send_error(HTTPStatus.NOT_FOUND)
             return
         try:
             payload = self._read_json()
-            result = create_import_text_response(payload)
+            if self.path == "/api/import-pdf":
+                result = create_import_pdf_response(payload)
+            else:
+                result = create_import_text_response(payload)
         except json.JSONDecodeError:
             self._send_json(
                 {"error": {"code": "INVALID_JSON", "message": "JSON invalido."}},
+                status=HTTPStatus.BAD_REQUEST,
+            )
+            return
+        except ValueError:
+            self._send_json(
+                {"error": {"code": "INVALID_FILE", "message": "Arquivo PDF invalido."}},
                 status=HTTPStatus.BAD_REQUEST,
             )
             return

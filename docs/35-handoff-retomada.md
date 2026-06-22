@@ -23,11 +23,12 @@ Repositorio: https://github.com/welitonsp/agente-sei-inteligente
 | Dedup contra calendario real (ICS) | CONCLUIDO | `app/integrations/ics_reader.py` |
 | Cliente OAuth real (Calendar+People) | Codigo pronto | `app/integrations/google_auth.py`, `app/integrations/runtime.py` |
 | Intake texto manual | CONCLUIDO no backend | `app/intake/manual_text.py`, `tests/test_manual_text_intake.py` |
-| Painel local texto manual | CONCLUIDO para MVP texto | `app/dashboard/local_app.py`, `tests/test_dashboard_local_app.py` |
+| Intake PDF local | CONCLUIDO para PDF pesquisavel | `app/intake/pdf_upload.py`, `tests/test_pdf_upload_intake.py` |
+| Painel local texto/PDF | CONCLUIDO para MVP texto/PDF | `app/dashboard/local_app.py`, `tests/test_dashboard_local_app.py` |
 | Scripts | CONCLUIDO | `scripts/init_db.py`, `scripts/google_oauth_setup.py`, `scripts/google_validate.py` |
 | PR e CI | PR #1 draft aberto; CI aprovado | https://github.com/welitonsp/agente-sei-inteligente/pull/1 |
 | Gate de segredos | CONCLUIDO | `.github/workflows/ci.yml`, `scripts/check_no_secrets.py` |
-| Testes | 92 passando | `tests/` |
+| Testes | 97 passando | `tests/` |
 
 Modo atual: **dry-run** (simulacao). Nenhum evento real e criado ate o OAuth
 estar completo no `.env`.
@@ -95,7 +96,7 @@ set PYTHONPATH=.
 .venv\Scripts\python.exe -m pytest
 ```
 
-Esperado: scanner sem segredos concretos e 92 testes passando.
+Esperado: scanner sem segredos concretos e 97 testes passando.
 
 ### 4.1. Rodar o painel MVP local
 

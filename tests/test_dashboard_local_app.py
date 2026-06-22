@@ -33,9 +33,11 @@ def test_index_tem_campos_minimos_do_checklist():
 
     assert 'name="processo_sei"' in html
     assert 'name="texto"' in html
+    assert 'name="pdf"' in html
     assert "Analisar para o 19 CRPM" in html
     assert "Revisao humana" in html
     assert "Campos pendentes" in html
+    assert "/api/import-pdf" in html
 
 
 def test_create_import_text_response_retorna_resultado_estruturado(db_env):

@@ -111,3 +111,18 @@ Evidencia: `tests/test_dashboard_local_app.py`, execucao local de `python script
 Status: APROVADO
 Problemas encontrados: Nenhum bloqueante.
 Proximo passo: Rodar painel localmente, validar usabilidade visual e iniciar upload PDF/OCR ou autenticacao local.
+
+## TEST-0007
+
+Data: 2026-06-22
+Versao/commit: branch `feat/fundacao-agenda-ics`
+Ambiente: Local Windows, Python 3.13, `.venv`, pytest
+Responsavel: Engenharia do projeto
+Caso testado: Upload local de PDF pesquisável, PDF sem texto extraível e PDF inválido.
+Entrada usada: PDFs fictícios/anonimizados gerados em teste, com e sem texto extraível.
+Resultado esperado: PDF pesquisável gera hash/metadados/resumo; PDF sem texto marca `ocr_necessario`; PDF inválido não cria documento; texto integral não é persistido nem auditado.
+Resultado obtido: `scripts/check_no_secrets.py` OK; 97 testes passando.
+Evidencia: `tests/test_pdf_upload_intake.py`, execução local de `python scripts/check_no_secrets.py .` e `python -m pytest`.
+Status: APROVADO
+Problemas encontrados: Nenhum bloqueante.
+Proximo passo: Validar upload PDF no painel local e decidir entre OCR real ou autenticação local do painel.
