@@ -97,6 +97,7 @@ A versao 1 sera considerada pronta quando o agente conseguir:
 | [docs/39-memoria-aprendizado-supervisionado.md](docs/39-memoria-aprendizado-supervisionado.md) | FASE 39 - Memoria Institucional e Aprendizado Supervisionado |
 | [docs/40-checklist-funcionario-digital.md](docs/40-checklist-funcionario-digital.md) | Checklist consolidado do Funcionario Digital |
 | [docs/41-fundacao-tecnica-segura.md](docs/41-fundacao-tecnica-segura.md) | FASE 40 - Fundacao Tecnica Segura |
+| [docs/42-banco-sqlite-memoria-institucional.md](docs/42-banco-sqlite-memoria-institucional.md) | FASE 41 - Banco SQLite e Memoria Institucional Inicial |
 
 ## Estrutura-alvo
 

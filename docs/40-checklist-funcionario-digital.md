@@ -25,6 +25,6 @@ Este checklist deve ser validado continuamente para garantir a integridade do Ag
 - [ ] O Agente **NÃO dá ciência automática** nem envia processos sem ação do servidor.
 
 ## Aprendizado
-- [ ] O Agente possui um módulo de memória institucional, registrando precedentes da unidade.
-- [ ] O Agente aprende de maneira supervisionada com as revisões e correções feitas pelos humanos na redação.
-- [ ] O Agente não usa informações do aprendizado de maneira violadora da Política de Identidade e Dados do SEI.
+- [x] O Agente possui um módulo de memória institucional, registrando precedentes da unidade.
+- [x] O Agente aprende de maneira supervisionada com as revisões e correções feitas pelos humanos na redação.
+- [x] O Agente não usa informações do aprendizado de maneira violadora da Política de Identidade e Dados do SEI.
