@@ -1,6 +1,6 @@
-# Agente SEI Inteligente - 19 CRPM
+# Agente 19 — Funcionário Digital de IA do 19º CRPM
 
-Documentacao-base do projeto de um agente administrativo inteligente para apoiar a rotina do 19 CRPM com e-mail institucional, PDF, Google Agenda, alertas em celular, minutas administrativas e uso assistido do SEI.
+Documentacao-base do projeto do Agente 19, o Funcionário Digital de IA criado para apoiar a rotina do 19º CRPM com e-mail institucional, PDF, Google Agenda, alertas em celular, minutas administrativas e uso assistido do SEI.
 
 Versao documental: 0.1  
 Data: 2026-06-21  
@@ -8,9 +8,26 @@ Status: Fundacao documental
 
 ## Objetivo
 
-Construir uma plataforma web de automacao administrativa assistida. O agente deve transformar demandas recebidas por e-mail, documentos, PDFs e futuramente pelo SEI em tarefas organizadas: resumo, classificacao, prazo, evento de agenda, alerta, minuta e pendencia para revisao humana.
+Construir uma plataforma web de automacao administrativa assistida centrada no Agente 19. Como Funcionário Digital de IA, o Agente 19 transforma demandas recebidas por e-mail, documentos, PDFs e processos do SEI em tarefas organizadas: resumo, classificacao, prazo, evento de agenda, alerta, minuta e pendencia para revisao humana.
 
-O sistema prepara, organiza e sugere. Ele nao substitui a autoridade humana, nao assina documento, nao tramita processo, nao envia processo e nao conclui ato oficial no SEI.
+**Regra-mãe**: O Agente 19 prepara, sugere, organiza, cria minuta e aprende. O humano revisa, assina e pratica o ato oficial.
+
+O sistema não substitui a autoridade humana.
+
+**Limites obrigatórios**: O Agente 19 NÃO pode:
+- pedir senha do SEI;
+- armazenar senha;
+- armazenar cookie;
+- armazenar sessão;
+- capturar token;
+- assinar documento;
+- tramitar processo;
+- concluir processo;
+- excluir documento;
+- cancelar documento;
+- dar ciência automática;
+- enviar processo automaticamente;
+- praticar ato oficial final.
 
 ## Principios
 
@@ -71,7 +88,14 @@ A versao 1 sera considerada pronta quando o agente conseguir:
 | [docs/27-checklist-processos-desenvolvimento.md](docs/27-checklist-processos-desenvolvimento.md) | Checklist de processos para desenvolvimento |
 | [docs/28-regras-git-ia.md](docs/28-regras-git-ia.md) | Regras de commit, push, PR e merge com uso de IA |
 | [docs/29-regra-documentacao-continua.md](docs/29-regra-documentacao-continua.md) | Regra para documentar processos, decisoes e mudancas continuamente |
-| [docs/34-prompt-claude-code.md](docs/34-prompt-claude-code.md) | Prompt mestre para Claude Code executar o projeto |
+| [docs/30-registro-decisoes.md](docs/30-registro-decisoes.md) | Registro historico de decisoes arquiteturais e operacionais |
+| [docs/31-registro-processos.md](docs/31-registro-processos.md) | Registro de mapeamentos de processos da unidade |
+| [docs/32-registro-testes-homologacao.md](docs/32-registro-testes-homologacao.md) | Logs e resultados das sessoes de homologacao do Agente 19 |
+| [docs/33-changelog.md](docs/33-changelog.md) | Historico de versoes e funcionalidades entregues |
+| [docs/34-prompt-claude-code.md](docs/34-prompt-claude-code.md) | Prompt mestre para executar o projeto |
+| [docs/38-agente-sei-rpa-assistido.md](docs/38-agente-sei-rpa-assistido.md) | FASE 38 - Agente SEI RPA Assistido por Numero de Processo |
+| [docs/39-memoria-aprendizado-supervisionado.md](docs/39-memoria-aprendizado-supervisionado.md) | FASE 39 - Memoria Institucional e Aprendizado Supervisionado |
+| [docs/40-checklist-funcionario-digital.md](docs/40-checklist-funcionario-digital.md) | Checklist consolidado do Funcionario Digital |
 
 ## Estrutura-alvo
 
