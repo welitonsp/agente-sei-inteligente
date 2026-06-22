@@ -2,6 +2,37 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.3.4-desktop-navegador-seguro] - 2026-06-22
+
+### Adicionado
+
+1. Aplicacao desktop local em `app/desktop/`, executavel com
+   `.venv\Scripts\python.exe -m app.desktop`.
+2. Botao para abrir a URL oficial `https://sei.go.gov.br/sei/` em
+   navegador/janela separada, sem capturar login ou senha.
+3. Painel desktop do Agente 19 para texto colado, PDF manual, resumo, tipo
+   provavel, evento/prazo, providencia sugerida e copia do resultado.
+4. Comunicacao do desktop restrita ao backend local `http://127.0.0.1:8000`.
+5. Documento da Fase 37.2 em `docs/37-fase-desktop-navegador-seguro.md`.
+6. Testes de contrato de seguranca do desktop em
+   `tests/test_desktop_secure_browser.py`.
+
+### Seguranca
+
+1. O Agente 19 Desktop nao possui campo de senha ou login SEI.
+2. Payloads com campos/indicios de credencial sao bloqueados.
+3. O desktop nao le cookies, sessao, localStorage/sessionStorage ou headers de
+   autenticacao.
+4. O desktop nao executa cliques nem atos oficiais no SEI.
+5. A extensao Chrome/Edge fica como recurso futuro opcional, dependente de
+   autorizacao institucional.
+
+### Riscos conhecidos
+
+1. Uso real com navegador interno ou janela separada depende de homologacao e
+   autorizacao institucional.
+2. O usuario ainda precisa copiar texto/exportar PDF manualmente do SEI.
+
 ## [0.3.3-extensao-sei-readonly] - 2026-06-22
 
 ### Adicionado

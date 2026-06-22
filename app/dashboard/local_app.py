@@ -425,7 +425,7 @@ def create_import_text_response(payload: dict[str, Any]) -> dict[str, Any]:
         processo_sei=str(payload.get("processo_sei", "")),
         usuario_local=str(payload.get("usuario_local", "")),
         estacao=str(payload.get("estacao", "")),
-        origem="dashboard_local",
+        origem=str(payload.get("origem") or "dashboard_local"),
     )
     return analyze_text(request).to_contract()
 
@@ -441,7 +441,7 @@ def create_import_pdf_response(payload: dict[str, Any]) -> dict[str, Any]:
         processo_sei=str(payload.get("processo_sei", "")),
         usuario_local=str(payload.get("usuario_local", "")),
         estacao=str(payload.get("estacao", "")),
-        origem="dashboard_local",
+        origem=str(payload.get("origem") or "dashboard_local"),
     )
     return analyze_pdf(request).to_contract()
 

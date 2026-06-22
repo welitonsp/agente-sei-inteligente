@@ -79,6 +79,7 @@ Com escopo limitado a:
 | P-12 | Avaliacao automatizada de IA | Parcialmente conforme | Plano de testes existe; RAGAS/TruLens ou avaliador proprio nao definido | Adicionar avaliacao de fidelidade e ausencia de invencao |
 | P-13 | Autenticacao do painel | Parcialmente conforme | Necessidade documentada; mecanismo nao escolhido | Definir login local, usuarios e perfis |
 | P-14 | Retencao de logs | Parcialmente conforme | Politica geral existe; prazo institucional falta | Definir prazo e responsavel por auditoria |
+| P-15 | Agente 19 Desktop seguro | Parcialmente conforme | Prototipo implementado sem captura de credenciais; falta homologacao/autorizacao institucional | Homologar em ambiente institucional com exemplos anonimizados |
 
 ## Nao conformidades atuais
 
@@ -118,6 +119,7 @@ Com escopo limitado a:
 | Etapa 7 - Inteligencia administrativa | Condicionada | Apos dados reais ou exemplos anonimizados |
 | Etapa 8 - Interface web | Em andamento | Painel local de texto/PDF pronto; falta autenticação e views completas |
 | Etapa 9 - SEI read-only | Em prototipo | Extensao read-only criada; uso real depende de autorizacao/homologacao |
+| Fase 37.2 - Desktop seguro | Em prototipo | `app.desktop` criado; login fica na pagina oficial do SEI; uso real depende de homologacao/autorizacao |
 | Etapa 10 - Minutador SEI assistido | Nao liberada | Minutas apenas fora do SEI por enquanto |
 | Etapa 11 - Operacao v1 | Nao liberada | Depende de homologacao completa |
 

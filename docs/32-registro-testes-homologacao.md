@@ -141,3 +141,18 @@ Evidencia: `tests/test_browser_extension_contract.py`.
 Status: APROVADO
 Problemas encontrados: Nenhum bloqueante.
 Proximo passo: Homologar manualmente a extensao na tela real do SEI com backend local ativo.
+
+## TEST-0009
+
+Data: 2026-06-22
+Versao/commit: branch `feat/fundacao-agenda-ics`
+Ambiente: Local Windows, Python 3.13, `.venv`, pytest
+Responsavel: Engenharia do projeto
+Caso testado: Contrato de seguranca do Agente 19 Desktop com navegador seguro.
+Entrada usada: Arquivos `app/desktop/secure_browser.py` e testes automatizados.
+Resultado esperado: Desktop abre somente URL oficial do SEI, comunica apenas com `127.0.0.1`, nao possui campo de senha/login SEI, nao persiste credenciais e nao executa clique/ato oficial.
+Resultado obtido: `scripts/check_no_secrets.py` OK; 107 testes passando.
+Evidencia: `tests/test_desktop_secure_browser.py`, execucao local de `python scripts/check_no_secrets.py .` e `python -m pytest`.
+Status: APROVADO
+Problemas encontrados: Nenhum bloqueante.
+Proximo passo: Homologar manualmente o desktop em ambiente institucional com exemplos anonimizados.

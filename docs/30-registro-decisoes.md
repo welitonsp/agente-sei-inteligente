@@ -147,3 +147,16 @@ Impacto: O painel local continua como backend/API, mas a experiencia principal p
 Risco: Leitura direta da tela do SEI e sensivel; mitigacao por modo read-only, sem cookies, sem senha, sem clique automatico, sem busca/navegacao por numero e sem atos oficiais.
 Arquivos afetados: `browser_extension/`, `docs/22`, `docs/26`, `docs/27`, `docs/33`, `docs/35`.
 Proximo passo: Homologar extensao local read-only com usuario autenticado manualmente no SEI.
+
+## DEC-0011
+
+Data: 2026-06-22
+Responsavel: Chefe do projeto
+Status: APROVADA
+Contexto: O ambiente institucional pode bloquear extensoes Chrome/Edge. Foi levantada a possibilidade de abrir o Agente 19 com login e senha do SEI dentro dele.
+Decisao: Criar a Fase 37.2 - Agente 19 Desktop com Navegador Seguro, recusando qualquer captura de usuario, senha, cookie, sessao, token, localStorage, sessionStorage ou header de autenticacao do SEI.
+Motivo: Manter o Agente 19 util mesmo sem extensao, sem transformar o sistema em intermediario de credenciais do SEI.
+Impacto: O login ocorre exclusivamente na pagina oficial `https://sei.go.gov.br/sei/`; o Agente 19 roda em janela local, fala apenas com `127.0.0.1` e recebe texto/PDF fornecido manualmente pelo usuario.
+Risco: Uso com navegador interno ou janela separada ainda precisa de homologacao/autorizacao institucional antes de producao real.
+Arquivos afetados: `app/desktop/`, `tests/test_desktop_secure_browser.py`, `docs/27`, `docs/33`, `docs/36`, `docs/37`.
+Proximo passo: Homologar o desktop com exemplos anonimizados e confirmar se o SEI deve abrir em navegador separado ou WebView institucional.

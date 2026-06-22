@@ -3,11 +3,11 @@
 Data: 2026-06-22
 Branch: `feat/fundacao-agenda-ics`
 PR: https://github.com/welitonsp/agente-sei-inteligente/pull/1
-Status geral: fundacao tecnica, painel local, intake texto/PDF e prototipo de extensao SEI read-only implementados. Operacao real ainda depende de homologacao e autorizacoes.
+Status geral: fundacao tecnica, painel local, intake texto/PDF, Agente 19 Desktop seguro e prototipo de extensao SEI read-only implementados. Operacao real ainda depende de homologacao e autorizacoes.
 
 ## 1. Resumo executivo
 
-O projeto ja possui uma base tecnica segura para operar como assistente administrativo do 19 CRPM. O sistema ainda nao esta liberado para operacao real com dados sensiveis, mas ja consegue receber texto/PDF fornecido pelo usuario, gerar analise estruturada basica, registrar auditoria sem salvar texto integral, simular integracao com agenda e aparecer dentro da tela do SEI por uma extensao read-only.
+O projeto ja possui uma base tecnica segura para operar como assistente administrativo do 19 CRPM. O sistema ainda nao esta liberado para operacao real com dados sensiveis, mas ja consegue receber texto/PDF fornecido pelo usuario, gerar analise estruturada basica, registrar auditoria sem salvar texto integral, simular integracao com agenda, abrir o Agente 19 como desktop local seguro e aparecer dentro da tela do SEI por uma extensao read-only quando autorizada.
 
 Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SEI continuam manuais e sob responsabilidade do servidor logado.
 
@@ -25,6 +25,7 @@ Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SE
 - [x] Changelog criado e atualizado.
 - [x] Handoff de retomada criado.
 - [x] Relatorio de status consolidado criado neste arquivo.
+- [x] Fase 37.2 documentada em `docs/37-fase-desktop-navegador-seguro.md`.
 
 ### Fundacao tecnica e seguranca
 
@@ -53,7 +54,7 @@ Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SE
 - [x] Pipeline roda em Python 3.11 e 3.13.
 - [x] Scanner de segredos criado em `scripts/check_no_secrets.py`.
 - [x] Scanner bloqueia `.env`, tokens, client secrets, URL ICS e chaves concretas.
-- [x] Suite automatizada com 101 testes passando.
+- [x] Suite automatizada com 107 testes passando.
 - [x] PR #1 aberto em modo draft.
 - [x] Checks remotos aprovados no GitHub Actions.
 
@@ -106,6 +107,20 @@ Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SE
 - [x] Resultado estruturado exibido.
 - [x] Indicacao de revisao humana obrigatoria.
 - [x] Indicacao de OCR necessario quando aplicavel.
+
+### Agente 19 Desktop seguro
+
+- [x] Aplicacao desktop local criada em `app/desktop/`.
+- [x] Comando `.venv\Scripts\python.exe -m app.desktop` criado.
+- [x] Backend local iniciado/reutilizado em `127.0.0.1`.
+- [x] Botao para abrir o SEI pela URL oficial `https://sei.go.gov.br/sei/`.
+- [x] Aviso fixo de que o login ocorre somente na pagina oficial do SEI.
+- [x] Painel desktop para texto copiado manualmente.
+- [x] Painel desktop para PDF exportado manualmente.
+- [x] Resultado com resumo, tipo provavel, evento/prazo e providencia sugerida.
+- [x] Botao de copiar resultado.
+- [x] Bloqueio de campos/payloads com credenciais.
+- [x] Teste automatizado contra campo de senha/login SEI.
 
 ### Extensao SEI read-only
 
@@ -160,6 +175,8 @@ Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SE
 ### SEI
 
 - [x] Pode aparecer dentro da tela do SEI por extensao local.
+- [x] Pode funcionar sem extensao por aplicacao desktop local.
+- [x] Pode abrir o SEI oficial em janela separada, com login feito diretamente na pagina oficial.
 - [x] Pode ler texto visivel/selecionado da pagina atual apos acao do usuario.
 - [x] Pode enviar esse texto para analise local.
 - [x] Mantem atos oficiais manuais.
@@ -173,6 +190,8 @@ Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SE
 ### Homologacao e uso real
 
 - [ ] Homologar o painel local com exemplos anonimizados.
+- [ ] Homologar o Agente 19 Desktop seguro em ambiente institucional.
+- [ ] Definir se o SEI abrira em navegador separado ou WebView institucional homologado.
 - [ ] Homologar a extensao read-only na tela real do SEI.
 - [ ] Registrar evidencias da homologacao manual.
 - [ ] Obter autorizacao institucional para uso real da extensao.
@@ -265,14 +284,17 @@ Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SE
 - [ ] Adicionar lint/format.
 - [ ] Adicionar cobertura de testes, se decidido.
 - [ ] Criar testes end-to-end locais do painel.
+- [ ] Criar teste manual documentado do desktop.
 - [ ] Criar teste manual documentado da extensao.
 - [ ] Criar politica de versao e releases.
 
 ## 5. O que continua proibido
 
 - [ ] Automatizar login no SEI.
+- [ ] Pedir usuario ou senha do SEI dentro do Agente 19.
 - [ ] Digitar usuario ou senha do servidor.
 - [ ] Guardar senha, cookie, token ou sessao do SEI.
+- [ ] Ler localStorage/sessionStorage ou headers de autenticacao do SEI.
 - [ ] Pesquisar processo automaticamente pelo numero no SEI.
 - [ ] Navegar sozinho no SEI.
 - [ ] Clicar em botoes do SEI.
@@ -287,17 +309,19 @@ Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SE
 
 ## 6. Proxima fase recomendada
 
-1. Testar a extensao manualmente em uma pagina real do SEI ja autenticada, usando somente caso anonimizado ou conteudo nao sensivel.
+1. Testar o Agente 19 Desktop com SEI aberto pela URL oficial, usando somente caso anonimizado ou conteudo nao sensivel.
 2. Registrar o resultado em `docs/32-registro-testes-homologacao.md`.
 3. Concluir o OAuth Google e validar agenda real em modo controlado.
 4. Preencher a knowledge base do 19 CRPM para liberar triagem e roteamento.
-5. Implementar OCR real ou autenticacao local do painel, conforme prioridade operacional.
+5. Manter a extensao Chrome/Edge como recurso futuro opcional, dependente de autorizacao institucional.
+6. Implementar OCR real ou autenticacao local do painel, conforme prioridade operacional.
 
 ## 7. Como testar o que ja existe
 
 ```bat
 .venv\Scripts\python.exe scripts\check_no_secrets.py .
 .venv\Scripts\python.exe -m pytest
+.venv\Scripts\python.exe -m app.desktop
 .venv\Scripts\python.exe -m app.dashboard
 ```
 

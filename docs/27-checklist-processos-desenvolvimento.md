@@ -377,6 +377,54 @@ Objetivo: validar com exemplos anonimizados antes de usar rotina real.
 5. Baixa confianca gera revisao humana.
 6. Logs permitem auditoria.
 
+## Checklist 12 - Agente 19 Desktop com navegador seguro
+
+Objetivo: permitir uso local sem extensao de navegador, mantendo o login do SEI
+exclusivamente na pagina oficial e fora do Agente 19.
+
+Status atual:
+
+```text
+PROTOTIPO_IMPLEMENTADO
+```
+
+### Pre-condicoes obrigatorias
+
+| Item | Status |
+| --- | --- |
+| Decisao de nao capturar credenciais do SEI | APROVADO |
+| Backend local texto/PDF | APROVADO |
+| Guardiao de atos oficiais | APROVADO |
+| Extensao institucional indisponivel/bloqueada | IDENTIFICADO |
+| Homologacao institucional do desktop | NAO_INICIADO |
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Criar pacote `app.desktop` | CONCLUIDO |
+| Criar comando `.venv\Scripts\python.exe -m app.desktop` | CONCLUIDO |
+| Abrir URL oficial do SEI em navegador/janela separada | CONCLUIDO |
+| Manter aviso fixo de seguranca | CONCLUIDO |
+| Colar texto copiado manualmente do SEI | CONCLUIDO |
+| Selecionar PDF exportado manualmente do SEI | CONCLUIDO |
+| Analisar texto/PDF via backend local `127.0.0.1` | CONCLUIDO |
+| Gerar resumo/tipo provavel/evento/prazo/providencia | CONCLUIDO no prototipo |
+| Copiar resultado | CONCLUIDO |
+| Bloquear campos/payloads com credenciais | CONCLUIDO |
+| Testar ausencia de campo senha/login SEI | CONCLUIDO |
+| Homologar desktop em ambiente institucional | NAO_INICIADO |
+
+### Proibido nesta fase
+
+1. Pedir usuario ou senha do SEI.
+2. Salvar usuario ou senha do SEI.
+3. Ler cookie, sessao, token ou localStorage/sessionStorage.
+4. Automatizar clique no SEI.
+5. Assinar, tramitar, enviar, concluir ou criar documento oficial no SEI.
+6. Inserir conteudo no SEI sem acao humana.
+7. Burlar politica institucional de extensao ou navegador.
+
 ## Decisao de continuidade
 
 Pode continuar agora:
@@ -386,6 +434,7 @@ Checklist 2 - Painel MVP externo/local
 Checklist 3 - Leitura de PDF e texto
 Checklist 6 - Google Agenda, conclusao do OAuth
 Checklist 9 - Robozinho/extensao SEI read-only, somente prototipo e homologacao
+Checklist 12 - Agente 19 Desktop com navegador seguro, somente prototipo e homologacao
 ```
 
 Nao iniciar agora sem nova autorizacao:
