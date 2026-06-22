@@ -1,6 +1,6 @@
 # Matriz de conformidade do projeto
 
-Data da avaliacao: 2026-06-21
+Data da avaliacao: 2026-06-22
 
 ## Objetivo
 
@@ -65,7 +65,7 @@ Com escopo limitado a:
 
 | ID | Item | Status | Lacuna | Acao necessaria |
 | --- | --- | --- | --- | --- |
-| P-01 | Fundacao tecnica | Conforme | Implementada e testada (81 testes; TEST-0002) | Adicionar CI no GitHub Actions |
+| P-01 | Fundacao tecnica | Conforme | Implementada, testada (84 testes; TEST-0004) e com workflow CI criado | Abrir PR e observar primeira execucao remota do GitHub Actions |
 | P-02 | Banco de dados | Conforme | SQLite com 8 entidades em `app/storage/models.py`; `scripts/init_db.py` | Migrar para PostgreSQL apenas se necessario |
 | P-03 | Skills especialistas | Parcialmente conforme | Contratos existem; codigo nao existe | Implementar classes/funcoes e testes por skill |
 | P-04 | Knowledge base do 19 CRPM | Parcialmente conforme | Arquivos sao templates com exemplos | Preencher unidades, Alto Comando, palavras-chave e regras reais |
@@ -85,7 +85,7 @@ Com escopo limitado a:
 | ID | Item | Status | Motivo | Correcao |
 | --- | --- | --- | --- | --- |
 | NC-01 | Operacao real do agente | Nao conforme | Nao existe codigo de aplicacao | Implementar MVP e homologar |
-| NC-02 | Gate automatico de seguranca | Parcialmente conforme | Testes de bloqueio existem e passam localmente; falta workflow de CI | Criar GitHub Actions para rodar o gate em todo PR |
+| NC-02 | Gate automatico de seguranca | Parcialmente conforme | Workflow CI criado com testes e varredura de segredos; primeira execucao remota pendente | Abrir PR, observar GitHub Actions e configurar protecao da `main` |
 | NC-03 | Triagem automatica 19 CRPM | Nao conforme | Dados mestres reais ausentes | Preencher `knowledge_base/fluxos_19crpm/` |
 | NC-04 | Direcionamento para unidade responsavel | Nao conforme | Sem regras reais, o agente poderia inventar | Bloquear decisao automatica ate regras reais |
 | NC-05 | Definicao de "criar arquivo" | Nao conforme | Termo ainda ambiguo | Definir se e minuta `.docx`, PDF, texto, pasta ou registro |
@@ -110,7 +110,7 @@ Com escopo limitado a:
 | Fase | Status | Condicao |
 | --- | --- | --- |
 | Etapa 1 - Documentacao | Conforme | Concluida |
-| Etapa 2 - Fundacao tecnica | Conforme | Implementada e testada (81 testes) |
+| Etapa 2 - Fundacao tecnica | Conforme | Implementada, testada (84 testes) e com workflow CI criado |
 | Etapa 3 - Google Agenda | Em andamento | Servico pronto em dry-run; falta OAuth real |
 | Etapa 4 - Telegram | Condicionada | Apos logs e politica de mensagem |
 | Etapa 5 - E-mail | Condicionada | Apos decisao do provedor e credenciais |
@@ -146,4 +146,3 @@ Fica proibido, nesta fase:
 4. Escrever no SEI.
 5. Enviar conteudo real do SEI para IA externa.
 6. Decidir unidade do 19 CRPM sem regras reais.
-

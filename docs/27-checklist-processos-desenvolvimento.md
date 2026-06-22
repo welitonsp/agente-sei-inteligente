@@ -66,8 +66,8 @@ Objetivo: criar o esqueleto tecnico seguro antes de qualquer IA ou integracao ex
 | Criar `app/storage/database.py` | CONCLUIDO (`app/storage/db.py`) |
 | Criar modelos SQLite iniciais | CONCLUIDO (`app/storage/models.py`) |
 | Criar repositorios de auditoria | CONCLUIDO (`app/core/audit.py`) |
-| Criar testes de permissoes | CONCLUIDO (81 testes; TEST-0002) |
-| Criar CI basico no GitHub Actions | NAO_INICIADO |
+| Criar testes de permissoes | CONCLUIDO (84 testes totais; TEST-0004) |
+| Criar CI basico no GitHub Actions | CONCLUIDO (`.github/workflows/ci.yml`; TEST-0004) |
 
 ### Aceite
 
@@ -327,12 +327,12 @@ Objetivo: impedir regressao de seguranca.
 
 | Item | Status |
 | --- | --- |
-| Criar GitHub Actions | NAO_INICIADO |
-| Rodar testes unitarios | NAO_INICIADO |
-| Rodar testes de permissoes | NAO_INICIADO |
-| Bloquear merge se acao proibida for permitida | NAO_INICIADO |
+| Criar GitHub Actions | CONCLUIDO (`.github/workflows/ci.yml`) |
+| Rodar testes unitarios | CONCLUIDO localmente (84 testes; CI remoto pendente de PR) |
+| Rodar testes de permissoes | CONCLUIDO localmente (gate incluido no `pytest`) |
+| Bloquear merge se acao proibida for permitida | EM_ANDAMENTO (workflow falha; falta protecao de branch) |
 | Rodar lint/format | NAO_INICIADO |
-| Checar segredos em arquivos | NAO_INICIADO |
+| Checar segredos em arquivos | CONCLUIDO localmente (`scripts/check_no_secrets.py`; CI remoto pendente de PR) |
 
 ### Aceite
 
@@ -379,4 +379,3 @@ Nao iniciar agora:
 ```text
 Checklist 9 - Robozinho real / extensao
 ```
-

@@ -3,7 +3,7 @@
 Documento de continuidade: onde o desenvolvimento parou e como retomar em outra
 estacao de trabalho.
 
-Ultima atualizacao: 2026-06-21
+Ultima atualizacao: 2026-06-22
 Branch de trabalho: `feat/fundacao-agenda-ics`
 Repositorio: https://github.com/welitonsp/agente-sei-inteligente
 
@@ -23,7 +23,8 @@ Repositorio: https://github.com/welitonsp/agente-sei-inteligente
 | Dedup contra calendario real (ICS) | CONCLUIDO | `app/integrations/ics_reader.py` |
 | Cliente OAuth real (Calendar+People) | Codigo pronto | `app/integrations/google_auth.py`, `app/integrations/runtime.py` |
 | Scripts | CONCLUIDO | `scripts/init_db.py`, `scripts/google_oauth_setup.py`, `scripts/google_validate.py` |
-| Testes | 81 passando | `tests/` |
+| CI / gate de segredos | CONCLUIDO localmente | `.github/workflows/ci.yml`, `scripts/check_no_secrets.py` |
+| Testes | 84 passando | `tests/` |
 
 Modo atual: **dry-run** (simulacao). Nenhum evento real e criado ate o OAuth
 estar completo no `.env`.
@@ -87,10 +88,11 @@ da estacao anterior por canal seguro OU obtenha novamente:
 ```bat
 set PYTHONPATH=.
 .venv\Scripts\python.exe scripts\init_db.py
+.venv\Scripts\python.exe scripts\check_no_secrets.py .
 .venv\Scripts\python.exe -m pytest
 ```
 
-Esperado: 81 testes passando.
+Esperado: scanner sem segredos concretos e 84 testes passando.
 
 ### 5. Concluir o OAuth (itens pendentes acima)
 

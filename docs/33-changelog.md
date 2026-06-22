@@ -2,6 +2,30 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.2.1-ci-gate] - 2026-06-22
+
+### Adicionado
+
+1. Workflow GitHub Actions em `.github/workflows/ci.yml` para rodar testes em
+   Python 3.11 e 3.13.
+2. Gate simples de segredos em `scripts/check_no_secrets.py`, varrendo arquivos
+   conhecidos pelo Git e novos nao ignorados, bloqueando `.env`, refresh token,
+   client secret, URL ICS, chaves de API e private keys concretas.
+3. Testes automatizados do scanner de segredos (`tests/test_secret_scanner.py`).
+
+### Seguranca
+
+1. CI passa a executar `scripts/check_no_secrets.py` antes do `pytest`.
+2. Varredura local confirmou ausencia de segredos concretos nos arquivos
+   conhecidos pelo Git e novos nao ignorados.
+3. Suite local ampliada para 84 testes passando.
+
+### Riscos conhecidos
+
+1. Primeira execucao remota do GitHub Actions ainda depende de push/PR.
+2. Protecao de branch ainda precisa ser configurada no GitHub.
+3. OAuth do Google continua pendente de conclusao (client secret + refresh token).
+
 ## [0.2-fundacao-tecnica] - 2026-06-21
 
 ### Adicionado
@@ -39,7 +63,8 @@ Todas as entregas relevantes do projeto devem ser registradas aqui.
 
 ### Riscos conhecidos
 
-1. CI no GitHub Actions ainda nao configurado (gate roda apenas local).
+1. CI no GitHub Actions configurado em 2026-06-22; primeira execucao remota
+   ainda depende de push/PR.
 2. Knowledge base do 19 CRPM ainda usa templates.
 3. OAuth do Google pendente de conclusao (client secret + refresh token).
 4. Sem PR aberto ainda; merge para `main` pendente de revisao humana.
