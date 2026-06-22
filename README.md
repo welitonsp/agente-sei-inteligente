@@ -96,6 +96,7 @@ A versao 1 sera considerada pronta quando o agente conseguir:
 | [docs/38-agente-sei-rpa-assistido.md](docs/38-agente-sei-rpa-assistido.md) | FASE 38 - Agente SEI RPA Assistido por Numero de Processo |
 | [docs/39-memoria-aprendizado-supervisionado.md](docs/39-memoria-aprendizado-supervisionado.md) | FASE 39 - Memoria Institucional e Aprendizado Supervisionado |
 | [docs/40-checklist-funcionario-digital.md](docs/40-checklist-funcionario-digital.md) | Checklist consolidado do Funcionario Digital |
+| [docs/41-fundacao-tecnica-segura.md](docs/41-fundacao-tecnica-segura.md) | FASE 40 - Fundacao Tecnica Segura |
 
 ## Estrutura-alvo
 
