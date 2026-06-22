@@ -24,6 +24,7 @@ env/
 tmp/
 temp/
 downloads/
+*.pdf
 
 # OS/editor
 .DS_Store

@@ -15,6 +15,11 @@ Este checklist deve ser validado continuamente para garantir a integridade do Ag
 - [ ] O Agente exporta o processo em PDF e analisa o PDF inteiro.
 - [ ] O Agente identifica corretamente assunto, origem, interessado, prazo, evento, urgência, unidade envolvida, impacto para o 19º CRPM e providência recomendada.
 
+## Transparência e Retenção
+- [x] O Agente detalha no log da demanda exatamente quais documentos foram lidos.
+- [x] O Agente exibe um log claro com as ações tomadas ("Criado draft 1", "Analisado anexo X").
+- [x] O Agente exclui imediatamente de sua memória cópias de documentos que lê, para evitar vazamentos LGPD.
+
 ## Criação de Minutas e Atos Oficiais
 - [ ] O Agente pergunta proativamente ao usuário qual tipo de documento criar (ex: Ofício, Despacho, Ordem de Atendimento) antes de qualquer inserção.
 - [ ] A criação de minuta no SEI exige confirmação humana explícita.
