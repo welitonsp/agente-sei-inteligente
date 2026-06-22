@@ -377,17 +377,23 @@ Objetivo: validar com exemplos anonimizados antes de usar rotina real.
 5. Baixa confianca gera revisao humana.
 6. Logs permitem auditoria.
 
-## Decisao de inicio
+## Decisao de continuidade
 
-Pode iniciar agora:
+Pode continuar agora:
 
 ```text
-Checklist 1 - Fundacao tecnica
-Checklist 2 - Painel MVP externo/local, apos fundacao minima
+Checklist 2 - Painel MVP externo/local
+Checklist 3 - Leitura de PDF e texto
+Checklist 6 - Google Agenda, conclusao do OAuth
+Checklist 9 - Robozinho/extensao SEI read-only, somente prototipo e homologacao
 ```
 
-Nao iniciar agora:
+Nao iniciar agora sem nova autorizacao:
 
 ```text
-Checklist 9 - Robozinho real / extensao
+Clique automatico no SEI
+Login automatico no SEI
+Uso institucional da extensao sem homologacao
+IA externa com conteudo real do SEI
+Triagem automatica sem knowledge base real
 ```

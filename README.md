@@ -2,9 +2,9 @@
 
 Documentacao-base do projeto de um agente administrativo inteligente para apoiar a rotina do 19 CRPM com e-mail institucional, PDF, Google Agenda, alertas em celular, minutas administrativas e uso assistido do SEI.
 
-Versao documental: 0.3.2
+Versao documental: 0.3.3
 Data: 2026-06-22
-Status: Fundacao tecnica + Agenda dry-run + painel local texto/PDF
+Status: Fundacao tecnica + Agenda dry-run + painel local texto/PDF + extensao SEI read-only
 
 ## Objetivo
 
@@ -77,6 +77,7 @@ A versao 1 sera considerada pronta quando o agente conseguir:
 | [docs/33-changelog.md](docs/33-changelog.md) | Changelog das entregas |
 | [docs/34-prompt-claude-code.md](docs/34-prompt-claude-code.md) | Prompt mestre para Claude Code executar o projeto |
 | [docs/35-handoff-retomada.md](docs/35-handoff-retomada.md) | Handoff: ponto de parada e como retomar em outra estacao |
+| [docs/36-relatorio-status-projeto.md](docs/36-relatorio-status-projeto.md) | Relatorio consolidado do que foi feito, do que o sistema faz e do que falta |
 
 ## Estrutura-alvo
 

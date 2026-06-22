@@ -13,6 +13,8 @@ Todas as entregas relevantes do projeto devem ser registradas aqui.
 3. Service worker `background.js` chamando apenas `http://127.0.0.1:8000`.
 4. Testes de contrato de segurança da extensão
    (`tests/test_browser_extension_contract.py`).
+5. Relatorio consolidado de status do projeto em
+   `docs/36-relatorio-status-projeto.md`.
 
 ### Segurança
 
