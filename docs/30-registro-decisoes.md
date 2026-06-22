@@ -134,3 +134,16 @@ Impacto: Sem e-mails resolvidos, nao cria evento de convocacao; auditoria regist
 Risco: Depende de credenciais People API; em dry-run usa lista estatica para simular.  
 Arquivos afetados: `app/integrations/contacts_resolver.py`, `app/integrations/agenda_service.py`, `.env.example`.  
 Proximo passo: Validar contagem real de Oficiais apos OAuth.
+
+## DEC-0010
+
+Data: 2026-06-22
+Responsavel: Chefe do projeto
+Status: APROVADA
+Contexto: O chefe do projeto esclareceu que o agente precisa interagir na propria tela do SEI, pois uma tela separada tende a cair em desuso.
+Decisao: Priorizar um prototipo de extensao de navegador read-only dentro da tela do SEI, com botao flutuante e painel lateral, conectado ao backend local.
+Motivo: Aumentar aderencia operacional, mantendo o servidor no fluxo real de trabalho do SEI.
+Impacto: O painel local continua como backend/API, mas a experiencia principal passa a ser o assistente visual na pagina do SEI.
+Risco: Leitura direta da tela do SEI e sensivel; mitigacao por modo read-only, sem cookies, sem senha, sem clique automatico, sem busca/navegacao por numero e sem atos oficiais.
+Arquivos afetados: `browser_extension/`, `docs/22`, `docs/26`, `docs/27`, `docs/33`, `docs/35`.
+Proximo passo: Homologar extensao local read-only com usuario autenticado manualmente no SEI.

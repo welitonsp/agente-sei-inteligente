@@ -296,19 +296,31 @@ Objetivo: criar assistente visual na tela do SEI.
 Status atual:
 
 ```text
-FORA_DO_MVP
+PROTOTIPO_READONLY_EM_ANDAMENTO
 ```
 
 ### Pre-condicoes obrigatorias
 
 | Item | Status |
 | --- | --- |
-| Autorizacao institucional para extensao | BLOQUEADO |
-| Fundacao tecnica aprovada | BLOQUEADO |
-| Guardiao testado | BLOQUEADO |
-| Politica de dados implementada | BLOQUEADO |
-| Painel MVP homologado | BLOQUEADO |
-| Testes anti-clique sensivel | BLOQUEADO |
+| Autorizacao institucional para extensao | BLOQUEADO para uso real; prototipo local read-only iniciado |
+| Fundacao tecnica aprovada | APROVADO |
+| Guardiao testado | APROVADO |
+| Politica de dados implementada | EM_ANDAMENTO para leitura local/efemera |
+| Painel MVP homologado | EM_ANDAMENTO |
+| Testes anti-clique sensivel | CONCLUIDO para contrato estatico da extensao (sem `.click()`) |
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Criar extensao de navegador read-only | CONCLUIDO prototipo (`browser_extension/`) |
+| Exibir botao flutuante na tela do SEI | CONCLUIDO (`content.js`, `content.css`) |
+| Capturar texto visivel/selecionado | CONCLUIDO prototipo |
+| Enviar para backend local | CONCLUIDO (`background.js` -> `127.0.0.1:8000`) |
+| Bloquear clique/ato oficial automatico | CONCLUIDO por contrato/teste |
+| Homologar em ambiente SEI real | NAO_INICIADO |
+| Publicar/instalar de forma institucional | BLOQUEADO |
 
 ### Proibido nesta fase
 

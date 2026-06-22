@@ -126,3 +126,18 @@ Evidencia: `tests/test_pdf_upload_intake.py`, execução local de `python script
 Status: APROVADO
 Problemas encontrados: Nenhum bloqueante.
 Proximo passo: Validar upload PDF no painel local e decidir entre OCR real ou autenticação local do painel.
+
+## TEST-0008
+
+Data: 2026-06-22
+Versao/commit: branch `feat/fundacao-agenda-ics`
+Ambiente: Local Windows, Python 3.13, `.venv`, pytest
+Responsavel: Engenharia do projeto
+Caso testado: Contrato estatico de seguranca da extensao SEI read-only.
+Entrada usada: Arquivos `browser_extension/manifest.json`, `content.js` e `background.js`.
+Resultado esperado: Extensao restrita ao SEI/localhost, sem permissao de cookies/webRequest, sem clique automatico e com bloqueio de termos de atos oficiais.
+Resultado obtido: Testes de contrato da extensao aprovados; scanner sem segredos.
+Evidencia: `tests/test_browser_extension_contract.py`.
+Status: APROVADO
+Problemas encontrados: Nenhum bloqueante.
+Proximo passo: Homologar manualmente a extensao na tela real do SEI com backend local ativo.

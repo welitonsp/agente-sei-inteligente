@@ -25,10 +25,11 @@ Repositorio: https://github.com/welitonsp/agente-sei-inteligente
 | Intake texto manual | CONCLUIDO no backend | `app/intake/manual_text.py`, `tests/test_manual_text_intake.py` |
 | Intake PDF local | CONCLUIDO para PDF pesquisavel | `app/intake/pdf_upload.py`, `tests/test_pdf_upload_intake.py` |
 | Painel local texto/PDF | CONCLUIDO para MVP texto/PDF | `app/dashboard/local_app.py`, `tests/test_dashboard_local_app.py` |
+| Extensao SEI read-only | PROTOTIPO | `browser_extension/`, `tests/test_browser_extension_contract.py` |
 | Scripts | CONCLUIDO | `scripts/init_db.py`, `scripts/google_oauth_setup.py`, `scripts/google_validate.py` |
 | PR e CI | PR #1 draft aberto; CI aprovado | https://github.com/welitonsp/agente-sei-inteligente/pull/1 |
 | Gate de segredos | CONCLUIDO | `.github/workflows/ci.yml`, `scripts/check_no_secrets.py` |
-| Testes | 97 passando | `tests/` |
+| Testes | 101 passando | `tests/` |
 
 Modo atual: **dry-run** (simulacao). Nenhum evento real e criado ate o OAuth
 estar completo no `.env`.
@@ -96,7 +97,23 @@ set PYTHONPATH=.
 .venv\Scripts\python.exe -m pytest
 ```
 
-Esperado: scanner sem segredos concretos e 97 testes passando.
+Esperado: scanner sem segredos concretos e 101 testes passando.
+
+### 4.2. Testar extensao no navegador
+
+1. Rode o backend local:
+
+```bat
+.venv\Scripts\python.exe -m app.dashboard
+```
+
+2. No Chrome/Edge, abra `chrome://extensions` ou `edge://extensions`.
+3. Ative "Modo do desenvolvedor".
+4. Carregue sem compactacao a pasta `browser_extension/`.
+5. Abra uma pagina do SEI ja autenticada manualmente e clique em `Agente 19`.
+
+Regras: a extensao e read-only, nao faz login, nao guarda senha/cookie, nao
+clica no SEI e envia somente texto visivel/selecionado ao backend local.
 
 ### 4.1. Rodar o painel MVP local
 

@@ -89,7 +89,7 @@ Com escopo limitado a:
 | NC-03 | Triagem automatica 19 CRPM | Nao conforme | Dados mestres reais ausentes | Preencher `knowledge_base/fluxos_19crpm/` |
 | NC-04 | Direcionamento para unidade responsavel | Nao conforme | Sem regras reais, o agente poderia inventar | Bloquear decisao automatica ate regras reais |
 | NC-05 | Definicao de "criar arquivo" | Nao conforme | Termo ainda ambiguo | Definir se e minuta `.docx`, PDF, texto, pasta ou registro |
-| NC-06 | Extensao real do robozinho | Nao conforme | Sem autorizacao, sem codigo, sem testes | Manter fora do MVP |
+| NC-06 | Extensao real do robozinho | Parcialmente conforme | Prototipo read-only criado; falta autorizacao/homologacao institucional | Manter read-only, sem clique automatico, ate autorizacao formal |
 | NC-07 | Leitura automatica do SEI por numero | Nao conforme | Risco de navegacao automatica e clique indevido | Manter proibida no MVP |
 | NC-08 | Uso de conteudo real do SEI em IA externa | Nao conforme | Sem autorizacao formal | Manter bloqueado |
 | NC-09 | Escrita no SEI via WebServices | Nao conforme | Contraria estrategia de sessao individual e exige autorizacao formal | Manter bloqueada |
@@ -98,7 +98,7 @@ Com escopo limitado a:
 
 | Item | Motivo |
 | --- | --- |
-| Extensao de navegador real | Sensivel, exige autorizacao e testes |
+| Extensao de navegador real | Prototipo read-only iniciado; uso real exige autorizacao e homologacao |
 | Playwright conectado ao SEI | Risco de clique/navegacao indevida |
 | Busca automatica por numero de processo no SEI | Pode virar automacao de navegacao |
 | Escrita de minuta dentro do SEI | Sem modulo oficial e sem autorizacao |
@@ -117,7 +117,7 @@ Com escopo limitado a:
 | Etapa 6 - PDF | Em andamento | Upload e extração de PDF pesquisável prontos; OCR real pendente |
 | Etapa 7 - Inteligencia administrativa | Condicionada | Apos dados reais ou exemplos anonimizados |
 | Etapa 8 - Interface web | Em andamento | Painel local de texto/PDF pronto; falta autenticação e views completas |
-| Etapa 9 - SEI read-only | Nao liberada | Depende de autorizacao, testes e politica de dados |
+| Etapa 9 - SEI read-only | Em prototipo | Extensao read-only criada; uso real depende de autorizacao/homologacao |
 | Etapa 10 - Minutador SEI assistido | Nao liberada | Minutas apenas fora do SEI por enquanto |
 | Etapa 11 - Operacao v1 | Nao liberada | Depende de homologacao completa |
 

@@ -1,0 +1,160 @@
+#agente-sei-root {
+  all: initial;
+  position: fixed;
+  right: 18px;
+  bottom: 84px;
+  z-index: 2147483647;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #172129;
+}
+
+#agente-sei-root * {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: 0;
+}
+
+.agente-sei-button {
+  width: 58px;
+  height: 58px;
+  border: 0;
+  border-radius: 50%;
+  background: #1f6f5b;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
+}
+
+.agente-sei-panel {
+  width: min(380px, calc(100vw - 32px));
+  max-height: min(620px, calc(100vh - 110px));
+  display: none;
+  overflow: hidden;
+  border: 1px solid #d7dee2;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .24);
+}
+
+.agente-sei-open .agente-sei-panel {
+  display: block;
+}
+
+.agente-sei-open .agente-sei-button {
+  display: none;
+}
+
+.agente-sei-head {
+  min-height: 48px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #0f8db5;
+  color: #fff;
+}
+
+.agente-sei-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.agente-sei-close {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .16);
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.agente-sei-body {
+  padding: 12px;
+  max-height: calc(min(620px, calc(100vh - 110px)) - 48px);
+  overflow: auto;
+}
+
+.agente-sei-field {
+  margin-bottom: 10px;
+}
+
+.agente-sei-field label {
+  display: block;
+  margin-bottom: 4px;
+  color: #34424d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.agente-sei-field input,
+.agente-sei-field textarea {
+  width: 100%;
+  border: 1px solid #d7dee2;
+  border-radius: 6px;
+  padding: 8px;
+  color: #172129;
+  background: #fff;
+  font-size: 13px;
+}
+
+.agente-sei-field textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.agente-sei-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.agente-sei-primary {
+  min-height: 38px;
+  border: 0;
+  border-radius: 6px;
+  background: #1f6f5b;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.agente-sei-secondary {
+  min-height: 34px;
+  border: 1px solid #d7dee2;
+  border-radius: 6px;
+  background: #f6f8f9;
+  color: #172129;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.agente-sei-result {
+  padding: 10px;
+  border: 1px solid #d7dee2;
+  border-radius: 8px;
+  background: #f9fbfb;
+  color: #172129;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
+.agente-sei-warning {
+  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  background: #fff6db;
+  color: #6f4a00;
+  font-size: 12px;
+}
+
+.agente-sei-error {
+  color: #8d1f11;
+  font-weight: 700;
+}

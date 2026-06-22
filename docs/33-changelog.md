@@ -2,6 +2,32 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.3.3-extensao-sei-readonly] - 2026-06-22
+
+### Adicionado
+
+1. Protótipo de extensão Chrome/Edge em `browser_extension/`, com botão
+   flutuante dentro das páginas `https://sei.go.gov.br/sei/*`.
+2. Painel lateral in-page para capturar texto visível/selecionado da tela do
+   SEI e enviar ao backend local `POST /api/import-text`.
+3. Service worker `background.js` chamando apenas `http://127.0.0.1:8000`.
+4. Testes de contrato de segurança da extensão
+   (`tests/test_browser_extension_contract.py`).
+
+### Segurança
+
+1. Extensão não solicita permissão de cookies nem webRequest.
+2. Extensão não guarda senha, cookie ou sessão.
+3. Extensão não executa clique automático no SEI.
+4. Termos de atos oficiais são bloqueados no conteúdo enviado para análise.
+5. Modo continua read-only e exige revisão humana.
+
+### Riscos conhecidos
+
+1. Requer instalação manual como extensão sem publicação na loja.
+2. Leitura direta da tela do SEI deve ser validada em homologação institucional.
+3. Busca/navegação por número de processo e qualquer ato oficial seguem proibidos.
+
 ## [0.3.2-pdf-local] - 2026-06-22
 
 ### Adicionado
