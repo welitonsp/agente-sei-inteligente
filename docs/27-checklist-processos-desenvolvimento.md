@@ -97,13 +97,13 @@ Objetivo: criar uma interface simples para operar sem acessar diretamente o SEI.
 
 | Item | Status |
 | --- | --- |
-| Criar tela inicial do painel | NAO_INICIADO |
-| Campo `Numero do processo SEI` | EM_ANDAMENTO (backend recebe em `ManualTextRequest`) |
-| Campo `Texto copiado do SEI` | EM_ANDAMENTO (backend `app/intake/manual_text.py`) |
+| Criar tela inicial do painel | CONCLUIDO (`app/dashboard/local_app.py`; TEST-0006) |
+| Campo `Numero do processo SEI` | CONCLUIDO (`ManualTextRequest` + painel local) |
+| Campo `Texto copiado do SEI` | CONCLUIDO (`app/intake/manual_text.py` + painel local) |
 | Upload de PDF | NAO_INICIADO |
-| Botao `Analisar para o 19 CRPM` | NAO_INICIADO |
-| Exibir resultado estruturado | EM_ANDAMENTO (contrato backend pronto; falta UI) |
-| Exibir revisao humana obrigatoria | EM_ANDAMENTO (backend sempre retorna revisao obrigatoria; falta UI) |
+| Botao `Analisar para o 19 CRPM` | CONCLUIDO no painel local |
+| Exibir resultado estruturado | CONCLUIDO no painel local |
+| Exibir revisao humana obrigatoria | CONCLUIDO no painel local |
 | Exibir documentos nao lidos/OCR necessario | NAO_INICIADO |
 | Registrar log da analise | CONCLUIDO no backend de texto manual (TEST-0005) |
 
@@ -123,7 +123,7 @@ Objetivo: processar documentos fornecidos pelo servidor.
 
 | Item | Status |
 | --- | --- |
-| Painel MVP criado | BLOQUEADO |
+| Painel MVP criado | EM_ANDAMENTO para texto manual (PDF/upload pendente) |
 | Politica de dados local/efemera implementada | EM_ANDAMENTO para texto manual (sem texto integral; hash/metadados) |
 
 ### Execucao

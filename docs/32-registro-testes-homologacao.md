@@ -96,3 +96,18 @@ Evidencia: `tests/test_manual_text_intake.py`, execucao local de `python scripts
 Status: APROVADO
 Problemas encontrados: Nenhum bloqueante.
 Proximo passo: Criar API/tela MVP para acionar `manual_text.analyze_text` e exibir resultado estruturado.
+
+## TEST-0006
+
+Data: 2026-06-22
+Versao/commit: branch `feat/fundacao-agenda-ics`
+Ambiente: Local Windows, Python 3.13, `.venv`, pytest
+Responsavel: Engenharia do projeto
+Caso testado: Painel MVP local para texto colado.
+Entrada usada: HTML do painel e textos ficticios/anonimos enviados ao endpoint local `IMPORT_TEXT`.
+Resultado esperado: Tela contem campos minimos do checklist; endpoint retorna resultado estruturado; texto integral nao volta na resposta.
+Resultado obtido: `scripts/check_no_secrets.py` OK; 92 testes passando.
+Evidencia: `tests/test_dashboard_local_app.py`, execucao local de `python scripts/check_no_secrets.py .` e `python -m pytest`.
+Status: APROVADO
+Problemas encontrados: Nenhum bloqueante.
+Proximo passo: Rodar painel localmente, validar usabilidade visual e iniciar upload PDF/OCR ou autenticacao local.

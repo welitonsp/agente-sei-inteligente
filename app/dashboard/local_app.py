@@ -1,0 +1,478 @@
+"""Painel MVP local sem dependencias externas.
+
+Serve uma tela HTML operacional e uma pequena API stdlib para acionar o fluxo
+`IMPORT_TEXT`. O painel e externo/local: nao acessa o SEI, nao pesquisa
+processo por numero e nao executa ato oficial.
+"""
+
+from __future__ import annotations
+
+import json
+from http import HTTPStatus
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from typing import Any
+
+from app.core.config import get_settings
+from app.core.logging import configure_logging, get_logger, log_event
+from app.intake.manual_text import ManualTextRequest, analyze_text
+from app.storage.db import init_db
+
+
+INDEX_HTML = """<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agente SEI Inteligente - 19 CRPM</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7f8;
+      --ink: #1d252c;
+      --muted: #64717d;
+      --line: #d9e0e4;
+      --panel: #ffffff;
+      --accent: #1f6f5b;
+      --accent-dark: #155342;
+      --warn: #8a5a00;
+      --warn-bg: #fff6db;
+      --ok-bg: #e7f5ee;
+      --shadow: 0 8px 22px rgba(21, 34, 44, .08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+      letter-spacing: 0;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .mode {
+      min-height: 32px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--muted);
+      background: #fbfcfc;
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: minmax(340px, 440px) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    form, .result-body {
+      padding: 16px;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 6px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 11px;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    textarea {
+      min-height: 230px;
+      resize: vertical;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    button {
+      min-height: 40px;
+      border: 0;
+      border-radius: 6px;
+      padding: 10px 14px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover { background: var(--accent-dark); }
+    button:disabled { cursor: wait; opacity: .65; }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--warn-bg);
+      color: var(--warn);
+    }
+
+    .status.ok {
+      background: var(--ok-bg);
+      color: var(--accent-dark);
+    }
+
+    .placeholder {
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 76px;
+      background: #fbfcfc;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .metric strong {
+      overflow-wrap: anywhere;
+    }
+
+    pre {
+      margin: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfc;
+      overflow: auto;
+      min-height: 130px;
+      max-height: 330px;
+      white-space: pre-wrap;
+    }
+
+    .error {
+      color: #8d1f11;
+      font-weight: 700;
+    }
+
+    @media (max-width: 860px) {
+      main { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .mode { white-space: normal; }
+    }
+
+    @media (max-width: 540px) {
+      main { padding: 12px; }
+      .row, .grid { grid-template-columns: 1fr; }
+      textarea { min-height: 180px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <h1>Agente SEI Inteligente - 19 CRPM</h1>
+      <div class="mode">MVP local</div>
+    </div>
+  </header>
+  <main>
+    <section aria-labelledby="nova-demanda">
+      <div class="panel-head">
+        <h2 id="nova-demanda">Nova demanda</h2>
+      </div>
+      <form id="intake-form">
+        <div class="row">
+          <div class="field">
+            <label for="processo">Numero do processo SEI</label>
+            <input id="processo" name="processo_sei" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="usuario">Usuario local</label>
+            <input id="usuario" name="usuario_local" autocomplete="off">
+          </div>
+        </div>
+        <div class="field">
+          <label for="titulo">Titulo</label>
+          <input id="titulo" name="titulo" autocomplete="off" required>
+        </div>
+        <div class="field">
+          <label for="texto">Texto copiado</label>
+          <textarea id="texto" name="texto" required></textarea>
+        </div>
+        <button id="submit" type="submit">Analisar para o 19 CRPM</button>
+      </form>
+    </section>
+
+    <section aria-labelledby="resultado">
+      <div class="panel-head">
+        <h2 id="resultado">Resultado</h2>
+        <span id="badge" class="status">Aguardando</span>
+      </div>
+      <div class="result-body">
+        <div id="empty" class="placeholder">Nenhuma demanda analisada.</div>
+        <div id="result" hidden>
+          <div class="grid">
+            <div class="metric"><span>Status</span><strong id="status"></strong></div>
+            <div class="metric"><span>Revisao humana</span><strong id="review"></strong></div>
+            <div class="metric"><span>Confianca</span><strong id="confidence"></strong></div>
+            <div class="metric"><span>Hash</span><strong id="hash"></strong></div>
+          </div>
+          <div class="field">
+            <label>Resumo</label>
+            <pre id="summary"></pre>
+          </div>
+          <div class="grid">
+            <div class="metric"><span>Evento</span><strong id="event"></strong></div>
+            <div class="metric"><span>Prazo</span><strong id="deadline"></strong></div>
+          </div>
+          <div class="field">
+            <label>Campos pendentes</label>
+            <pre id="pending"></pre>
+          </div>
+        </div>
+        <div id="error" class="error" hidden></div>
+      </div>
+    </section>
+  </main>
+  <script>
+    const form = document.getElementById("intake-form");
+    const submit = document.getElementById("submit");
+    const badge = document.getElementById("badge");
+    const empty = document.getElementById("empty");
+    const result = document.getElementById("result");
+    const errorBox = document.getElementById("error");
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value || "";
+    }
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.hidden = false;
+      badge.textContent = "Erro";
+      badge.className = "status";
+    }
+
+    function render(payload) {
+      const data = payload.resultado || {};
+      const event = data.evento || {};
+      const deadline = data.prazo || {};
+      empty.hidden = true;
+      result.hidden = false;
+      errorBox.hidden = true;
+      badge.textContent = payload.status || "Recebido";
+      badge.className = "status ok";
+      setText("status", payload.status);
+      setText("review", payload.revisao_humana_obrigatoria ? "Obrigatoria" : "Nao");
+      setText("confidence", String(payload.confianca ?? ""));
+      setText("hash", data.text_hash || "");
+      setText("summary", data.resumo_executivo || "");
+      setText("event", event.ha_evento ? `${event.data || ""} ${event.horario_inicio || ""} ${event.local || ""}` : "Nao confirmado");
+      setText("deadline", deadline.ha_prazo ? `${deadline.data_limite || ""} ${deadline.hora_limite || ""} ${deadline.risco || ""}` : "Nao confirmado");
+      setText("pending", (payload.campos_pendentes || []).join("\\n") || "Nenhum");
+    }
+
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      submit.disabled = true;
+      badge.textContent = "Analisando";
+      badge.className = "status";
+      const formData = new FormData(form);
+      const body = Object.fromEntries(formData.entries());
+      try {
+        const response = await fetch("/api/import-text", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body)
+        });
+        const payload = await response.json();
+        if (!response.ok) {
+          showError(payload.error?.message || "Falha ao analisar.");
+          return;
+        }
+        render(payload);
+      } catch (err) {
+        showError("Falha de comunicacao com o painel local.");
+      } finally {
+        submit.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+"""
+
+
+def create_import_text_response(payload: dict[str, Any]) -> dict[str, Any]:
+    """Executa `IMPORT_TEXT` e devolve o contrato serializavel."""
+    request = ManualTextRequest(
+        titulo=str(payload.get("titulo", "")),
+        texto=str(payload.get("texto", "")),
+        processo_sei=str(payload.get("processo_sei", "")),
+        usuario_local=str(payload.get("usuario_local", "")),
+        estacao=str(payload.get("estacao", "")),
+        origem="dashboard_local",
+    )
+    return analyze_text(request).to_contract()
+
+
+class DashboardHandler(BaseHTTPRequestHandler):
+    server_version = "AgenteSeiDashboard/0.1"
+
+    def do_GET(self) -> None:  # noqa: N802 - API stdlib
+        if self.path in ("/", "/index.html"):
+            self._send_html(INDEX_HTML)
+            return
+        if self.path == "/health":
+            self._send_json({"status": "ok"})
+            return
+        self.send_error(HTTPStatus.NOT_FOUND)
+
+    def do_POST(self) -> None:  # noqa: N802 - API stdlib
+        if self.path != "/api/import-text":
+            self.send_error(HTTPStatus.NOT_FOUND)
+            return
+        try:
+            payload = self._read_json()
+            result = create_import_text_response(payload)
+        except json.JSONDecodeError:
+            self._send_json(
+                {"error": {"code": "INVALID_JSON", "message": "JSON invalido."}},
+                status=HTTPStatus.BAD_REQUEST,
+            )
+            return
+        except Exception:
+            self._send_json(
+                {"error": {"code": "FAILED", "message": "Falha tecnica."}},
+                status=HTTPStatus.INTERNAL_SERVER_ERROR,
+            )
+            return
+        self._send_json(result)
+
+    def log_message(self, format: str, *args: Any) -> None:
+        return
+
+    def _read_json(self) -> dict[str, Any]:
+        length = int(self.headers.get("Content-Length", "0"))
+        raw = self.rfile.read(length)
+        if not raw:
+            return {}
+        parsed = json.loads(raw.decode("utf-8"))
+        return parsed if isinstance(parsed, dict) else {}
+
+    def _send_html(self, body: str) -> None:
+        data = body.encode("utf-8")
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def _send_json(self, body: dict[str, Any], status: HTTPStatus = HTTPStatus.OK) -> None:
+        data = json.dumps(body, ensure_ascii=False).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+
+def run(host: str | None = None, port: int | None = None) -> None:
+    settings = get_settings()
+    configure_logging(settings.log_level)
+    init_db()
+
+    bind_host = host or settings.app_host
+    bind_port = port or settings.app_port
+    httpd = ThreadingHTTPServer((bind_host, bind_port), DashboardHandler)
+    logger = get_logger("dashboard")
+    log_event(
+        logger,
+        20,
+        "painel local iniciado",
+        url=f"http://{bind_host}:{bind_port}",
+    )
+    try:
+        httpd.serve_forever()
+    finally:
+        httpd.server_close()

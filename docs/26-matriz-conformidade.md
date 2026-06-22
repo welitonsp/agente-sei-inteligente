@@ -116,7 +116,7 @@ Com escopo limitado a:
 | Etapa 5 - E-mail | Condicionada | Apos decisao do provedor e credenciais |
 | Etapa 6 - PDF | Condicionada | Texto manual iniciado; PDF/upload/OCR ainda pendentes |
 | Etapa 7 - Inteligencia administrativa | Condicionada | Apos dados reais ou exemplos anonimizados |
-| Etapa 8 - Interface web | Em andamento | Backend de texto manual pronto; falta API/tela sem extensao e sem SEI real |
+| Etapa 8 - Interface web | Em andamento | Painel local de texto manual pronto; falta PDF/upload, autenticacao e views completas |
 | Etapa 9 - SEI read-only | Nao liberada | Depende de autorizacao, testes e politica de dados |
 | Etapa 10 - Minutador SEI assistido | Nao liberada | Minutas apenas fora do SEI por enquanto |
 | Etapa 11 - Operacao v1 | Nao liberada | Depende de homologacao completa |

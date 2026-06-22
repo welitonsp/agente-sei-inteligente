@@ -2,6 +2,31 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.3.1-painel-local-texto] - 2026-06-22
+
+### Adicionado
+
+1. Painel MVP local em `app/dashboard/local_app.py`, sem dependencias externas,
+   executavel com `python -m app.dashboard`.
+2. Tela operacional para numero do processo SEI, usuario local, titulo, texto
+   copiado, botao de analise e exibicao do resultado estruturado.
+3. Endpoint local `POST /api/import-text`, conectado ao backend
+   `manual_text.analyze_text`.
+4. Testes automatizados do painel local (`tests/test_dashboard_local_app.py`).
+
+### Seguranca
+
+1. Painel nao acessa SEI real, nao pesquisa processo por numero e nao oferece
+   botoes de ato oficial.
+2. Resultado exibe revisao humana obrigatoria e campos pendentes.
+3. Suite local ampliada para 92 testes passando.
+
+### Riscos conhecidos
+
+1. Painel ainda nao tem autenticacao; permitido apenas para MVP local.
+2. Upload de PDF/OCR ainda nao implementado.
+3. Triagem real do 19 CRPM segue bloqueada ate preencher a knowledge base.
+
 ## [0.3-intake-texto-local] - 2026-06-22
 
 ### Adicionado
