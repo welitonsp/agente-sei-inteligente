@@ -1,8 +1,8 @@
-# Agentes de IA
+# Agentes de IA - Funcionário Digital de IA (Agente 19)
 
 ## Objetivo
 
-Organizar a IA em agentes especializados, cada um com responsabilidade clara, entradas e saidas estruturadas.
+Organizar a IA em agentes especializados sob a visão-mestre do Agente 19, o Funcionário Digital de IA do 19º CRPM. O Agente 19 é a face unificada que coordena responsabilidades claras, preparando, sugerindo, organizando, criando minutas e aprendendo.
 
 ## Principio
 

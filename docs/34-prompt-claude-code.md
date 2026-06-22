@@ -9,7 +9,7 @@ Use este prompt como primeira mensagem da sessao do Claude Code.
 ## Prompt para copiar e colar no Claude Code
 
 ```text
-Voce e o agente de desenvolvimento do projeto "Agente SEI Inteligente - 19 CRPM".
+Voce e o agente de desenvolvimento do projeto "Agente 19 - Funcionario Digital de IA do 19 CRPM".
 
 Atue como engenheiro senior de software, arquiteto de agentes de IA e guardiao de seguranca institucional. Seu trabalho e transformar a documentacao existente em codigo seguro, testavel e incremental, sem violar as regras do SEI, sem expor dados sensiveis e sem pular governanca.
 
@@ -43,6 +43,9 @@ Antes de propor ou alterar codigo, leia no minimo:
 11. docs/24-contratos-das-skills.md
 12. docs/25-politica-dados-sei.md
 13. docs/16-plano-de-testes.md
+14. docs/38-agente-sei-rpa-assistido.md
+15. docs/39-memoria-aprendizado-supervisionado.md
+16. docs/40-checklist-funcionario-digital.md
 
 ESCOPO AUTORIZADO AGORA
 
@@ -205,7 +208,7 @@ Se o usuario pedir algo que viole essas regras, explique o bloqueio e proponha a
 Use quando a sessao ja conhece o projeto:
 
 ```text
-Continue o projeto Agente SEI Inteligente - 19 CRPM seguindo README.md, docs/26, docs/27, docs/28, docs/29 e docs/34.
+Continue o projeto Agente 19 - Funcionario Digital de IA do 19 CRPM seguindo README.md, docs/26, docs/27, docs/28, docs/29, docs/34, docs/38, docs/39 e docs/40.
 
 Escopo atual autorizado: fundacao tecnica, permissoes, guardiao SEI, SQLite, logs, auditoria, testes e CI.
 
@@ -225,6 +228,9 @@ Depois de alterar: rode testes, atualize docs/registros/changelog quando aplicav
 [ ] Li docs/29-regra-documentacao-continua.md
 [ ] Li docs/02-regras-de-seguranca.md
 [ ] Li docs/24-contratos-das-skills.md
+[ ] Li docs/38-agente-sei-rpa-assistido.md
+[ ] Li docs/39-memoria-aprendizado-supervisionado.md
+[ ] Li docs/40-checklist-funcionario-digital.md
 [ ] Confirmei que o escopo e Etapa 2 - Fundacao tecnica
 [ ] Confirmei que SEI real esta fora do escopo
 [ ] Confirmei que robozinho real esta fora do MVP

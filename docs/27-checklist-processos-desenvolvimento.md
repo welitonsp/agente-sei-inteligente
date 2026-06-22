@@ -365,6 +365,43 @@ Objetivo: validar com exemplos anonimizados antes de usar rotina real.
 5. Baixa confianca gera revisao humana.
 6. Logs permitem auditoria.
 
+## Checklist 12 - FASE 38: Agente SEI RPA Assistido
+
+Objetivo: Permitir que o Agente 19 atue diretamente no SEI apenas para preenchimento, apos acionamento pelo usuario.
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Implementar acionamento por numero de processo | NAO_INICIADO |
+| Garantir que Agente use a sessao sem capturar credenciais | NAO_INICIADO |
+| Exportar processo para PDF usando a interface atual | NAO_INICIADO |
+| Criar interacao para escolha de minuta (Oficio, Despacho, etc.) | NAO_INICIADO |
+| Implementar preenchimento assistido da minuta no SEI | NAO_INICIADO |
+
+### Aceite
+
+1. Senha/token NUNCA e armazenado.
+2. Agente so preenche minuta se o humano autorizar.
+3. Agente NUNCA assina ou tramita documento.
+
+## Checklist 13 - FASE 39: Memoria Institucional e Aprendizado Supervisionado
+
+Objetivo: Permitir que o Agente 19 aprenda com a unidade.
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Estruturar banco de dados da Memoria Institucional | NAO_INICIADO |
+| Capturar correcoes em minutas antes do envio final | NAO_INICIADO |
+| Refinar prompts e sugestoes com base no historico local | NAO_INICIADO |
+
+### Aceite
+
+1. O Agente nao altera regras de negocio de forma autonoma.
+2. Dados sensiveis nao vazam para treinar modelos publicos.
+
 ## Decisao de inicio
 
 Pode iniciar agora:

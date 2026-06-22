@@ -60,6 +60,7 @@ Com escopo limitado a:
 | C-10 | Separacao por skills especialistas | Conforme | Skills e contratos documentados | Usar no codigo |
 | C-11 | WebServices de escrita bloqueados | Conforme | Escrita bloqueada ate autorizacao formal | Manter |
 | C-12 | Repositorio GitHub privado | Conforme | Repositorio `welitonsp/agente-sei-inteligente` privado | Manter |
+| C-13 | Automacao RPA Assistida (Agente 19) | Conforme | O Agente preenche minutas apos confirmacao, sem assinar, sem capturar senhas | Manter controle estrito |
 
 ## Itens parcialmente conformes
 

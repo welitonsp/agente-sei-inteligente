@@ -113,7 +113,7 @@ Resultado:
 4. Bloquear assinatura e envio.
 5. Registrar auditoria interna do agente.
 
-Observacao: como nao ha modulo oficial SEI IA disponivel para instalacao, nao sera prevista escrita automatica dentro do SEI na versao 1.
+Observacao: a criacao de minuta (escrita automatica dentro do SEI) exige confirmacao humana previa. O Agente 19 preenche a minuta mas o humano revisa, corrige, assina e tramita manualmente.
 
 ## Etapa 11 - Operacao v1
 
@@ -127,3 +127,21 @@ Resultado:
 6. Minutas.
 7. Logs.
 8. Seguranca.
+
+## Etapa 12 - FASE 38: Agente SEI RPA Assistido (Número de Processo)
+
+Resultado:
+
+1. O servidor aciona o Agente 19 por uma janela/logo flutuante, informando o número do processo.
+2. O Agente abre o processo e exporta para PDF usando a sessão ativa do usuário, sem capturar token ou senha.
+3. Análise integral do processo identificando metadados essenciais.
+4. Pergunta proativa sobre criação de minuta (Ofício, Despacho, etc.).
+5. Criação da minuta (após confirmação), preenchimento sem assinatura e aviso de prontidão.
+
+## Etapa 13 - FASE 39: Memória Institucional e Aprendizado Supervisionado
+
+Resultado:
+
+1. O Agente 19 registra e mantém o histórico institucional de decisões e minutas (Memória Institucional).
+2. O Agente aprende supervisionadamente com as correções de texto feitas pelos humanos durante a revisão.
+3. Melhoria contínua e segura nas sugestões de providências e classificações.
