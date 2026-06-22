@@ -29,7 +29,7 @@ Ferramentas: Python, FastAPI, SQLite, pytest, GitHub Actions.
 Evidencias: Testes passando, commit, PR e logs de CI.  
 Criterio de aceite: Acoes proibidas bloqueadas por teste automatizado.  
 Bloqueios: Nenhuma integracao externa antes do guardiao.  
-Status: CONCLUIDO. Evidencia: 84 testes passando (TEST-0004), guardiao em `app/sei/sei_action_guard.py` e workflow CI criado em `.github/workflows/ci.yml`. Primeira execucao remota do CI ainda depende de push/PR.
+Status: CONCLUIDO. Evidencia: 84 testes passando (TEST-0004), guardiao em `app/sei/sei_action_guard.py`, workflow CI em `.github/workflows/ci.yml` e GitHub Actions aprovado no PR #1.
 
 ## PROC-0002
 
@@ -93,5 +93,5 @@ Responsavel: Engenharia do projeto.
 Ferramentas: `.github/workflows/ci.yml`, `pytest`, `scripts/check_no_secrets.py`.  
 Evidencias: `check_no_secrets.py` OK e 84 testes passando localmente (TEST-0004).  
 Criterio de aceite: PR falha se testes ou gate de segredos falharem; branch `main` protegida antes do merge.  
-Bloqueios: Primeira execucao remota depende de push/PR; protecao de branch ainda precisa ser configurada no GitHub.  
-Status: EM_ANDAMENTO. Workflow e scanner criados; validacao local aprovada.
+Bloqueios: Protecao de branch ainda precisa ser configurada no GitHub.  
+Status: EM_ANDAMENTO. Workflow e scanner criados; validacao local aprovada; GitHub Actions aprovado no PR #1.

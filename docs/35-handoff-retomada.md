@@ -23,7 +23,8 @@ Repositorio: https://github.com/welitonsp/agente-sei-inteligente
 | Dedup contra calendario real (ICS) | CONCLUIDO | `app/integrations/ics_reader.py` |
 | Cliente OAuth real (Calendar+People) | Codigo pronto | `app/integrations/google_auth.py`, `app/integrations/runtime.py` |
 | Scripts | CONCLUIDO | `scripts/init_db.py`, `scripts/google_oauth_setup.py`, `scripts/google_validate.py` |
-| CI / gate de segredos | CONCLUIDO localmente | `.github/workflows/ci.yml`, `scripts/check_no_secrets.py` |
+| PR e CI | PR #1 draft aberto; CI aprovado | https://github.com/welitonsp/agente-sei-inteligente/pull/1 |
+| Gate de segredos | CONCLUIDO | `.github/workflows/ci.yml`, `scripts/check_no_secrets.py` |
 | Testes | 84 passando | `tests/` |
 
 Modo atual: **dry-run** (simulacao). Nenhum evento real e criado ate o OAuth

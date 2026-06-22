@@ -328,11 +328,11 @@ Objetivo: impedir regressao de seguranca.
 | Item | Status |
 | --- | --- |
 | Criar GitHub Actions | CONCLUIDO (`.github/workflows/ci.yml`) |
-| Rodar testes unitarios | CONCLUIDO localmente (84 testes; CI remoto pendente de PR) |
-| Rodar testes de permissoes | CONCLUIDO localmente (gate incluido no `pytest`) |
+| Rodar testes unitarios | CONCLUIDO (84 testes locais; GitHub Actions aprovado no PR #1) |
+| Rodar testes de permissoes | CONCLUIDO (gate incluido no `pytest`; GitHub Actions aprovado no PR #1) |
 | Bloquear merge se acao proibida for permitida | EM_ANDAMENTO (workflow falha; falta protecao de branch) |
 | Rodar lint/format | NAO_INICIADO |
-| Checar segredos em arquivos | CONCLUIDO localmente (`scripts/check_no_secrets.py`; CI remoto pendente de PR) |
+| Checar segredos em arquivos | CONCLUIDO (`scripts/check_no_secrets.py`; GitHub Actions aprovado no PR #1) |
 
 ### Aceite
 

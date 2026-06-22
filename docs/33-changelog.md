@@ -22,7 +22,7 @@ Todas as entregas relevantes do projeto devem ser registradas aqui.
 
 ### Riscos conhecidos
 
-1. Primeira execucao remota do GitHub Actions ainda depende de push/PR.
+1. PR #1 aberto em modo draft e GitHub Actions aprovado em Python 3.11/3.13.
 2. Protecao de branch ainda precisa ser configurada no GitHub.
 3. OAuth do Google continua pendente de conclusao (client secret + refresh token).
 
@@ -63,8 +63,7 @@ Todas as entregas relevantes do projeto devem ser registradas aqui.
 
 ### Riscos conhecidos
 
-1. CI no GitHub Actions configurado em 2026-06-22; primeira execucao remota
-   ainda depende de push/PR.
+1. CI no GitHub Actions configurado em 2026-06-22 e aprovado no PR #1.
 2. Knowledge base do 19 CRPM ainda usa templates.
 3. OAuth do Google pendente de conclusao (client secret + refresh token).
 4. Sem PR aberto ainda; merge para `main` pendente de revisao humana.

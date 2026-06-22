@@ -76,8 +76,8 @@ Responsavel: Engenharia do projeto
 Caso testado: Gate CI local: sintaxe do scanner de segredos, varredura dos arquivos versionados e suite automatizada completa.  
 Entrada usada: Arquivos conhecidos pelo Git e novos nao ignorados; dados ficticios/anonimos nos testes.  
 Resultado esperado: Nenhum segredo concreto detectado; todos os testes passam.  
-Resultado obtido: `scripts/check_no_secrets.py` OK; 84 testes passando.  
-Evidencia: Execucao local de `python scripts/check_no_secrets.py .` e `python -m pytest`.  
+Resultado obtido: `scripts/check_no_secrets.py` OK; 84 testes passando localmente; GitHub Actions aprovado no PR #1 em Python 3.11 e 3.13.  
+Evidencia: Execucao local de `python scripts/check_no_secrets.py .` e `python -m pytest`; checks do PR #1.  
 Status: APROVADO  
 Problemas encontrados: Scanner inicialmente gerou falso positivo em atributos de teste (`google_client_secret`/`google_refresh_token`) e o teste de import precisava registrar o modulo em `sys.modules`; ambos corrigidos.  
-Proximo passo: Commitar/pushar o CI, abrir PR e observar a primeira execucao remota do GitHub Actions.
+Proximo passo: Configurar protecao da branch `main` e concluir o OAuth real.
