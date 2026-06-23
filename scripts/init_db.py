@@ -1,19 +1,25 @@
+"""Cria o banco SQLite e as tabelas. Uso: python scripts/init_db.py"""
+
+from __future__ import annotations
+
 import os
-import sys
 
-# Add project root to sys.path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from app.core.config import get_settings
+from app.core.logging import configure_logging, get_logger, log_event
+from app.storage.db import init_db
 
-from app.storage.database import init_database
 
-def main():
-    try:
-        print("Iniciando a criação do banco de dados seguro do Agente 19...")
-        init_database()
-        print("Banco SQLite inicializado com sucesso. Tabelas criadas.")
-        print("Atenção: Nenhum dado sensível foi exposto no console.")
-    except Exception as e:
-        print(f"Erro ao inicializar o banco de dados: {str(e)}")
+def main() -> None:
+    settings = get_settings()
+    configure_logging(settings.log_level)
+    logger = get_logger("init_db")
+
+    print("Iniciando a criação do banco de dados seguro do Agente 19...")
+    os.makedirs("data", exist_ok=True)
+    init_db()
+    log_event(logger, 20, "banco inicializado", database_url=settings.database_url)
+    print(f"Banco inicializado: {settings.database_url}")
+    print("Atenção: Nenhum dado sensível foi exposto no console.")
 
 if __name__ == "__main__":
     main()

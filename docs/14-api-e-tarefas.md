@@ -115,6 +115,56 @@ Exemplo:
 }
 ```
 
+### Gerar minuta local zero custo
+
+```text
+POST /api/generate-draft
+```
+
+Exemplo:
+
+```json
+{
+  "assunto": "Apoio administrativo",
+  "resumo": "pedido de apoio para atividade institucional",
+  "processo_sei": "2026.000000",
+  "tipo_minuta": "despacho",
+  "unidade_destino": "PM/19 CRPM"
+}
+```
+
+Regra: gera somente rascunho local copiavel. Nao cria documento no SEI, nao
+assina, nao tramita, nao envia processo e exige revisao humana.
+
+### Triagem local 19 CRPM
+
+```text
+POST /api/triage-local
+```
+
+Exemplo:
+
+```json
+{
+  "assunto": "Apoio administrativo",
+  "texto": "Resumo da demanda",
+  "processo_sei": "2026.000000"
+}
+```
+
+Regra: consulta apenas a knowledge base local. Se nao houver regra clara, nao
+sugere unidade e retorna revisao humana obrigatoria.
+
+### Diagnostico seguro de API SEI/WSSEI
+
+```text
+CLI: scripts/sei_api_discovery.py
+```
+
+Regra: diagnostico manual sem credenciais. Nao envia usuario, senha, cookie,
+token ou sessao. Nao executa operacao de negocio. Resultado positivo apenas
+indica endpoint candidato e nao autoriza uso real.
+
 ### Enviar alerta
 
 ```text
@@ -190,4 +240,3 @@ GRANT_SEI_ACCESS
 4. Exibir historico da demanda.
 5. Permitir edicao humana antes de agenda e minuta.
 6. Manter o usuario informado quando uma tarefa falhar ou for bloqueada.
-

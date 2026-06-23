@@ -21,6 +21,30 @@ O agente deve:
 13. O humano revisa, corrige, assina e tramita manualmente.
 14. Registrar log da analise.
 
+## Formato visual aprovado
+
+O formato aprovado para o Agente 19 na tela do SEI e um chat lateral flutuante,
+profissional e read-only.
+
+Componentes:
+
+1. Botao flutuante compacto `19`.
+2. Painel lateral em formato de chat.
+3. Historico de mensagens.
+4. Campo para pergunta livre.
+5. Barra de status: somente leitura, backend local e revisao humana.
+6. Acoes rapidas: capturar, resumo, prazos, providencia e minuta.
+7. Botao para copiar resposta.
+8. Aviso fixo de que login, senha, cookie e atos oficiais ficam fora do agente.
+
+O chat nao transforma o agente em usuario autonomo do SEI. Ele apenas conversa
+com o usuario sobre o conteudo visivel/selecionado e envia a analise ao backend
+local.
+
+A acao `Minuta` gera somente rascunho externo. A insercao no SEI continua
+manual, revisada pelo usuario, e nao deve ser confundida com criacao de
+documento oficial pelo agente.
+
 ## Restricao tecnica
 
 Como nao e possivel instalar o modulo oficial SEI IA, o robozinho nao sera um modulo interno do SEI.
@@ -267,7 +291,12 @@ Se documento e apenas informativo e nao menciona area do 19 CRPM -> arquivar com
 
 ## MVP recomendado
 
-Antes de criar extensao real, construir um prototipo no painel web:
+Historico: o painel web foi construido primeiro como base segura e backend local.
+Em 2026-06-22, a decisao DEC-0010 autorizou o inicio de um prototipo de
+extensao read-only dentro da tela do SEI, sem login, sem cookie, sem clique
+automatico e sem ato oficial.
+
+Painel/base local:
 
 1. Campo `Numero do processo SEI`.
 2. Campo `Texto copiado do SEI`.
@@ -278,13 +307,13 @@ Antes de criar extensao real, construir um prototipo no painel web:
 7. Botao `Criar agenda`.
 8. Botao `Enviar alerta`.
 
-Depois, evoluir para:
+Evolucao read-only iniciada:
 
-1. Extensao de navegador read-only.
-2. Botao flutuante.
-3. Painel lateral.
-4. Leitura automatica da pagina atual.
-5. Analise de documentos do processo.
+1. Extensao de navegador read-only - prototipo criado em `browser_extension/`.
+2. Botao flutuante - prototipo criado.
+3. Painel lateral - prototipo criado.
+4. Leitura da pagina atual/trecho selecionado apos acao do usuario - prototipo criado.
+5. Analise de documentos do processo - pendente para OCR/RAG e homologacao.
 
 Busca automatica por numero de processo deve continuar fora do MVP. Se algum dia for autorizada, devera ser tratada como funcionalidade separada, com testes proprios e sem qualquer permissao de ato oficial.
 

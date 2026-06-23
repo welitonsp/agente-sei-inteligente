@@ -1,8 +1,15 @@
-import datetime
-from datetime import timezone
+"""Servico de auditoria: registra acoes do agente de forma rastreavel e segura.
+
+Cada registro guarda quem pediu, qual acao, sobre qual alvo, qual resultado e
+o motivo. Todo conteudo passa pelo security_filter antes de ser persistido,
+de modo que senha, cookie ou token nunca cheguem ao banco (docs/20, docs/25).
+"""
+
+from __future__ import annotations
+
+import logging
 import hashlib
-from typing import Dict, Any, Optional
-from app.storage.repositories import add_auditoria_evento
+from typing import Any
 
 def get_hash(text: str) -> str:
     return hashlib.sha256(text.encode('utf-8')).hexdigest()
@@ -12,46 +19,99 @@ def mask_process_number(process_number: str) -> str:
         return process_number[:3] + "***" + process_number[-3:]
     return "***"
 
-def log_audit_event(
-    event_type: str,
-    action: str,
-    status: str,
-    process_number: Optional[str] = None,
-    metadata: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
-    
+def log_audit_event(event_type: str, action: str, status: str, process_number: str | None = None, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
+    from app.core.security_filter import sanitize
     process_info = None
-    process_masked = ""
-    process_hash = ""
     if process_number:
-        process_masked = mask_process_number(process_number)
-        process_hash = get_hash(process_number)
         process_info = {
-            "process_number_hash": process_hash,
-            "process_number_masked": process_masked
+            "process_number_masked": mask_process_number(process_number),
+            "process_number_hash": get_hash(process_number)
         }
-        
-    sanitized_metadata = metadata or {}
     
-    if "full_text" in sanitized_metadata or "password" in sanitized_metadata or "cookie" in sanitized_metadata or "session" in sanitized_metadata or "token" in sanitized_metadata:
-        sanitized_metadata = {k: v for k, v in sanitized_metadata.items() if k not in ["full_text", "password", "cookie", "token", "session"]}
-
-    timestamp_iso = datetime.datetime.now(timezone.utc).isoformat()
-    
-    event = {
-        "timestamp": timestamp_iso,
+    sanitized_metadata = dict(metadata) if metadata else {}
+    keys_to_remove = ["password", "cookie", "session", "token", "full_text"]
+    for key in keys_to_remove:
+        sanitized_metadata.pop(key, None)
+            
+    return {
         "event_type": event_type,
         "action": action,
         "status": status,
         "process_info": process_info,
         "metadata": sanitized_metadata
     }
-    
-    # Grava no banco de auditoria
-    try:
-        add_auditoria_evento(timestamp_iso, event_type, process_masked, process_hash, action, status, sanitized_metadata)
-    except Exception:
-        # Failsafe se o banco não estiver inicializado (ex: em alguns testes)
-        pass
-    
-    return event
+
+from app.core.logging import get_logger, log_event
+from app.core.security_filter import sanitize
+from app.sei.sei_action_guard import GuardRequest, GuardResult
+from app.storage.db import session_scope
+from app.storage.models import AuditLog
+
+_logger = get_logger("audit")
+
+
+def record(
+    *,
+    action: str,
+    result: str,
+    actor_type: str = "agente",
+    actor_id: str | None = None,
+    target_type: str | None = None,
+    target_id: str | None = None,
+    reason: str | None = None,
+    metadata: dict[str, Any] | None = None,
+) -> int:
+    """Persiste um registro de auditoria e devolve seu id.
+
+    `metadata` e sanitizado antes de gravar. Tambem emite um log estruturado.
+    """
+    safe_meta = sanitize(metadata or {})
+
+    with session_scope() as session:
+        entry = AuditLog(
+            actor_type=actor_type,
+            actor_id=actor_id,
+            action=action,
+            target_type=target_type,
+            target_id=target_id,
+            result=result,
+            reason=reason,
+            meta_json=safe_meta,
+        )
+        session.add(entry)
+        session.flush()
+        audit_id = entry.id
+
+    log_event(
+        _logger,
+        logging.INFO if result == "permitido" else logging.WARNING,
+        "audit",
+        audit_id=audit_id,
+        action=action,
+        result=result,
+        actor_id=actor_id,
+        target_id=target_id,
+        reason=reason,
+    )
+    return audit_id
+
+
+def record_guard_decision(req: GuardRequest, res: GuardResult) -> int:
+    """Atalho para auditar uma decisao do guard do SEI."""
+    return record(
+        action=res.acao,
+        result=res.decisao.value,
+        actor_type="agente",
+        actor_id=req.usuario_local or None,
+        target_type="processo_sei",
+        target_id=req.processo_sei or None,
+        reason=res.motivo,
+        metadata={
+            "origem": req.origem,
+            "estacao": req.estacao,
+            "justificativa": req.justificativa,
+            "aprovado_por_humano": req.aprovado_por_humano,
+            "revisao_humana_obrigatoria": res.revisao_humana_obrigatoria,
+            **res.metadata,
+        },
+    )

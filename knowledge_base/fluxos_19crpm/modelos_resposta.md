@@ -1,27 +1,6 @@
-# Modelos de resposta por fluxo
+# Modelos e orientacoes locais de resposta
 
-Substituir por modelos reais aprovados.
+Preencher somente apos revisao do responsavel do projeto.
 
-## Despacho de encaminhamento
-
-```text
-DESPACHO
-
-Considerando o teor do documento/processo, encaminhe-se a demanda para [UNIDADE] para conhecimento e providencias cabiveis.
-
-Prazo: [PRAZO]
-Observacao: [OBSERVACAO]
-```
-
-## Registro de pendencia
-
-```text
-PENDENCIA
-
-Processo SEI:
-Assunto:
-Unidade sugerida:
-Providencia:
-Prazo:
-Revisao humana:
-```
+Enquanto este arquivo estiver sem regras reais, o Agente 19 deve manter
+roteamento como `indefinido` e exigir revisao humana.

@@ -1,118 +1,166 @@
 # Integracao com SEI
 
-## URL
+## URL oficial
 
 ```text
 https://sei.go.gov.br/sei/
 ```
 
-## Modo de integracao
+## Enquadramento atual
 
-O SEI deve entrar no projeto depois de agenda, alertas, e-mail, PDF e inteligencia administrativa basica estarem funcionando.
-
-Decisao atual: nao ha viabilidade de instalar o modulo oficial SEI IA no ambiente institucional. Portanto, a integracao sera externa/local assistida, sem modulo instalado dentro do SEI.
+O projeto nao possui autorizacao de API oficial, WSSEI, modulo oficial SEI IA ou acesso da TI. A integracao deve ser tratada como particular/local e supervisionada.
 
 Modo permitido:
 
 ```text
-assistido
+assistido_particular_local
 ```
 
-Isso significa que o usuario humano abre e autentica no SEI. O agente pode apoiar leitura, resumo e preparacao de minuta, sempre dentro dos limites de seguranca.
+Isso significa que o usuario humano abre o SEI, faz login manualmente com sua propria conta e mantem controle da sessao. O agente pode apoiar leitura, resumo, classificacao, deteccao de prazo, sugestao de providencia e geracao de minuta fora do SEI.
 
 O agente nao deve:
 
-1. Guardar usuario.
-2. Guardar senha.
-3. Usar conta compartilhada.
-4. Reutilizar sessao de outro servidor.
+1. Guardar usuario ou senha.
+2. Capturar cookie, token ou sessao.
+3. Persistir perfil do navegador.
+4. Reutilizar sessao de outro usuario.
 5. Executar em segundo plano no SEI.
 6. Praticar atos oficiais.
 
+## Separacao entre LLM e navegador
+
+O LLM nao controla o navegador. Ele nao escolhe seletor, nao clica, nao navega e nao decide acao oficial.
+
+Permitido ao LLM:
+
+1. Analisar texto.
+2. Classificar assunto.
+3. Detectar prazo/evento.
+4. Sugerir providencia.
+5. Gerar conteudo de minuta.
+
+Qualquer interacao com a tela do SEI deve ser codigo deterministico, auditado e protegido por allow-list/default-deny.
+
 ## O que o agente pode fazer
 
-1. Reconhecer tela de controle.
-2. Abrir processo autorizado pelo usuario.
-3. Ler arvore de documentos.
-4. Ler documento selecionado.
-5. Extrair texto.
-6. Resumir.
-7. Identificar prazo, evento e providencia.
-8. Preparar minuta, se a fase do projeto permitir.
-9. Salvar rascunho, se a permissao estiver habilitada.
-10. Registrar log.
+1. Abrir sessao com login manual do usuario.
+2. Ler processo aberto.
+3. Confirmar numero do processo.
+4. Ler arvore de documentos.
+5. Ler conteudo visivel.
+6. Resumir o processo.
+7. Classificar o assunto.
+8. Detectar prazos.
+9. Sugerir providencia.
+10. Gerar minuta fora do SEI.
+11. Preparar criacao controlada de minuta no SEI, ainda simulada na FASE 5A.
 
-## O que o agente nao pode fazer
+## O que o agente nunca deve fazer
 
-1. Assinar documento.
-2. Enviar processo.
-3. Tramitar processo.
-4. Concluir processo.
-5. Cancelar documento.
-6. Excluir documento.
-7. Dar ciencia automatica.
-8. Conceder credencial.
-9. Liberar acesso externo.
-10. Alterar sigilo automaticamente.
-
-## Automacao por pagina web
-
-Se o agente usar uma pagina web ou navegador automatizado para executar tarefas, a automacao deve ser feita por acoes pequenas, declaradas e auditaveis.
-
-Exemplo de ferramenta permitida:
-
-```text
-ler_texto_documento(processo, documento)
-```
-
-Exemplo de ferramenta proibida:
-
-```text
-clicar_botao_assinar()
-```
+1. Guardar senha.
+2. Capturar cookie, token ou sessao.
+3. Persistir perfil do navegador.
+4. Assinar documento.
+5. Tramitar processo.
+6. Enviar processo.
+7. Concluir processo.
+8. Dar ciencia.
+9. Cancelar documento.
+10. Excluir documento.
+11. Liberar acesso externo.
+12. Enviar e-mail pelo SEI.
+13. Criar tipo de documento no cadastro administrativo do SEI.
 
 ## Camadas de protecao
 
-1. Lista positiva de ferramentas permitidas.
-2. Guarda central de acoes.
-3. Bloqueio de seletores sensiveis.
-4. Confirmacao humana para qualquer escrita.
-5. Log de toda operacao.
-6. Modo read-only como padrao.
-7. Variavel `ALLOW_OFFICIAL_SEI_ACTIONS=false` permanente.
+1. Allow-list/default-deny.
+2. Chokepoint de leitura.
+3. `ReadOnlyPage`.
+4. `MinutaWriter`.
+5. Token de confirmacao.
+6. Verificacao do processo certo antes de escrever.
+7. Hash de conteudo.
+8. Feature flags desligadas por padrao.
+9. Auditoria sem texto integral.
+10. Sessao efemera.
 
-## Fases
+## Fases SEI
 
-### Fase 1 - Sem SEI
+### FASE 4 - leitura/análise supervisionada
 
-O agente trabalha com e-mail, PDF, agenda, Telegram e painel web.
+O agente le somente o processo aberto pelo usuario, por sessao manual e efemera, sem capturar credenciais.
 
-### Fase 2 - SEI read-only
+### FASE 5A - minuta controlada simulada
 
-O agente le processos e documentos, resume e registra pendencias.
+Arquitetura segura para minuta, sem escrita real no SEI.
 
-### Fase 3 - Minutador assistido
+Regras:
 
-O agente prepara minuta ou texto auxiliar, mas para antes de qualquer ato oficial.
+1. Token de confirmacao amarrado a processo + tipo de documento + hash do texto.
+2. Verificacao do processo correto.
+3. Allow-list separada para escrita controlada.
+4. `ENABLE_MINUTA_CREATION=false` por padrao.
+5. Stubs `NotImplementedError` para UI real.
 
-### Fase 4 - Operacao supervisionada
+### FASE 5B - futura
 
-Uso real com logs, revisao humana, metricas e bloqueios testados.
+Somente apos homologacao, o agente podera criar uma minuta usando um tipo de documento ja existente no SEI, preencher cadastro, inserir texto no editor, salvar a minuta e parar.
 
-## Estrategia sem modulo oficial
+Nao podera assinar, tramitar, enviar, concluir, dar ciencia, cancelar, excluir ou liberar acesso externo.
 
-Sem o modulo oficial, ha duas formas seguras de aproximar o agente do SEI:
+### FASE 5B-homologacao
 
-1. Importacao manual: o servidor copia texto, baixa PDF ou encaminha e-mail/documento para o agente.
-2. Assistente local de leitura: o servidor abre o SEI com sua propria credencial e aciona o agente para ler somente a pagina atual, sem capturar senha ou executar cliques sensiveis.
+Preparacao implementada sem escrita real:
 
-Atos como assinar, enviar, concluir, dar ciencia, excluir, cancelar, tramitar, liberar acesso externo ou alterar sigilo continuam fora do agente.
+1. Cadastro da minuta exige tipo de documento, nivel de acesso e `text_hash`.
+2. Acesso restrito/sigiloso exige hipotese legal.
+3. Campos como descricao, interessado e destinatario podem ser obrigatorios por tipo documental.
+4. Manifesto de seletores exige status `homologado` para todos os seletores minimos.
+5. Seletores de atos oficiais sao bloqueados.
+6. `real_write_allowed=false` mesmo quando a prontidao de homologacao estiver positiva.
 
-## Criterios antes de ativar SEI
+### FASE 6 - agenda/notificacoes
 
-1. Permissoes implementadas e testadas.
-2. Acoes proibidas bloqueadas em teste automatizado.
-3. Logs funcionando.
-4. Painel de auditoria disponivel.
-5. Politica de uso validada pela chefia.
-6. Usuario treinado para revisar e interromper automacao.
+Integracao com agenda e notificacoes deve continuar fora do SEI, com revisao humana e custo zero por padrao.
+
+### FASE 7 - hardening/auditoria final
+
+Revisao de seguranca, testes arquiteturais e bloqueios de producao antes de qualquer uso real sensivel.
+
+## Variaveis relevantes
+
+```env
+ENABLE_SEI_BROWSER_AUTOMATION=false
+ENABLE_MINUTA_CREATION=false
+MINUTA_TOKEN_SECRET=dev-insecure-trocar-em-producao
+LOG_FULL_TEXT=false
+ALLOW_OFFICIAL_SEI_ACTIONS=false
+```
+
+## Criterios antes de ativar qualquer escrita real
+
+1. Seletores homologados em ambiente seguro.
+2. Teste arquitetural impedindo uso direto de Playwright fora dos arquivos permitidos.
+3. `MINUTA_TOKEN_SECRET` forte e nao padrao.
+4. `ENABLE_MINUTA_CREATION=true` proibido em producao enquanto FASE 5B nao estiver homologada.
+5. Auditoria apenas por hash/metadados.
+6. Revisao humana antes de salvar minuta.
+7. Escrita real mantida como `NotImplementedError` ate aceite formal da FASE 5B.
+
+## Diagnostico seguro de API/WSSEI
+
+O projeto possui diagnostico local para verificar se existem endpoints provaveis
+de `mod-wssei` ou WSDL nativo:
+
+```bat
+.venv\Scripts\python.exe scripts\sei_api_discovery.py
+```
+
+Esse diagnostico nao envia usuario, senha, cookie, token ou sessao. Ele nao
+chama operacoes de negocio e nao autoriza uso real. Se algum endpoint responder,
+o resultado deve ser tratado apenas como evidencia para decisao humana.
+
+Resultado real registrado em `docs/42-resultado-diagnostico-real-api-sei.md`:
+os caminhos publicos padrao de `mod-wssei` retornaram 404 e o WSDL nativo ficou
+indisponivel sem credenciais/sessao. Portanto, API real continua fora do caminho
+imediato do projeto.

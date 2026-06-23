@@ -24,32 +24,39 @@ A primeira tela deve mostrar trabalho real:
 
 ## Areas principais
 
-### Robozinho SEI
+### Agente 19 na tela do SEI
 
-O robozinho SEI e a interface de assistencia rapida para o servidor logado no SEI. Como nao havera modulo oficial instalado, ele deve ser pensado como extensao de navegador, painel lateral local ou janela flutuante da aplicacao.
+O Agente 19 na tela do SEI e a interface de assistencia rapida para o servidor
+logado no SEI. O formato aprovado e chat lateral flutuante, acionado por botao
+compacto `19`.
 
 Fluxo esperado:
 
 1. Servidor acessa o SEI com usuario e senha proprios.
-2. Servidor clica no robozinho.
-3. Robo abre painel lateral.
-4. Servidor informa numero do processo SEI ou pede leitura da pagina atual.
+2. Servidor clica no botao `19`.
+3. Agente abre chat lateral.
+4. Servidor pergunta sobre o processo aberto ou usa uma acao rapida.
 5. Agente le somente documentos acessiveis naquela sessao.
 6. Agente filtra o que interessa ao 19 CRPM.
 7. Agente explica assunto, finalidade, prazo e providencia sugerida.
 8. Agente indica unidade do 19 CRPM para direcionamento.
-9. Agente gera minuta/arquivo fora do SEI para revisao.
+9. Agente gera rascunho de minuta/arquivo fora do SEI para revisao.
 
-Comandos visiveis:
+Comandos/acoes visiveis:
 
-1. `Analisar processo`.
-2. `Ler pagina atual`.
-3. `Identificar prazos`.
-4. `Filtrar 19 CRPM`.
-5. `Sugerir unidade responsavel`.
-6. `Gerar minuta`.
-7. `Criar evento na agenda`.
-8. `Enviar alerta`.
+1. `Capturar`.
+2. `Resumo`.
+3. `Prazos`.
+4. `Providencia`.
+5. `Minuta`.
+6. `Enviar pergunta`.
+7. `Copiar resposta`.
+
+Indicadores fixos:
+
+1. `Somente leitura`.
+2. `Backend local`.
+3. `Revisao humana`.
 
 Comandos proibidos:
 
