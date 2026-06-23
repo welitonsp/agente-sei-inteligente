@@ -1,0 +1,48 @@
+{
+  "version": "fase-5b-template",
+  "environment": "homologacao",
+  "real_write_enabled": false,
+  "notes": "Template sem seletores reais. Preencher somente em homologacao controlada.",
+  "selectors": {
+    "abrir_incluir_documento": {
+      "value": "",
+      "status": "pendente",
+      "evidence": ""
+    },
+    "selecionar_tipo_documento": {
+      "value": "",
+      "status": "pendente",
+      "evidence": ""
+    },
+    "campo_descricao": {
+      "value": "",
+      "status": "pendente",
+      "evidence": ""
+    },
+    "campo_interessado": {
+      "value": "",
+      "status": "pendente",
+      "evidence": ""
+    },
+    "campo_destinatario": {
+      "value": "",
+      "status": "pendente",
+      "evidence": ""
+    },
+    "campo_nivel_acesso": {
+      "value": "",
+      "status": "pendente",
+      "evidence": ""
+    },
+    "editor_texto": {
+      "value": "",
+      "status": "pendente",
+      "evidence": ""
+    },
+    "salvar_minuta": {
+      "value": "",
+      "status": "pendente",
+      "evidence": ""
+    }
+  }
+}

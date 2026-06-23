@@ -94,13 +94,15 @@ Saida esperada: notificacao enviada, status registrado e erro rastreavel.
 
 Responsavel por leitura e preparacao dentro do limite permitido:
 
-1. Abrir SEI com sessao autenticada pelo usuario.
-2. Reconhecer tela de controle.
-3. Abrir processo.
-4. Ler documentos.
-5. Gerar resumo.
-6. Preparar minuta.
-7. Bloquear atos oficiais.
+1. Usar SEI com login manual do usuario.
+2. Manter sessao Playwright efemera quando automacao de leitura for usada.
+3. Nao guardar senha, cookie, token ou sessao.
+4. Confirmar numero do processo aberto.
+5. Ler arvore de documentos por chokepoint.
+6. Ler conteudo visivel por `ReadOnlyPage`.
+7. Gerar resumo, classificacao, prazo e providencia.
+8. Preparar minuta fora do SEI ou em FASE 5A simulada.
+9. Bloquear atos oficiais.
 
 Saida esperada: leitura ou minuta preparada, sem assinatura, envio, tramitacao ou conclusao automatica.
 
@@ -126,10 +128,14 @@ O sistema deve separar agentes por responsabilidade:
 | Agente Classificador | Define tipo, assunto, prioridade e providencia | Nao |
 | Agente de Eventos | Extrai data, horario, local e participantes | Nao |
 | Agente de Prazos | Identifica prazo e lembretes | Nao |
-| Agente Minutador | Gera minuta administrativa | Nao, apenas salva rascunho |
+| Agente Minutador | Gera minuta administrativa | Nao; FASE 5A e simulada e FASE 5B futura so cria minuta usando tipo ja existente |
 | Agente Agenda | Prepara/cria evento autorizado | Sim, Google Agenda |
 | Agente Notificador | Envia alerta autorizado | Sim, Telegram/e-mail |
-| Agente SEI | Le e prepara minuta em modo assistido | Somente leitura e rascunho autorizado |
+| Agente SEI | Le e prepara minuta em modo assistido | Somente codigo deterministico auditado; LLM nao controla navegador |
+
+O LLM nao escolhe seletores, nao clica, nao navega e nao executa ato oficial.
+Ele apenas analisa texto, classifica, sugere providencia e gera conteudo para
+revisao humana.
 
 ## Guarda de acoes
 
@@ -160,4 +166,3 @@ execucao: bloqueada e registrada em log
 9. Interface web.
 10. SEI read-only.
 11. Minutador assistido.
-

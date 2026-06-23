@@ -62,6 +62,10 @@ class Settings(BaseSettings):
     sei_text_retention: str = "ephemeral"
     sei_allow_external_ai_for_live_content: bool = False
     sei_allow_browser_extension: bool = False
+    enable_sei_browser_automation: bool = False
+    enable_minuta_creation: bool = False
+    minuta_token_secret: str = "dev-insecure-trocar-em-producao"
+    log_full_text: bool = False
 
     # IA (provedor configuravel)
     ai_provider: str = ""

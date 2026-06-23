@@ -155,6 +155,16 @@ Exemplo:
 Regra: consulta apenas a knowledge base local. Se nao houver regra clara, nao
 sugere unidade e retorna revisao humana obrigatoria.
 
+### Diagnostico seguro de API SEI/WSSEI
+
+```text
+CLI: scripts/sei_api_discovery.py
+```
+
+Regra: diagnostico manual sem credenciais. Nao envia usuario, senha, cookie,
+token ou sessao. Nao executa operacao de negocio. Resultado positivo apenas
+indica endpoint candidato e nao autoriza uso real.
+
 ### Enviar alerta
 
 ```text

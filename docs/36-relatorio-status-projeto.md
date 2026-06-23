@@ -1,18 +1,43 @@
 # Relatorio de status do projeto
 
-Data: 2026-06-22
+Data: 2026-06-23
 Branch: `feat/fundacao-agenda-ics`
 PR: https://github.com/welitonsp/agente-sei-inteligente/pull/1
-Status geral: fundacao tecnica, painel local, intake texto/PDF, Agente 19 Desktop seguro, estrategia zero custo, minutador local zero custo, knowledge base local 19 CRPM e prototipo de extensao SEI read-only implementados. Operacao real ainda depende de homologacao e autorizacoes.
+Status geral: fundacao tecnica, painel local, intake texto/PDF, Agente 19 Desktop seguro, estrategia zero custo, minutador local zero custo, knowledge base local 19 CRPM, UI chat V2 da extensao SEI read-only, novo enquadramento arquitetural particular/local, PATCH 4 de hardening da FASE 5A, FASE 5B-homologacao e diagnostico seguro de API SEI/WSSEI implementados. Operacao real ainda depende de homologacao e autorizacoes.
 
 ## 1. Resumo executivo
 
 O projeto ja possui uma base tecnica segura para operar como assistente administrativo do 19 CRPM. O sistema ainda nao esta liberado para operacao real com dados sensiveis, mas ja consegue receber texto/PDF fornecido pelo usuario, gerar analise estruturada basica, registrar auditoria sem salvar texto integral, simular integracao com agenda, abrir o Agente 19 como desktop local seguro e aparecer dentro da tela do SEI por uma extensao read-only quando autorizada.
 
+Formato de UI definido: o Agente 19 na tela do SEI sera um chat lateral
+flutuante, profissional, com campo de pergunta, historico de mensagens, status
+operacional visivel e acoes rapidas de resumo, prazos, providencia e minuta
+externa supervisionada. Tambem existe preview local em
+`browser_extension/preview_chat.html` para avaliacao visual sem SEI real.
+
 Regra principal mantida: o sistema ajuda, organiza e sugere. Atos oficiais no SEI continuam manuais e sob responsabilidade do servidor logado.
 
 Restricao financeira permanente: o projeto deve operar com custo zero por
 padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
+
+Enquadramento SEI atualizado: o projeto e uma solucao particular/local. O usuario
+faz login manualmente no SEI Goias; o agente nao guarda senha, nao captura
+cookie/token/sessao, nao persiste perfil do navegador e nao permite que o LLM
+controle o navegador. Interacoes com SEI devem ser codigo deterministico,
+auditado e protegido por allow-list/default-deny.
+
+FASE 5A: minuta controlada simulada com PATCH 4 aplicado. A escrita real no SEI
+ainda NAO esta habilitada. A FASE 5B futura, se homologada, deve limitar-se a
+criar uma minuta usando um tipo de documento ja existente no SEI, salvar e parar.
+
+FASE 5B-homologacao: contratos de cadastro, nivel de acesso e manifesto de
+seletores foram preparados. Mesmo quando o avaliador indicar prontidao para
+homologacao, `real_write_allowed=false`.
+
+Diagnostico API SEI/WSSEI: executado contra `https://sei.go.gov.br/sei/` sem
+enviar usuario, senha, cookie, token ou sessao. `mod-wssei-v2` e `mod-wssei-v1`
+retornaram 404; WSDL nativo ficou indisponivel com conexao encerrada pelo host
+remoto.
 
 ## 2. Checklist do que ja foi executado
 
@@ -30,6 +55,8 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 - [x] Relatorio de status consolidado criado neste arquivo.
 - [x] Fase 37.2 documentada em `docs/37-fase-desktop-navegador-seguro.md`.
 - [x] Estrategia zero custo documentada em `docs/38-estrategia-zero-custo-sei.md`.
+- [x] Novo enquadramento SEI particular/local documentado no README.
+- [x] FASE 5 documentada em `docs/fase-5-minuta-controlada.md`.
 
 ### Fundacao tecnica e seguranca
 
@@ -58,7 +85,7 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 - [x] Pipeline roda em Python 3.11 e 3.13.
 - [x] Scanner de segredos criado em `scripts/check_no_secrets.py`.
 - [x] Scanner bloqueia `.env`, tokens, client secrets, URL ICS e chaves concretas.
-- [x] Suite automatizada com 123 testes passando.
+- [x] Suite automatizada com 150 testes passando.
 - [x] PR #1 aberto em modo draft.
 - [x] Checks remotos aprovados no GitHub Actions.
 
@@ -138,6 +165,40 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 - [x] Acoes oficiais bloqueadas no contrato.
 - [x] Auditoria sem texto integral.
 
+### FASE 5A - minuta controlada simulada
+
+- [x] Arquitetura segura documentada.
+- [x] `ENABLE_MINUTA_CREATION=false` registrado como padrao seguro.
+- [x] Token de confirmacao definido como requisito.
+- [x] Verificacao de processo correto definida como requisito.
+- [x] Allow-list separada de escrita controlada definida como requisito.
+- [x] Escrita real no SEI mantida como nao habilitada.
+- [x] PATCH 4 de hardening final.
+- [ ] FASE 5B com seletores homologados.
+
+### FASE 5B-homologacao
+
+- [x] Contrato de cadastro de minuta criado.
+- [x] `nivel_acesso` obrigatorio.
+- [x] `hipotese_legal` obrigatoria para restrito/sigiloso.
+- [x] Manifesto de seletores criado.
+- [x] Template sem seletores reais criado.
+- [x] Bloqueio de seletores de atos oficiais.
+- [x] `real_write_allowed=false`.
+- [ ] Preencher manifesto em homologacao controlada.
+- [ ] Implementar escrita real com seletores homologados.
+
+### Diagnostico seguro de API SEI/WSSEI
+
+- [x] Montagem de URLs candidatas.
+- [x] Diagnostico sem credenciais.
+- [x] Bloqueio de URL com credencial.
+- [x] Sem Cookie/Authorization/payload.
+- [x] Script `scripts/sei_api_discovery.py`.
+- [x] Documento da Fase 41.
+- [x] Rodar diagnostico real manualmente.
+- [x] Registrar resultado na Fase 42.
+
 ### Knowledge base local 19 CRPM
 
 - [x] Pasta local `knowledge_base/fluxos_19crpm/` criada.
@@ -154,6 +215,9 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 ### Extensao SEI read-only
 
 - [x] Prototipo de extensao Chrome/Edge criado em `browser_extension/`.
+- [x] UI definida como chat lateral profissional.
+- [x] UI Chat V2 com status `Somente leitura`, `Backend local` e `Revisao humana`.
+- [x] Acao `Minuta` gera apenas rascunho externo para conferencia humana.
 - [x] Manifest V3 criado.
 - [x] Permissao restrita a `https://sei.go.gov.br/sei/*` e `http://127.0.0.1:8000/*`.
 - [x] Botao flutuante `Agente 19` aparece dentro da tela do SEI.
@@ -167,6 +231,10 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 - [x] Nao submete formularios do SEI.
 - [x] Nao executa ato oficial.
 - [x] Teste de contrato de seguranca criado.
+- [x] Preview local atualizado para simular minuta externa.
+- [ ] Homologacao visual da UI chat no SEI real.
+- [x] Preview local da UI chat criado.
+- [ ] Feedback visual do preview pelo usuario.
 
 ## 3. Checklist do que o sistema ja faz hoje
 
@@ -355,6 +423,7 @@ padrao, sem API paga, assinatura, RPA pago ou hospedagem paga.
 6. Implementar OCR gratuito/local ou autenticacao local do painel, conforme prioridade operacional.
 7. Concluir o OAuth Google e validar agenda real em modo controlado, apenas se usar recursos gratuitos/institucionais ja existentes.
 8. Manter a extensao Chrome/Edge como recurso futuro opcional, dependente de autorizacao institucional.
+9. Continuar caminho local supervisionado; API real somente se houver endpoint autorizado/informacao oficial.
 
 ## 7. Como testar o que ja existe
 

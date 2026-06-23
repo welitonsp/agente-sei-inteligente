@@ -4,6 +4,15 @@
 
 O agente prepara, mas nao decide. Atos oficiais continuam sob responsabilidade humana.
 
+O projeto e particular/local. O usuario faz login manualmente no SEI Goias e o
+agente nao deve solicitar, receber, armazenar, registrar, interceptar ou
+processar usuario, senha, cookie, token, sessao, `localStorage`,
+`sessionStorage` ou headers de autenticacao.
+
+O LLM nao controla o navegador. O LLM pode analisar texto, classificar, sugerir
+providencia e gerar conteudo. Qualquer interacao com a tela do SEI deve ser
+feita por codigo deterministico, auditado e protegido por allow-list/default-deny.
+
 ## Acoes permitidas
 
 As acoes permitidas devem ser centralizadas em `app/core/permissions.py` quando a implementacao comecar:
@@ -65,6 +74,37 @@ Controles recomendados:
 4. Nao armazenar senha do SEI.
 5. Registrar URL, processo, documento, acao e resultado.
 6. Tirar captura de tela apenas se houver politica institucional autorizando.
+7. Usar sessao Playwright efemera.
+8. Nao persistir perfil de navegador.
+9. Passar toda leitura por chokepoint.
+10. Usar `ReadOnlyPage` para impedir escrita em rotas de leitura.
+
+## FASE 5 - Minuta controlada
+
+### FASE 5A - simulada
+
+A FASE 5A valida a arquitetura de escrita controlada sem escrever no SEI.
+
+Requisitos:
+
+1. `MinutaWriter` como ponto unico para tentativa de minuta.
+2. Token de confirmacao amarrado a processo + tipo de documento + hash do texto.
+3. Verificacao do processo certo antes de qualquer escrita.
+4. Allow-list separada para escrita controlada.
+5. Stubs `NotImplementedError` para UI real.
+6. `ENABLE_MINUTA_CREATION=false` por padrao.
+7. Auditoria sem texto integral.
+
+### FASE 5B - futura
+
+Somente com homologacao, a FASE 5B podera criar uma minuta usando um tipo de
+documento ja existente no SEI, preencher cadastro, inserir texto no editor,
+salvar a minuta e parar.
+
+Mesmo na FASE 5B, permanecem proibidos assinatura, tramitacao, envio,
+conclusao, ciencia, cancelamento, exclusao, liberacao de acesso externo,
+envio de e-mail pelo SEI e criacao de tipo de documento no cadastro
+administrativo do SEI.
 
 ## Segredos
 
@@ -113,4 +153,3 @@ Exemplos que exigem revisao:
 4. Prazo com redacao ambigua.
 5. Documento com possivel urgencia institucional.
 6. Minuta que mencione decisao, sancao, autorizacao ou responsabilizacao.
-

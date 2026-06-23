@@ -1,6 +1,6 @@
 # Matriz de conformidade do projeto
 
-Data da avaliacao: 2026-06-22
+Data da avaliacao: 2026-06-23
 
 ## Objetivo
 
@@ -22,27 +22,25 @@ Esta matriz avalia a conformidade do projeto com a propria arquitetura definida 
 O projeto esta:
 
 ```text
-Conforme para iniciar desenvolvimento da fundacao tecnica.
+Conforme para FASE 5A simulada em branch de desenvolvimento.
 Nao conforme para operacao real.
-Nao conforme para automacao direta no SEI.
+Nao conforme para escrita real no SEI.
 Nao conforme para uso de conteudo real do SEI em IA externa.
 ```
 
 Desenvolvimento autorizado como proximo passo:
 
 ```text
-Etapa 2 - Fundacao tecnica
+FASE 5B apenas em homologacao controlada
 ```
 
 Com escopo limitado a:
 
-1. Estrutura `app/`.
-2. Permissoes.
-3. Guardiao de seguranca.
-4. SQLite.
-5. Logs.
-6. Testes de bloqueio.
-7. Painel MVP com texto colado/PDF.
+1. Mapear seletores reais sem acao oficial.
+2. Exigir nivel de acesso explicitamente.
+3. Validar tipo de documento ja existente.
+4. Salvar minuta e parar.
+5. Nunca assinar, tramitar, enviar, concluir, dar ciencia, cancelar, excluir ou liberar acesso externo.
 
 ## Itens em conformidade
 
@@ -83,6 +81,9 @@ Com escopo limitado a:
 | P-16 | Restricao de custo zero | Conforme | DEC-0012 registrada; sem API paga, assinatura, RPA pago ou hospedagem paga | Manter como restricao permanente |
 | P-17 | Minutador local zero custo | Parcialmente conforme | Prototipo por regras/templates implementado; falta homologacao com exemplos reais anonimizados | Preencher knowledge base do 19 CRPM e homologar minutas |
 | P-18 | Knowledge base local 19 CRPM | Parcialmente conforme | Estrutura e motor criados; dados reais ainda ausentes | Preencher CSVs reais e homologar roteamento |
+| P-19 | FASE 5A minuta controlada simulada | Conforme | `MinutaWriter`, token, safety, auditoria por hash e teste arquitetural implementados; sem escrita real | Manter como simulacao ate FASE 5B homologada |
+| P-20 | FASE 5B-homologacao | Conforme para preparacao | Cadastro, nivel de acesso e manifesto de seletores criados; `real_write_allowed=false` | Preencher manifesto somente em homologacao controlada |
+| P-21 | UI chat Agente 19 | Conforme para prototipo | Chat lateral V2 read-only implementado na extensao; status operacional e minuta externa; sem clique/ato oficial | Homologar visualmente no preview local e no SEI real autorizado |
 
 ## Nao conformidades atuais
 
@@ -105,7 +106,7 @@ Com escopo limitado a:
 | Extensao de navegador real | Prototipo read-only iniciado; uso real exige autorizacao e homologacao |
 | Playwright conectado ao SEI | Risco de clique/navegacao indevida |
 | Busca automatica por numero de processo no SEI | Pode virar automacao de navegacao |
-| Escrita de minuta dentro do SEI | Sem modulo oficial e sem autorizacao |
+| Escrita real de minuta dentro do SEI | FASE 5B futura, depende de seletores homologados e autorizacao |
 | WebServices de escrita | Nao preserva naturalmente a sessao individual |
 | Envio de documento real do SEI para Gemini | Bloqueado por politica de dados |
 
@@ -125,21 +126,24 @@ Com escopo limitado a:
 | Fase 37.2 - Desktop seguro | Em prototipo | `app.desktop` criado; login fica na pagina oficial do SEI; uso real depende de homologacao/autorizacao |
 | Fase 39 - Minutador local zero custo | Em prototipo | Rascunhos locais por regras/templates; sem escrita no SEI; falta homologacao |
 | Fase 40 - Knowledge base local 19 CRPM | Em prototipo | Loader e triagem por regras criados; dados reais ainda pendentes |
-| Etapa 10 - Minutador SEI assistido | Nao liberada | Minutas apenas fora do SEI por enquanto |
+| FASE 5A - Minuta controlada simulada | Conforme para branch de desenvolvimento | PATCH 4 aplicado; escrita real permanece `NotImplementedError` |
+| FASE 5B-homologacao | Conforme para preparacao | Contratos e manifesto criados; sem escrita real |
+| FASE 5B - Escrita real de minuta | Nao liberada | Depende de seletores homologados, nivel de acesso explicito e autorizacao |
+| Fase 43 - UI chat Agente 19 | Em prototipo | Chat lateral read-only implementado; falta homologacao visual/institucional |
+| Fase 45 - UX Chat V2 | Em prototipo | Status operacional e minuta externa supervisionada implementados; falta homologacao visual |
 | Etapa 11 - Operacao v1 | Nao liberada | Depende de homologacao completa |
 
 ## Ordem obrigatoria de correcao
 
-1. Implementar fundacao tecnica.
-2. Criar testes de permissoes e bloqueios.
-3. Criar SQLite e auditoria.
-4. Criar painel MVP sem SEI real.
-5. Preencher dados mestres do 19 CRPM.
-6. Implementar triagem com revisao humana obrigatoria.
-7. Integrar Agenda e Telegram isoladamente.
-8. Avaliar IA/RAG com dados nao sensiveis.
-9. Homologar com exemplos anonimizados.
-10. So depois discutir robozinho read-only real.
+1. Manter FASE 5A como simulacao segura.
+2. Preencher dados mestres do 19 CRPM.
+3. Homologar triagem com exemplos anonimizados.
+4. Homologar minutas locais.
+5. Mapear seletores reais da FASE 5B em ambiente controlado.
+6. Exigir nivel de acesso e campos obrigatorios.
+7. Manter escrita real bloqueada ate aceite formal.
+8. Homologar com exemplos anonimizados.
+9. Revisar seguranca antes de qualquer operacao real.
 
 ## Decisao do chefe do projeto
 
@@ -150,6 +154,6 @@ Fica proibido, nesta fase:
 1. Automatizar login no SEI.
 2. Navegar no SEI por numero de processo.
 3. Clicar em qualquer botao do SEI.
-4. Escrever no SEI.
+4. Escrever de fato no SEI antes da FASE 5B homologada.
 5. Enviar conteudo real do SEI para IA externa.
 6. Decidir unidade do 19 CRPM sem regras reais.

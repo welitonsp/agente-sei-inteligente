@@ -15,6 +15,7 @@ from typing import Any
 
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger, log_event
+from app.core.safety import assert_safe_environment
 from app.intelligence.local_minutador import DraftRequest, generate_draft
 from app.intelligence.local_triage import TriageRequest, analyze_triage
 from app.intake.manual_text import ManualTextRequest, analyze_text
@@ -723,6 +724,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
 def run(host: str | None = None, port: int | None = None) -> None:
     settings = get_settings()
+    assert_safe_environment(settings)
     configure_logging(settings.log_level)
     init_db()
 

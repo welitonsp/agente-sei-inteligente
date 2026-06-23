@@ -3,7 +3,7 @@
 Documento de continuidade: onde o desenvolvimento parou e como retomar em outra
 estacao de trabalho.
 
-Ultima atualizacao: 2026-06-22
+Ultima atualizacao: 2026-06-23
 Branch de trabalho: `feat/fundacao-agenda-ics`
 Repositorio: https://github.com/welitonsp/agente-sei-inteligente
 
@@ -25,14 +25,18 @@ Repositorio: https://github.com/welitonsp/agente-sei-inteligente
 | Intake texto manual | CONCLUIDO no backend | `app/intake/manual_text.py`, `tests/test_manual_text_intake.py` |
 | Intake PDF local | CONCLUIDO para PDF pesquisavel | `app/intake/pdf_upload.py`, `tests/test_pdf_upload_intake.py` |
 | Painel local texto/PDF | CONCLUIDO para MVP texto/PDF | `app/dashboard/local_app.py`, `tests/test_dashboard_local_app.py` |
-| Extensao SEI read-only | PROTOTIPO | `browser_extension/`, `tests/test_browser_extension_contract.py` |
+| Extensao SEI read-only | PROTOTIPO chat lateral V2 | `browser_extension/`, `tests/test_browser_extension_contract.py`, `docs/43-ui-chat-agente19-sei.md`, `docs/44-preview-local-ui-chat-agente19.md`, `docs/45-ux-chat-v2-minuta-externa.md` |
 | Agente 19 Desktop seguro | PROTOTIPO | `app/desktop/`, `tests/test_desktop_secure_browser.py` |
 | Minutador local zero custo | PROTOTIPO | `app/intelligence/local_minutador.py`, `knowledge_base/templates_minutas/`, `tests/test_local_minutador.py` |
 | Knowledge base local 19 CRPM | PROTOTIPO sem dados reais | `knowledge_base/fluxos_19crpm/`, `app/intelligence/knowledge_base.py`, `app/intelligence/local_triage.py` |
+| Enquadramento SEI particular/local | DOCUMENTADO | `README.md`, `docs/fase-5-minuta-controlada.md`, `docs/06-integracao-sei.md` |
+| PATCH 4 hardening FASE 5A | CONCLUIDO | `app/core/safety.py`, `app/sei/minuta_writer.py`, `tests/test_phase5a_minuta_controlada.py` |
+| FASE 5B-homologacao | CONCLUIDO sem escrita real | `app/sei/minuta_cadastro.py`, `app/sei/selector_manifest.py`, `app/sei/fase5b_homologacao.py` |
+| Diagnostico API SEI/WSSEI | CONCLUIDO; sem API publica utilizavel | `app/sei/api_discovery.py`, `scripts/sei_api_discovery.py`, `docs/42-resultado-diagnostico-real-api-sei.md` |
 | Scripts | CONCLUIDO | `scripts/init_db.py`, `scripts/google_oauth_setup.py`, `scripts/google_validate.py` |
 | PR e CI | PR #1 draft aberto; CI aprovado | https://github.com/welitonsp/agente-sei-inteligente/pull/1 |
 | Gate de segredos | CONCLUIDO | `.github/workflows/ci.yml`, `scripts/check_no_secrets.py` |
-| Testes | 123 passando | `tests/` |
+| Testes | 150 passando | `tests/` |
 
 Modo atual: **dry-run** (simulacao). Nenhum evento real e criado ate o OAuth
 estar completo no `.env`.
@@ -90,6 +94,10 @@ da estacao anterior por canal seguro OU obtenha novamente:
 | `CALENDAR_BACKEND` | `google` (real) ou `dry_run` (simulacao) |
 | `OFFICERS_SOURCE` | `google_contacts` |
 | `OFFICERS_CONTACT_LABEL` | `OFICIAIS` |
+| `ENABLE_SEI_BROWSER_AUTOMATION` | `false` por padrao |
+| `ENABLE_MINUTA_CREATION` | `false` por padrao |
+| `MINUTA_TOKEN_SECRET` | trocar em ambiente real; nunca versionar segredo forte |
+| `LOG_FULL_TEXT` | `false` por padrao |
 
 ### 4. Inicializar o banco e rodar os testes
 
@@ -100,7 +108,7 @@ set PYTHONPATH=.
 .venv\Scripts\python.exe -m pytest
 ```
 
-Esperado: scanner sem segredos concretos e 123 testes passando.
+Esperado: scanner sem segredos concretos e 150 testes passando.
 
 ### 4.1. Rodar o painel MVP local
 
@@ -142,6 +150,16 @@ oficiais.
 Regras: a extensao e read-only, nao faz login, nao guarda senha/cookie, nao
 clica no SEI e envia somente texto visivel/selecionado ao backend local.
 
+Formato atual: chat lateral profissional com botao flutuante `19`, historico de
+mensagens, pergunta livre, captura de tela e acoes rapidas de resumo, prazos e
+providencia.
+
+Preview local:
+
+```text
+C:\ADM PMGO\browser_extension\preview_chat.html
+```
+
 ### 5. Concluir o OAuth (itens pendentes acima)
 
 ```bat
@@ -159,6 +177,38 @@ escrita a agenda). Cole o refresh token impresso no `.env`.
 3. O agente permanece em dry-run ate o OAuth completo; criar evento exige
    aprovacao humana (guard) e o ICS so faz leitura.
 4. Se algum segredo vazar, revogar em https://myaccount.google.com/permissions.
+5. O login no SEI e manual; o agente nao guarda senha, cookie, token ou sessao.
+6. Sessao Playwright deve ser efemera e sem perfil persistido.
+7. LLM nao controla navegador; interacao com SEI deve ser codigo deterministico e auditado.
+
+## PATCH 4 aplicado
+
+1. `MINUTA_TOKEN_SECRET` padrao bloqueado em `APP_ENV=prod`.
+2. `ENABLE_MINUTA_CREATION=true` bloqueado em producao enquanto FASE 5B nao estiver homologada.
+3. Auditoria registra `text_hash`, nunca texto integral.
+4. Teste arquitetural contra uso direto de Playwright fora dos arquivos permitidos criado.
+5. Escrita real mantida como `NotImplementedError`.
+
+## Proximo passo imediato - FASE 5B em homologacao
+
+1. Preencher `knowledge_base/sei_homologacao/minuta_selectors.template.json` somente em homologacao controlada.
+2. Registrar evidencia de cada seletor.
+3. Validar tipo de documento ja existente.
+4. Validar nivel de acesso, descricao, interessado e destinatario quando aplicavel.
+5. Manter `real_write_allowed=false` ate aceite formal.
+6. Nunca assinar, tramitar, enviar, concluir, dar ciencia, cancelar, excluir ou liberar acesso externo.
+
+## Diagnostico seguro de API SEI/WSSEI
+
+```bat
+.venv\Scripts\python.exe scripts\sei_api_discovery.py
+```
+
+Regras: nao envia credenciais, nao usa sessao do navegador, nao executa operacao
+de negocio e resultado positivo nao autoriza uso real.
+
+Resultado em 2026-06-23: `mod-wssei-v2` e `mod-wssei-v1` retornaram 404; WSDL
+nativo ficou indisponivel com conexao encerrada pelo host remoto.
 
 ## Proximo passo apos validar o OAuth
 

@@ -523,6 +523,245 @@ PROTOTIPO_IMPLEMENTADO_SEM_DADOS_REAIS
 3. Tramitacao automatica no SEI.
 4. Usar dado real sensivel sem revisao.
 
+## Checklist 16 - Enquadramento SEI particular e FASE 5
+
+Objetivo: alinhar o projeto ao modelo particular/local supervisionado, com login
+manual do usuario no SEI e escrita real ainda bloqueada.
+
+Status atual:
+
+```text
+ENQUADRAMENTO_DOCUMENTADO
+```
+
+### Arquitetura aprovada
+
+| Item | Status |
+| --- | --- |
+| Projeto reenquadrado como assistente local supervisionado | CONCLUIDO no README |
+| Login manual do usuario no SEI | APROVADO como premissa |
+| Agente sem guarda de senha | APROVADO como regra permanente |
+| Agente sem captura de cookie/token/sessao | APROVADO como regra permanente |
+| Sessao Playwright efemera | APROVADO como requisito |
+| LLM sem controle do navegador | APROVADO como requisito |
+| Interacao SEI por codigo deterministico auditado | APROVADO como requisito |
+| Allow-list/default-deny | CONCLUIDO na fundacao tecnica |
+| Chokepoint de leitura | APROVADO como requisito arquitetural |
+| `ReadOnlyPage` | APROVADO como componente de leitura |
+| `MinutaWriter` | APROVADO como componente unico de escrita controlada |
+| FASE 5A - minuta controlada simulada | CONCLUIDO com PATCH 4 |
+| FASE 5B - escrita real de minuta | NAO_INICIADO; depende de homologacao |
+
+### FASE 5A - simulada
+
+| Item | Status |
+| --- | --- |
+| Token de confirmacao amarrado a processo + tipo + hash | APROVADO como contrato |
+| Verificacao de processo correto antes de escrever | APROVADO como contrato |
+| Allow-list separada para escrita controlada | APROVADO como contrato |
+| Stubs `NotImplementedError` para UI real | OBRIGATORIO ate FASE 5B |
+| `ENABLE_MINUTA_CREATION=false` por padrao | OBRIGATORIO |
+| Nenhuma escrita real no SEI | OBRIGATORIO |
+
+### Proximo passo imediato - PATCH 4
+
+| Item | Status |
+| --- | --- |
+| Bloquear `MINUTA_TOKEN_SECRET` padrao em `APP_ENV=prod` | CONCLUIDO |
+| Bloquear `ENABLE_MINUTA_CREATION=true` em producao antes da FASE 5B | CONCLUIDO |
+| Auditar `text_hash`, nunca texto integral | CONCLUIDO |
+| Criar teste arquitetural contra Playwright direto fora dos arquivos permitidos | CONCLUIDO |
+| Manter escrita real como `NotImplementedError` | CONCLUIDO |
+
+### Proibido nesta fase
+
+1. Guardar senha.
+2. Capturar cookie, token ou sessao.
+3. Persistir perfil do navegador.
+4. Assinar documento.
+5. Tramitar processo.
+6. Enviar processo.
+7. Concluir processo.
+8. Dar ciencia.
+9. Cancelar documento.
+10. Excluir documento.
+11. Liberar acesso externo.
+12. Enviar e-mail pelo SEI.
+13. Criar tipo de documento no cadastro administrativo do SEI.
+
+## Checklist 17 - FASE 5B-homologacao
+
+Objetivo: preparar contratos e criterios para homologar seletores reais sem
+habilitar escrita real no SEI.
+
+Status atual:
+
+```text
+PREPARACAO_DE_HOMOLOGACAO_CONCLUIDA
+```
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Criar contrato de cadastro da minuta | CONCLUIDO (`app/sei/minuta_cadastro.py`) |
+| Exigir tipo de documento ja existente | CONCLUIDO |
+| Exigir nivel de acesso explicitamente | CONCLUIDO |
+| Exigir hipotese legal para restrito/sigiloso | CONCLUIDO |
+| Permitir campos aplicaveis por tipo documental | CONCLUIDO |
+| Criar manifesto de seletores | CONCLUIDO (`app/sei/selector_manifest.py`) |
+| Criar template de seletores sem valores reais | CONCLUIDO |
+| Bloquear seletores de atos oficiais | CONCLUIDO |
+| Criar avaliador de prontidao | CONCLUIDO (`app/sei/fase5b_homologacao.py`) |
+| Manter `real_write_allowed=false` | CONCLUIDO |
+| Implementar seletores reais | NAO_INICIADO |
+| Habilitar escrita real | BLOQUEADO |
+
+### Proibido nesta fase
+
+1. Inserir seletor real sem evidencia de homologacao.
+2. Habilitar escrita real.
+3. Assinar, tramitar, enviar, concluir, dar ciencia, cancelar, excluir ou liberar acesso externo.
+4. Criar tipo de documento no cadastro administrativo do SEI.
+
+## Checklist 18 - Diagnostico seguro de API SEI/WSSEI
+
+Objetivo: verificar se ha endpoint candidato de API sem autenticar e sem pedir
+atuacao da TI para a primeira verificacao tecnica.
+
+Status atual:
+
+```text
+DIAGNOSTICO_IMPLEMENTADO
+```
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Criar montagem segura de URLs candidatas | CONCLUIDO |
+| Testar `mod-wssei-v2` | CONCLUIDO como candidato |
+| Testar `mod-wssei-v1` | CONCLUIDO como candidato |
+| Testar WSDL nativo | CONCLUIDO como candidato |
+| Recusar URL com credencial | CONCLUIDO |
+| Nao enviar Cookie/Authorization | CONCLUIDO por teste |
+| Nao enviar payload | CONCLUIDO por teste |
+| Criar script manual | CONCLUIDO (`scripts/sei_api_discovery.py`) |
+| Documentar interpretacao | CONCLUIDO (`docs/41-diagnostico-api-sei-wssei.md`) |
+| Executar diagnostico real | CONCLUIDO (`docs/42-resultado-diagnostico-real-api-sei.md`) |
+| `mod-wssei-v2` publico encontrado | NAO_ENCONTRADO (`404`) |
+| `mod-wssei-v1` publico encontrado | NAO_ENCONTRADO (`404`) |
+| WSDL nativo publico encontrado | INDISPONIVEL sem credenciais/sessao |
+
+### Proibido nesta fase
+
+1. Enviar usuario/senha.
+2. Capturar cookie/token/sessao.
+3. Executar operacao de negocio.
+4. Usar resultado positivo como autorizacao de uso real.
+
+## Checklist 19 - UI chat do Agente 19 na tela do SEI
+
+Objetivo: definir e prototipar a interface do Agente 19 como chat lateral
+profissional dentro da tela do SEI.
+
+Status atual:
+
+```text
+PROTOTIPO_CHAT_READONLY_IMPLEMENTADO
+```
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Definir formato chat lateral | CONCLUIDO |
+| Criar botao flutuante compacto | CONCLUIDO |
+| Criar cabecalho profissional | CONCLUIDO |
+| Criar historico de mensagens | CONCLUIDO |
+| Criar campo de pergunta | CONCLUIDO |
+| Criar acao capturar tela | CONCLUIDO |
+| Criar acoes resumo/prazos/providencia | CONCLUIDO |
+| Criar botao copiar resposta | CONCLUIDO |
+| Manter comunicacao apenas com backend local | CONCLUIDO |
+| Testar ausencia de click/ato oficial | CONCLUIDO |
+| Homologar visualmente no SEI real | NAO_INICIADO |
+
+### Proibido nesta fase
+
+1. Login automatico.
+2. Capturar credenciais.
+3. Clicar no SEI.
+4. Inserir texto no SEI.
+5. Praticar ato oficial.
+
+## Checklist 20 - Preview local da UI chat
+
+Objetivo: permitir avaliacao visual do chat sem SEI real, sem backend real e
+sem dados sensiveis.
+
+Status atual:
+
+```text
+PREVIEW_LOCAL_IMPLEMENTADO
+```
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Criar pagina mock do SEI | CONCLUIDO |
+| Carregar `content.css` e `content.js` | CONCLUIDO |
+| Criar resposta simulada do backend | CONCLUIDO |
+| Usar processo ficticio | CONCLUIDO |
+| Bloquear dados reais/sensiveis no preview | CONCLUIDO por teste |
+| Documentar como abrir | CONCLUIDO |
+| Homologar visualmente com usuario | NAO_INICIADO |
+
+### Proibido nesta fase
+
+1. Usar dados reais.
+2. Abrir SEI real.
+3. Chamar backend real.
+4. Solicitar credenciais.
+
+## Checklist 21 - UX Chat V2 e minuta externa supervisionada
+
+Objetivo: melhorar a experiencia da UI chat dentro do SEI, deixando o modo de
+seguranca visivel e oferecendo rascunho de minuta apenas fora do SEI.
+
+Status atual:
+
+```text
+UX_CHAT_V2_IMPLEMENTADA
+```
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Criar barra de status operacional | CONCLUIDO |
+| Exibir `Somente leitura` | CONCLUIDO |
+| Exibir `Backend local` | CONCLUIDO |
+| Exibir `Revisao humana` | CONCLUIDO |
+| Criar acao rapida `Minuta` | CONCLUIDO |
+| Formatar minuta como rascunho externo | CONCLUIDO |
+| Informar que insercao no SEI permanece manual | CONCLUIDO |
+| Fechar painel com `Esc` | CONCLUIDO |
+| Atualizar preview local | CONCLUIDO |
+| Criar documento da fase | CONCLUIDO (`docs/45-ux-chat-v2-minuta-externa.md`) |
+| Testar contrato read-only da UI V2 | CONCLUIDO |
+| Homologar visualmente com usuario | NAO_INICIADO |
+| Testar no SEI real autorizado | NAO_INICIADO |
+
+### Proibido nesta fase
+
+1. Inserir minuta no SEI pela extensao.
+2. Clicar em botoes do SEI.
+3. Criar documento oficial.
+4. Assinar, tramitar, enviar, concluir, dar ciencia, cancelar ou excluir.
+5. Capturar senha, cookie, token ou sessao.
+
 ### Proibido nesta restricao
 
 1. Contratar API paga.
@@ -545,6 +784,12 @@ Checklist 12 - Agente 19 Desktop com navegador seguro, somente prototipo e homol
 Checklist 13 - Estrategia zero custo
 Checklist 14 - Minutador local zero custo, homologacao e melhoria das regras
 Checklist 15 - Knowledge base local, preenchimento real e homologacao
+Checklist 16 - PATCH 4 hardening final da FASE 5
+Checklist 17 - FASE 5B-homologacao, somente preenchimento controlado do manifesto
+Checklist 18 - Rodar diagnostico seguro de API SEI/WSSEI e registrar resultado
+Checklist 19 - Homologar visualmente UI chat do Agente 19 no SEI
+Checklist 20 - Abrir preview local da UI chat e registrar feedback
+Checklist 21 - Homologar UX Chat V2 e minuta externa supervisionada
 ```
 
 Nao iniciar agora sem nova autorizacao:
@@ -552,8 +797,10 @@ Nao iniciar agora sem nova autorizacao:
 ```text
 Clique automatico no SEI
 Login automatico no SEI
+Persistencia de perfil Playwright
 Uso institucional da extensao sem homologacao
 IA externa com conteudo real do SEI
 Triagem automatica sem knowledge base real
+Escrita real de minuta no SEI antes da FASE 5B homologada
 API paga ou servico com assinatura
 ```

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SEI - Processo 202600000123456</title>
+  <link rel="stylesheet" href="content.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: #172129;
+      background: #eef3f5;
+      font-family: Arial, Helvetica, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .mock-topbar {
+      height: 46px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 16px;
+      background: #0a91b7;
+      color: #ffffff;
+    }
+
+    .mock-logo {
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .mock-search {
+      width: min(360px, 36vw);
+      height: 30px;
+      margin-left: auto;
+      border: 0;
+      border-radius: 6px;
+      padding: 0 10px;
+    }
+
+    .mock-shell {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      min-height: calc(100vh - 46px);
+    }
+
+    .mock-menu {
+      padding: 12px;
+      background: #002b33;
+      color: #ffffff;
+    }
+
+    .mock-menu input {
+      width: 100%;
+      height: 30px;
+      border: 0;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      padding: 0 8px;
+    }
+
+    .mock-menu-item {
+      padding: 9px 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .mock-main {
+      padding: 28px 30px 80px;
+      background: #ffffff;
+    }
+
+    .mock-title {
+      margin: 0 0 18px;
+      font-size: 23px;
+    }
+
+    .mock-toolbar {
+      width: min(530px, 100%);
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px;
+      border: 1px solid #d8e0e4;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
+    }
+
+    .mock-tool {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: #ffd56d;
+    }
+
+    .mock-content {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+      gap: 24px;
+    }
+
+    .mock-card {
+      border: 1px solid #d8e0e4;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .mock-card h2 {
+      margin: 0;
+      padding: 10px 12px;
+      background: #1c6797;
+      color: #ffffff;
+      font-size: 15px;
+    }
+
+    .mock-card-body {
+      padding: 12px;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .mock-row {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid #edf1f3;
+    }
+
+    @media (max-width: 860px) {
+      .mock-shell,
+      .mock-content {
+        grid-template-columns: 1fr;
+      }
+
+      .mock-menu {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="mock-topbar">
+    <div class="mock-logo">sei!</div>
+    <div>Controle de Processos</div>
+    <input class="mock-search" placeholder="Pesquisar..." aria-label="Pesquisar">
+  </header>
+
+  <div class="mock-shell">
+    <aside class="mock-menu">
+      <input placeholder="Pesquisar no Menu" aria-label="Pesquisar no menu">
+      <div class="mock-menu-item">Controle de Processos</div>
+      <div class="mock-menu-item">Iniciar Processo</div>
+      <div class="mock-menu-item">Pesquisa</div>
+      <div class="mock-menu-item">Textos Padrao</div>
+      <div class="mock-menu-item">Bloco de Assinatura</div>
+    </aside>
+
+    <main class="mock-main">
+      <h1 class="mock-title">Processo 202600000123456</h1>
+      <div class="mock-toolbar" aria-label="Barra de ferramentas simulada">
+        <div class="mock-tool"></div>
+        <div class="mock-tool"></div>
+        <div class="mock-tool"></div>
+        <div class="mock-tool"></div>
+        <div class="mock-tool"></div>
+        <div class="mock-tool"></div>
+      </div>
+
+      <section class="mock-content">
+        <article class="mock-card">
+          <h2>Documento aberto</h2>
+          <div class="mock-card-body">
+            <p>
+              Processo administrativo simulado para avaliacao visual do Agente 19.
+              O documento solicita manifestacao da unidade responsavel e menciona
+              prazo ate 30/07/2026 para resposta administrativa.
+            </p>
+            <p>
+              Conteudo ficticio, sem dados reais, usado apenas para homologacao
+              visual da interface em formato de chat.
+            </p>
+          </div>
+        </article>
+
+        <aside class="mock-card">
+          <h2>Dados do processo</h2>
+          <div class="mock-card-body">
+            <div class="mock-row"><strong>Numero</strong><span>202600000123456</span></div>
+            <div class="mock-row"><strong>Tipo</strong><span>Administrativo simulado</span></div>
+            <div class="mock-row"><strong>Prazo</strong><span>30/07/2026</span></div>
+            <div class="mock-row"><strong>Status</strong><span>Aberto para analise visual</span></div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    window.chrome = {
+      runtime: {
+        lastError: null,
+        sendMessage(message, callback) {
+          const payload = {
+            ok: true,
+            result: {
+              status: "precisa_revisao",
+              revisao_humana_obrigatoria: true,
+              confianca: 0.72,
+              campos_pendentes: ["confirmar unidade responsavel"],
+              minuta_sugerida: {
+                tipo_documento: "Despacho, a confirmar",
+                texto: "Encaminho os autos para conhecimento e manifestacao da unidade responsavel, considerando o prazo informado no processo. Apos analise, restituam-se os autos com as informacoes pertinentes."
+              },
+              resultado: {
+                resumo_executivo: "Processo simulado com pedido de manifestacao e prazo ate 30/07/2026.",
+                evento: {ha_evento: false},
+                prazo: {ha_prazo: true, data_limite: "30/07/2026", hora_limite: "", risco: "atencao"}
+              }
+            }
+          };
+          window.setTimeout(() => callback(payload), 250);
+        }
+      }
+    };
+  </script>
+  <script src="content.js"></script>
+</body>
+</html>

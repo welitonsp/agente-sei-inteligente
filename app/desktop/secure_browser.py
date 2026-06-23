@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from app.core.config import get_settings
+from app.core.safety import assert_safe_environment
 from app.dashboard.local_app import run as run_dashboard
 
 
@@ -307,6 +308,7 @@ def format_triage_result(payload: dict[str, Any]) -> str:
 
 def run() -> None:
     """Sobe backend local e abre a janela desktop."""
+    assert_safe_environment(get_settings())
     start_backend_if_needed()
     app = SecureDesktopApp()
     app.mainloop()

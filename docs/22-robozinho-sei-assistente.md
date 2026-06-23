@@ -18,6 +18,30 @@ O agente deve:
 10. Gerar minuta/arquivo de trabalho fora do SEI.
 11. Registrar log da analise.
 
+## Formato visual aprovado
+
+O formato aprovado para o Agente 19 na tela do SEI e um chat lateral flutuante,
+profissional e read-only.
+
+Componentes:
+
+1. Botao flutuante compacto `19`.
+2. Painel lateral em formato de chat.
+3. Historico de mensagens.
+4. Campo para pergunta livre.
+5. Barra de status: somente leitura, backend local e revisao humana.
+6. Acoes rapidas: capturar, resumo, prazos, providencia e minuta.
+7. Botao para copiar resposta.
+8. Aviso fixo de que login, senha, cookie e atos oficiais ficam fora do agente.
+
+O chat nao transforma o agente em usuario autonomo do SEI. Ele apenas conversa
+com o usuario sobre o conteudo visivel/selecionado e envia a analise ao backend
+local.
+
+A acao `Minuta` gera somente rascunho externo. A insercao no SEI continua
+manual, revisada pelo usuario, e nao deve ser confundida com criacao de
+documento oficial pelo agente.
+
 ## Restricao tecnica
 
 Como nao e possivel instalar o modulo oficial SEI IA, o robozinho nao sera um modulo interno do SEI.

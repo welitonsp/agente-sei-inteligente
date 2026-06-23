@@ -199,3 +199,94 @@ Impacto: O Agente 19 passa a ter endpoint de triagem local e botoes no painel/de
 Risco: Base vazia ou incompleta gera baixa utilidade; mitigacao por campos pendentes, baixa confianca e revisao obrigatoria.
 Arquivos afetados: `knowledge_base/fluxos_19crpm/`, `app/intelligence/knowledge_base.py`, `app/intelligence/local_triage.py`, `tests/test_local_knowledge_base.py`, `docs/40`.
 Proximo passo: Preencher unidades e regras reais do 19 CRPM com revisao do responsavel.
+
+## DEC-0015
+
+Data: 2026-06-23
+Responsavel: Chefe do projeto
+Status: APROVADA
+Contexto: O projeto nao possui API oficial, WSSEI, modulo oficial SEI IA ou acesso da TI. O uso previsto e particular/local, com login manual do usuario no SEI Goias.
+Decisao: Reenquadrar o projeto como Agente SEI Inteligente Particular, assistente local supervisionado para analise de processos, geracao de minutas e apoio operacional no SEI.
+Motivo: Permitir evolucao util sem capturar credenciais, sem depender de autorizacao tecnica inexistente e sem automatizar ato oficial.
+Impacto: O LLM nao controla navegador; o LLM apenas analisa texto, classifica, sugere providencia e gera conteudo. Qualquer interacao com SEI deve ser codigo deterministico, auditado, com allow-list/default-deny, chokepoint de leitura, `ReadOnlyPage`, sessao efemera e feature flags desligadas por padrao.
+Risco: Confundir minuta controlada com escrita real pronta; mitigacao por FASE 5A simulada, `ENABLE_MINUTA_CREATION=false`, stubs `NotImplementedError` e FASE 5B futura dependente de homologacao.
+Arquivos afetados: `README.md`, `.env.example`, `docs/01`, `docs/02`, `docs/06`, `docs/08`, `docs/27`, `docs/33`, `docs/35`, `docs/36`, `docs/fase-5-minuta-controlada.md`.
+Proximo passo: PATCH 4 registrado na DEC-0016.
+
+## DEC-0016
+
+Data: 2026-06-23
+Responsavel: Chefe do projeto
+Status: APROVADA
+Contexto: O PATCH 1/3 + 2/3 + 3/3 foi aprovado para FASE 5A com a condicao de nao habilitar escrita real no SEI.
+Decisao: Aplicar PATCH 4 de hardening final antes de qualquer merge para `main`.
+Motivo: Impedir ativacao insegura em producao, garantir auditoria por hash e bloquear uso direto de Playwright fora do arquivo autorizado.
+Impacto: Startup valida `assert_safe_environment()`; `MINUTA_TOKEN_SECRET` padrao/curto e `ENABLE_MINUTA_CREATION=true` sao bloqueados em producao; `MinutaWriter` audita `text_hash`; escrita real permanece `NotImplementedError`.
+Risco: FASE 5B ainda nao existe; mitigacao por flags desligadas, teste arquitetural e documentacao de que a escrita real nao esta pronta.
+Arquivos afetados: `app/core/config.py`, `app/core/safety.py`, `app/dashboard/local_app.py`, `app/desktop/secure_browser.py`, `app/sei/minuta_token.py`, `app/sei/read_only_page.py`, `app/sei/playwright_session.py`, `app/sei/minuta_writer.py`, `tests/test_phase5a_minuta_controlada.py`, docs vivos.
+Proximo passo: Preparar FASE 5B somente em homologacao com seletores reais validados e nivel de acesso explicito.
+
+## DEC-0017
+
+Data: 2026-06-23
+Responsavel: Chefe do projeto
+Status: APROVADA
+Contexto: Apos o PATCH 4, a proxima fase deve preparar a FASE 5B sem habilitar escrita real no SEI.
+Decisao: Criar FASE 5B-homologacao com contrato de cadastro, nivel de acesso obrigatorio, manifesto de seletores e avaliador de prontidao.
+Motivo: Permitir homologacao controlada dos seletores reais antes de qualquer tentativa de escrita no SEI.
+Impacto: O projeto passa a validar tipo documental, nivel de acesso, hipotese legal quando necessario, campos administrativos aplicaveis e seletores homologados. Mesmo com tudo valido, `real_write_allowed=false`.
+Risco: Confundir prontidao para homologacao com autorizacao para escrita real; mitigacao por template sem seletores reais, bloqueio de seletores de atos oficiais e escrita real ainda ausente.
+Arquivos afetados: `app/sei/minuta_cadastro.py`, `app/sei/selector_manifest.py`, `app/sei/fase5b_homologacao.py`, `knowledge_base/sei_homologacao/minuta_selectors.template.json`, `tests/test_phase5b_homologacao.py`, docs vivos.
+Proximo passo: Preencher manifesto somente em homologacao controlada, com evidencia, sem assinar/tramitar/enviar/concluir.
+
+## DEC-0018
+
+Data: 2026-06-23
+Responsavel: Chefe do projeto
+Status: APROVADA
+Contexto: Foi solicitado pesquisar no GitHub se ha API SEI disponivel sem acionar a TI. A pesquisa indicou `mod-wssei` como melhor pista tecnica, mas dependente de estar ativo/autorizado na instancia.
+Decisao: Criar diagnostico seguro local para verificar endpoints candidatos sem autenticar e sem enviar credenciais.
+Motivo: Permitir evidencia tecnica inicial sem capturar senha, cookie, token ou sessao e sem praticar operacao de negocio.
+Impacto: O projeto passa a ter `scripts/sei_api_discovery.py` e `app/sei/api_discovery.py` para testar candidatos `mod-wssei-v2`, `mod-wssei-v1` e WSDL nativo.
+Risco: Interpretar endpoint existente como autorizacao de uso; mitigacao por classificacao conservadora e documentacao de que resultado positivo nao libera uso real.
+Arquivos afetados: `app/sei/api_discovery.py`, `scripts/sei_api_discovery.py`, `tests/test_sei_api_discovery.py`, `docs/41-diagnostico-api-sei-wssei.md`, docs vivos.
+Proximo passo: Rodar diagnostico e registrar resultado em `docs/32-registro-testes-homologacao.md`.
+
+## DEC-0019
+
+Data: 2026-06-23
+Responsavel: Chefe do projeto
+Status: APROVADA
+Contexto: O diagnostico seguro foi executado contra `https://sei.go.gov.br/sei/` sem credenciais.
+Decisao: Nao adotar API SEI/WSSEI como caminho imediato, pois os caminhos publicos padrao nao retornaram endpoint utilizavel.
+Motivo: `mod-wssei-v2` e `mod-wssei-v1` retornaram 404; WSDL nativo ficou indisponivel com conexao encerrada pelo host remoto.
+Impacto: O projeto continua no caminho local supervisionado, com login manual, leitura assistida, minuta local/controlada e FASE 5B apenas em homologacao.
+Risco: Pode existir endpoint interno nao publico; mitigacao por manter a possibilidade documentada, mas exigir autorizacao/informacao oficial antes de qualquer uso real.
+Arquivos afetados: `docs/42-resultado-diagnostico-real-api-sei.md`, `scripts/sei_api_discovery.py`, `app/sei/api_discovery.py`, docs vivos.
+Proximo passo: Continuar desenvolvimento local supervisionado; API real somente se houver endpoint autorizado.
+
+## DEC-0020
+
+Data: 2026-06-23
+Responsavel: Chefe do projeto
+Status: APROVADA
+Contexto: O usuario definiu que o Agente 19 deve ficar na tela do SEI em formato de chat, com visual profissional e inovador.
+Decisao: Adotar UI principal como chat lateral flutuante na extensao read-only.
+Motivo: Aproximar o agente da rotina real do SEI e permitir interacao natural enquanto o usuario esta logado manualmente.
+Impacto: A extensao passa a ter botao flutuante compacto, historico de mensagens, campo de pergunta e acoes rapidas de resumo, prazo e providencia.
+Risco: Confundir chat com automacao oficial; mitigacao por aviso fixo, modo read-only, ausencia de clique automatico e backend local.
+Arquivos afetados: `browser_extension/content.js`, `browser_extension/content.css`, `browser_extension/manifest.json`, `tests/test_browser_extension_contract.py`, `docs/43-ui-chat-agente19-sei.md`.
+Proximo passo: Homologar visualmente a extensao com SEI aberto, usando caso anonimizado ou nao sensivel.
+
+## DEC-0021
+
+Data: 2026-06-23
+Responsavel: Chefe do projeto
+Status: APROVADA
+Contexto: A UI em formato de chat precisa apoiar geracao de minutas sem parecer que o agente escreve ou cria documentos no SEI.
+Decisao: A acao `Minuta` na UI chat gera somente rascunho externo supervisionado, com status visivel de somente leitura, backend local e revisao humana.
+Motivo: Entregar valor operacional dentro da tela do SEI sem praticar ato oficial, sem clicar na pagina e sem ultrapassar a FASE 5A/5B-homologacao.
+Impacto: O chat passa a exibir status operacional, atalho `Esc`, acao `Minuta` e resposta formatada como rascunho externo copiavel.
+Risco: Usuario interpretar rascunho como documento oficial; mitigacao por texto fixo informando que a insercao no SEI permanece manual e exige conferencia humana.
+Arquivos afetados: `browser_extension/content.js`, `browser_extension/content.css`, `browser_extension/manifest.json`, `browser_extension/preview_chat.html`, `tests/test_browser_extension_contract.py`, `docs/45-ux-chat-v2-minuta-externa.md`.
+Proximo passo: Homologar visualmente a UI V2 no preview local antes de testar no SEI real autorizado.

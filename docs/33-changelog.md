@@ -2,6 +2,172 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.4.7-ux-chat-v2-minuta-externa] - 2026-06-23
+
+### Adicionado
+
+1. Barra de status operacional na UI chat: `Somente leitura`, `Backend local`
+   e `Revisao humana`.
+2. Acao rapida `Minuta`, limitada a rascunho externo para conferencia humana.
+3. Fechamento do painel pelo atalho `Esc`.
+4. Preview local atualizado com resposta simulada de minuta.
+5. Documento `docs/45-ux-chat-v2-minuta-externa.md`.
+6. Testes de contrato para a UI chat V2.
+
+### Alterado
+
+1. `browser_extension/manifest.json` atualizado para `0.2.1`.
+2. `browser_extension/content.js` passa a formatar minuta como rascunho externo.
+3. `browser_extension/content.css` passa a exibir status operacional fixo.
+
+### Seguranca
+
+1. A minuta nao e inserida no SEI pela extensao.
+2. A insercao no SEI permanece manual.
+3. A extensao continua sem clique automatico, cookie, token, sessao ou ato
+   oficial.
+
+## [0.4.6-preview-local-ui-chat] - 2026-06-23
+
+### Adicionado
+
+1. Preview local `browser_extension/preview_chat.html`.
+2. Shim local de `chrome.runtime.sendMessage` com resposta simulada.
+3. Documento `docs/44-preview-local-ui-chat-agente19.md`.
+4. Testes de contrato para preview local.
+
+### Seguranca
+
+1. Preview usa somente dados ficticios.
+2. Nao abre SEI real.
+3. Nao usa backend real.
+4. Nao usa senha, cookie, token ou sessao.
+5. Nao executa ato oficial.
+
+## [0.4.5-ui-chat-agente19-sei] - 2026-06-23
+
+### Adicionado
+
+1. UI da extensao reformulada como chat lateral profissional.
+2. Botao flutuante compacto `19`.
+3. Historico de mensagens do usuario e assistente.
+4. Campo de pergunta sobre o processo aberto.
+5. Acoes rapidas: capturar tela, resumo, prazos e providencia.
+6. Botao de copiar resposta.
+7. Documento `docs/43-ui-chat-agente19-sei.md`.
+
+### Alterado
+
+1. `browser_extension/manifest.json` atualizado para `0.2.0`.
+2. `browser_extension/content.js` e `content.css` substituem painel simples por chat.
+3. Testes da extensao ampliados para validar UI chat e modo read-only.
+
+### Seguranca
+
+1. Chat continua read-only.
+2. Sem login, senha, cookie, token ou sessao.
+3. Sem clique automatico no SEI.
+4. Sem ato oficial.
+5. Comunicacao restrita ao backend local `127.0.0.1`.
+
+## [0.4.4-resultado-diagnostico-real-api] - 2026-06-23
+
+### Adicionado
+
+1. Documento `docs/42-resultado-diagnostico-real-api-sei.md`.
+2. Tratamento de conexao encerrada pelo host remoto no diagnostico API.
+3. Ajuste do script `scripts/sei_api_discovery.py` para rodar diretamente.
+
+### Resultado
+
+1. `mod-wssei-v2`: `404 nao_encontrado`.
+2. `mod-wssei-v1`: `404 nao_encontrado`.
+3. `sei-soap-wsdl`: indisponivel sem credenciais/sessao; conexao encerrada pelo host remoto.
+
+### Seguranca
+
+1. Diagnostico real executado sem usuario, senha, cookie, token ou sessao.
+2. Nenhuma operacao de negocio foi chamada.
+3. API real segue nao habilitada.
+
+## [0.4.3-diagnostico-api-sei-wssei] - 2026-06-23
+
+### Adicionado
+
+1. `app/sei/api_discovery.py` para diagnostico seguro de endpoints SEI/WSSEI.
+2. `scripts/sei_api_discovery.py` para execucao manual do diagnostico.
+3. Testes automatizados em `tests/test_sei_api_discovery.py`.
+4. Documento `docs/41-diagnostico-api-sei-wssei.md`.
+
+### Seguranca
+
+1. Diagnostico nao envia usuario, senha, cookie, token ou sessao.
+2. Diagnostico nao usa sessao do navegador.
+3. Diagnostico nao executa operacao de negocio no SEI.
+4. URLs com credenciais sao recusadas.
+5. Resultado positivo nao autoriza uso real da API.
+
+## [0.4.2-fase5b-homologacao] - 2026-06-23
+
+### Adicionado
+
+1. `app/sei/minuta_cadastro.py` com contrato de cadastro da minuta.
+2. `app/sei/selector_manifest.py` com validacao de manifesto de seletores.
+3. `app/sei/fase5b_homologacao.py` com avaliador de prontidao para homologacao.
+4. Template `knowledge_base/sei_homologacao/minuta_selectors.template.json`.
+5. Testes automatizados em `tests/test_phase5b_homologacao.py`.
+
+### Seguranca
+
+1. `nivel_acesso` passa a ser obrigatorio antes de qualquer minuta real futura.
+2. Acesso restrito/sigiloso exige `hipotese_legal`.
+3. Campos administrativos podem ser exigidos por tipo documental.
+4. Manifesto bloqueia seletores relacionados a atos oficiais.
+5. Mesmo pronto para homologacao, `real_write_allowed=false`.
+6. Nenhum seletor real foi implementado.
+7. Escrita real no SEI continua nao habilitada.
+
+## [0.4.1-patch4-hardening-fase5a] - 2026-06-23
+
+### Adicionado
+
+1. `app/core/safety.py` com `evaluate_safety()` e `assert_safe_environment()`.
+2. Flags da FASE 5A em `app/core/config.py`.
+3. `app/sei/minuta_token.py` com token HMAC amarrado a processo, tipo e hash.
+4. `app/sei/read_only_page.py` para leitura sem expor pagina crua.
+5. `app/sei/playwright_session.py` como unico arquivo autorizado a abrir sessao Playwright efemera.
+6. `app/sei/minuta_writer.py` como chokepoint de minuta controlada simulada.
+7. Testes automatizados em `tests/test_phase5a_minuta_controlada.py`.
+
+### Seguranca
+
+1. `MINUTA_TOKEN_SECRET` padrao e segredo curto bloqueados em `APP_ENV=prod`.
+2. `ENABLE_MINUTA_CREATION=true` bloqueado em producao enquanto FASE 5B nao estiver homologada.
+3. Startup do painel e desktop chama `assert_safe_environment()`.
+4. `MinutaWriter` exige token e valida processo correto.
+5. Auditoria da FASE 5A registra `text_hash`, nunca texto integral.
+6. Escrita real no SEI permanece como `NotImplementedError`.
+7. Teste arquitetural bloqueia uso direto de Playwright fora de `app/sei/playwright_session.py`.
+
+## [0.4.0-enquadramento-arquitetural-sei-particular] - 2026-06-23
+
+### Alterado
+
+1. README reenquadrado como "Agente SEI Inteligente Particular — assistente local supervisionado para analise de processos, geracao de minutas e apoio operacional no SEI."
+2. Documentada a premissa de login manual do usuario no SEI Goias.
+3. Explicitado que o agente nao guarda senha, cookie, token ou sessao.
+4. Explicitado que a sessao Playwright deve ser efemera e que o LLM nao controla o navegador.
+5. Roadmap atualizado para FASE 4, FASE 5A, FASE 5B, FASE 6 e FASE 7.
+6. Criado documento `docs/fase-5-minuta-controlada.md`.
+
+### Seguranca
+
+1. Registrados allow-list/default-deny, chokepoint, `ReadOnlyPage`, `MinutaWriter`, token de confirmacao, hash de conteudo e feature flags desligadas por padrao.
+2. FASE 5A documentada como minuta controlada simulada, sem escrita real no SEI.
+3. FASE 5B mantida como futura, condicionada a seletores homologados.
+4. Escrita real no SEI continua nao habilitada.
+5. PATCH 4 definido como proximo passo de hardening.
+
 ## [0.3.7-knowledge-base-local-19crpm] - 2026-06-22
 
 ### Adicionado
