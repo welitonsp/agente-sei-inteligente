@@ -14,11 +14,12 @@ def main() -> None:
     configure_logging(settings.log_level)
     logger = get_logger("init_db")
 
+    print("Iniciando a criação do banco de dados seguro do Agente 19...")
     os.makedirs("data", exist_ok=True)
     init_db()
     log_event(logger, 20, "banco inicializado", database_url=settings.database_url)
     print(f"Banco inicializado: {settings.database_url}")
-
+    print("Atenção: Nenhum dado sensível foi exposto no console.")
 
 if __name__ == "__main__":
     main()

@@ -8,7 +8,38 @@ de modo que senha, cookie ou token nunca cheguem ao banco (docs/20, docs/25).
 from __future__ import annotations
 
 import logging
+import hashlib
 from typing import Any
+
+def get_hash(text: str) -> str:
+    return hashlib.sha256(text.encode('utf-8')).hexdigest()
+
+def mask_process_number(process_number: str) -> str:
+    if len(process_number) > 6:
+        return process_number[:3] + "***" + process_number[-3:]
+    return "***"
+
+def log_audit_event(event_type: str, action: str, status: str, process_number: str | None = None, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
+    from app.core.security_filter import sanitize
+    process_info = None
+    if process_number:
+        process_info = {
+            "process_number_masked": mask_process_number(process_number),
+            "process_number_hash": get_hash(process_number)
+        }
+    
+    sanitized_metadata = dict(metadata) if metadata else {}
+    keys_to_remove = ["password", "cookie", "session", "token", "full_text"]
+    for key in keys_to_remove:
+        sanitized_metadata.pop(key, None)
+            
+    return {
+        "event_type": event_type,
+        "action": action,
+        "status": status,
+        "process_info": process_info,
+        "metadata": sanitized_metadata
+    }
 
 from app.core.logging import get_logger, log_event
 from app.core.security_filter import sanitize

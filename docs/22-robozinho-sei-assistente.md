@@ -1,8 +1,8 @@
-# Robozinho SEI - Assistente visual do 19 CRPM
+# Agente 19 - Assistente visual flutuante do 19 CRPM
 
 ## Visao do gestor de processos
 
-O objetivo e criar um assistente visual que apareca na tela do SEI como um robozinho. O servidor, ja logado no SEI com seu proprio usuario e senha, clica no robozinho, informa o numero do processo SEI e pede ajuda.
+O objetivo e criar um assistente visual (o Agente 19, Funcionario Digital de IA) que apareca na tela do SEI como uma janela ou logo flutuante. O servidor, ja logado exclusivamente na pagina oficial do SEI com seu proprio usuario e senha, clica no Agente 19, informa o numero do processo SEI e aciona o assistente.
 
 O agente deve:
 
@@ -15,8 +15,11 @@ O agente deve:
 7. Identificar finalidade.
 8. Identificar unidade de origem.
 9. Sugerir qual unidade pertencente ao 19 CRPM deve receber a providencia.
-10. Gerar minuta/arquivo de trabalho fora do SEI.
-11. Registrar log da analise.
+10. Exportar o processo em PDF e analisar sua totalidade.
+11. Perguntar se o usuario deseja criar Oficio, Despacho, Ordem de Atendimento, etc.
+12. Apos confirmacao, criar a minuta dentro do SEI, preencher, e avisar que esta pronta para revisao humana.
+13. O humano revisa, corrige, assina e tramita manualmente.
+14. Registrar log da analise.
 
 ## Formato visual aprovado
 

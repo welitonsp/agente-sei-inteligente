@@ -425,6 +425,91 @@ PROTOTIPO_IMPLEMENTADO
 6. Inserir conteudo no SEI sem acao humana.
 7. Burlar politica institucional de extensao ou navegador.
 
+## Checklist 12B - FASE 38: Agente SEI RPA Assistido
+
+Objetivo: Permitir que o Agente 19 atue diretamente no SEI apenas para preenchimento, apos acionamento pelo usuario.
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Implementar acionamento por numero de processo | NAO_INICIADO |
+| Garantir que Agente use a sessao sem capturar credenciais | NAO_INICIADO |
+| Exportar processo para PDF usando a interface atual | NAO_INICIADO |
+| Criar interacao para escolha de minuta (Oficio, Despacho, etc.) | NAO_INICIADO |
+| Implementar preenchimento assistido da minuta no SEI | NAO_INICIADO |
+
+### Aceite
+
+1. Senha/token NUNCA e armazenado.
+2. Agente so preenche minuta se o humano autorizar.
+3. Agente NUNCA assina ou tramita documento.
+
+## Checklist 13B - FASE 39: Memoria Institucional e Aprendizado Supervisionado
+
+Objetivo: Permitir que o Agente 19 aprenda com a unidade.
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Estruturar banco de dados da Memoria Institucional | NAO_INICIADO |
+| Capturar correcoes em minutas antes do envio final | NAO_INICIADO |
+| Refinar prompts e sugestoes com base no historico local | NAO_INICIADO |
+
+### Aceite
+
+1. O Agente nao altera regras de negocio de forma autonoma.
+2. Dados sensiveis nao vazam para treinar modelos publicos.
+
+## Decisao de inicio
+
+Objetivo: permitir uso local sem extensao de navegador, mantendo o login do SEI
+exclusivamente na pagina oficial e fora do Agente 19.
+
+Status atual:
+
+```text
+PROTOTIPO_IMPLEMENTADO
+```
+
+### Pre-condicoes obrigatorias
+
+| Item | Status |
+| --- | --- |
+| Decisao de nao capturar credenciais do SEI | APROVADO |
+| Backend local texto/PDF | APROVADO |
+| Guardiao de atos oficiais | APROVADO |
+| Extensao institucional indisponivel/bloqueada | IDENTIFICADO |
+| Homologacao institucional do desktop | NAO_INICIADO |
+
+### Execucao
+
+| Item | Status |
+| --- | --- |
+| Criar pacote `app.desktop` | CONCLUIDO |
+| Criar comando `.venv\Scripts\python.exe -m app.desktop` | CONCLUIDO |
+| Abrir URL oficial do SEI em navegador/janela separada | CONCLUIDO |
+| Manter aviso fixo de seguranca | CONCLUIDO |
+| Colar texto copiado manualmente do SEI | CONCLUIDO |
+| Selecionar PDF exportado manualmente do SEI | CONCLUIDO |
+| Analisar texto/PDF via backend local `127.0.0.1` | CONCLUIDO |
+| Gerar resumo/tipo provavel/evento/prazo/providencia | CONCLUIDO no prototipo |
+| Copiar resultado | CONCLUIDO |
+| Bloquear campos/payloads com credenciais | CONCLUIDO |
+| Testar ausencia de campo senha/login SEI | CONCLUIDO |
+| Homologar desktop em ambiente institucional | NAO_INICIADO |
+
+### Proibido nesta fase
+
+1. Pedir usuario ou senha do SEI.
+2. Salvar usuario ou senha do SEI.
+3. Ler cookie, sessao, token ou localStorage/sessionStorage.
+4. Automatizar clique no SEI.
+5. Assinar, tramitar, enviar, concluir ou criar documento oficial no SEI.
+6. Inserir conteudo no SEI sem acao humana.
+7. Burlar politica institucional de extensao ou navegador.
+
 ## Checklist 13 - Estrategia zero custo
 
 Objetivo: garantir que o projeto nao dependa de servico pago.

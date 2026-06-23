@@ -124,3 +124,4 @@ def is_sensitive(action: "Action | str") -> bool:
     """True se a acao for permitida porem exigir aprovacao humana."""
     resolved = coerce_action(action)
     return resolved is not None and resolved in SENSITIVE_ACTIONS
+

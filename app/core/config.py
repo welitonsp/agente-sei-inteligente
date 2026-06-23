@@ -111,8 +111,58 @@ class Settings(BaseSettings):
         """OFFICERS_GROUP_EMAIL so e obrigatorio no modo group_email."""
         return self.officers_source == "group_email"
 
+    @property
+    def DATABASE_URL(self) -> str:
+        return self.database_url
+
+    @DATABASE_URL.setter
+    def DATABASE_URL(self, value: str) -> None:
+        self.database_url = value
+
+    @property
+    def APP_ENV(self) -> str:
+        return self.app_env
+
+    @APP_ENV.setter
+    def APP_ENV(self, value: str) -> None:
+        self.app_env = value
+
+    @property
+    def SEI_BASE_URL(self) -> str:
+        return self.sei_base_url
+
+    @SEI_BASE_URL.setter
+    def SEI_BASE_URL(self, value: str) -> None:
+        self.sei_base_url = value
+
+    @property
+    def ENABLE_SEI_BROWSER_AUTOMATION(self) -> bool:
+        return self.enable_sei_browser_automation
+
+    @ENABLE_SEI_BROWSER_AUTOMATION.setter
+    def ENABLE_SEI_BROWSER_AUTOMATION(self, value: bool) -> None:
+        self.enable_sei_browser_automation = value
+
+    @property
+    def ENABLE_DRAFT_CREATION(self) -> bool:
+        return self.enable_minuta_creation
+
+    @ENABLE_DRAFT_CREATION.setter
+    def ENABLE_DRAFT_CREATION(self, value: bool) -> None:
+        self.enable_minuta_creation = value
+
+    @property
+    def ENABLE_GOOGLE_CALENDAR_DRY_RUN(self) -> bool:
+        return self.calendar_backend == "dry_run"
+
+    @property
+    def LOG_FULL_TEXT(self) -> bool:
+        return self.log_full_text
+
 
 @lru_cache
 def get_settings() -> Settings:
     """Retorna a configuracao (cacheada) do processo."""
     return Settings()
+
+settings = get_settings()

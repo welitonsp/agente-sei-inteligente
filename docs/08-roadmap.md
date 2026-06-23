@@ -1,4 +1,4 @@
-# Roadmap
+﻿# Roadmap
 
 ## Premissa atual
 
@@ -49,7 +49,7 @@ Resultado:
 6. Knowledge base local 19 CRPM.
 7. Agenda em dry-run.
 
-## FASE 4 - Leitura/análise supervisionada
+## FASE 4 - Leitura/anÃ¡lise supervisionada
 
 Status: em desenvolvimento.
 
@@ -154,3 +154,108 @@ Resultado esperado:
 3. Revisao de logs e auditoria.
 4. Revisao de politica de instalacao/uso.
 5. Revisao de testes de regressao de seguranca.
+Resultado:
+
+1. Bot Telegram.
+2. Mensagens padronizadas.
+3. Status de envio.
+4. Reenvio em falha.
+5. Logs de notificacao.
+
+## Etapa 5 - Leitura de e-mail
+
+Resultado:
+
+1. Conexao com e-mail institucional.
+2. Leitura de caixa de entrada.
+3. Extracao de corpo e anexos.
+4. Marcacao como processado.
+5. Evitar reprocessamento.
+
+## Etapa 6 - Leitura de PDF
+
+Resultado:
+
+1. Extracao de texto.
+2. Identificacao de PDF sem texto.
+3. Resumo.
+4. Extracao de data, horario e local.
+5. Registro do documento.
+
+## Etapa 7 - Inteligencia administrativa
+
+Resultado:
+
+1. Classificador.
+2. Extrator de eventos.
+3. Extrator de prazos.
+4. Sugeridor de providencia.
+5. Gerador de minuta.
+6. Indicador de confianca.
+
+## Etapa 8 - Interface web
+
+Resultado:
+
+1. Painel de demandas.
+2. Fila de revisao.
+3. Visualizacao de agenda.
+4. Editor de minuta.
+5. Logs.
+6. Configuracoes.
+
+## Etapa 9 - SEI read-only
+
+Resultado:
+
+1. Abertura manual do SEI pelo servidor.
+2. Uso da sessao ja autenticada na estacao do servidor.
+3. Leitura assistida somente da pagina atual ou documento selecionado.
+4. Resumo.
+5. Sem senha armazenada.
+6. Sem usuario unico.
+7. Sem atos oficiais.
+
+## Etapa 10 - Minutador SEI assistido
+
+Resultado:
+
+1. Gerar minuta fora do SEI.
+2. Exibir texto para revisao humana.
+3. Permitir copia manual pelo servidor.
+4. Bloquear assinatura e envio.
+5. Registrar auditoria interna do agente.
+
+Observacao: a criacao de minuta (escrita automatica dentro do SEI) exige confirmacao humana previa. O Agente 19 preenche a minuta mas o humano revisa, corrige, assina e tramita manualmente.
+
+## Etapa 11 - Operacao v1
+
+Resultado:
+
+1. Agente funcional em rotina real controlada.
+2. Agenda.
+3. Celular.
+4. E-mail.
+5. PDF.
+6. Minutas.
+7. Logs.
+8. Seguranca.
+
+## Etapa 12 - FASE 38: Agente SEI RPA Assistido (NÃºmero de Processo)
+
+Resultado:
+
+1. O servidor aciona o Agente 19 por uma janela/logo flutuante, informando o nÃºmero do processo.
+2. O Agente abre o processo e exporta para PDF usando a sessÃ£o ativa do usuÃ¡rio, sem capturar token ou senha.
+3. AnÃ¡lise integral do processo identificando metadados essenciais.
+4. Pergunta proativa sobre criaÃ§Ã£o de minuta (OfÃ­cio, Despacho, etc.).
+5. CriaÃ§Ã£o da minuta (apÃ³s confirmaÃ§Ã£o), preenchimento sem assinatura e aviso de prontidÃ£o.
+
+## Etapa 13 - FASE 39: MemÃ³ria Institucional e Aprendizado Supervisionado
+
+Resultado:
+
+1. O Agente 19 registra e mantÃ©m o histÃ³rico institucional de decisÃµes e minutas (MemÃ³ria Institucional).
+2. O Agente aprende supervisionadamente com as correÃ§Ãµes de texto feitas pelos humanos durante a revisÃ£o.
+3. Melhoria contÃ­nua e segura nas sugestÃµes de providÃªncias e classificaÃ§Ãµes.
+

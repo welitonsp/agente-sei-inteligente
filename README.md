@@ -1,4 +1,6 @@
-# Agente SEI Inteligente Particular — assistente local supervisionado para analise de processos, geracao de minutas e apoio operacional no SEI.
+# Agente SEI Inteligente Particular (Agente 19) — Funcionário Digital de IA do 19º CRPM
+
+Documentacao-base do projeto do Agente 19, o Funcionário Digital de IA criado para apoiar a rotina do 19º CRPM com e-mail institucional, PDF, Google Agenda, alertas em celular, minutas administrativas e uso assistido do SEI.
 
 Versao documental: 0.4.7
 Data: 2026-06-23
@@ -11,6 +13,25 @@ O Agente SEI Inteligente Particular, tambem chamado Agente 19, e uma solucao loc
 Nao ha autorizacao de API oficial, WSSEI, modulo oficial SEI IA ou acesso de TI. Por isso, o projeto nao deve se apresentar como integracao institucional oficial. O usuario faz login manualmente no SEI, diretamente na pagina oficial, e o agente apenas apoia leitura, classificacao, resumo, providencias e minutas sob supervisao humana.
 
 O agente prepara, organiza e sugere. Ele nao substitui o usuario logado, nao pratica ato oficial e nao assume responsabilidade administrativa.
+
+**Regra-mãe**: O Agente 19 prepara, sugere, organiza, cria minuta e aprende. O humano revisa, assina e pratica o ato oficial.
+
+O sistema não substitui a autoridade humana.
+
+**Limites obrigatórios**: O Agente 19 NÃO pode:
+- pedir senha do SEI;
+- armazenar senha;
+- armazenar cookie;
+- armazenar sessão;
+- capturar token;
+- assinar documento;
+- tramitar processo;
+- concluir processo;
+- excluir documento;
+- cancelar documento;
+- dar ciência automática;
+- enviar processo automaticamente;
+- praticar ato oficial final.
 
 ## Modelo de sessao SEI
 
@@ -240,7 +261,13 @@ Agente 19 Desktop:
 | [docs/07-modelos-de-minutas.md](docs/07-modelos-de-minutas.md) | Modelos iniciais de minutas administrativas |
 | [docs/08-roadmap.md](docs/08-roadmap.md) | Etapas de evolucao do projeto |
 | [docs/27-checklist-processos-desenvolvimento.md](docs/27-checklist-processos-desenvolvimento.md) | Checklist de processos para desenvolvimento |
+| [docs/28-regras-git-ia.md](docs/28-regras-git-ia.md) | Regras de commit, push, PR e merge com uso de IA |
+| [docs/29-regra-documentacao-continua.md](docs/29-regra-documentacao-continua.md) | Regra para documentar processos, decisoes e mudancas continuamente |
+| [docs/30-registro-decisoes.md](docs/30-registro-decisoes.md) | Registro historico de decisoes arquiteturais e operacionais |
+| [docs/31-registro-processos.md](docs/31-registro-processos.md) | Registro de mapeamentos de processos da unidade |
+| [docs/32-registro-testes-homologacao.md](docs/32-registro-testes-homologacao.md) | Logs e resultados das sessoes de homologacao do Agente 19 |
 | [docs/33-changelog.md](docs/33-changelog.md) | Changelog das entregas |
+| [docs/34-prompt-claude-code.md](docs/34-prompt-claude-code.md) | Prompt mestre para executar o projeto |
 | [docs/36-relatorio-status-projeto.md](docs/36-relatorio-status-projeto.md) | Relatorio consolidado do que foi feito e do que falta |
 | [docs/fase-5-minuta-controlada.md](docs/fase-5-minuta-controlada.md) | FASE 5A/5B de minuta controlada |
 | [docs/37-fase-desktop-navegador-seguro.md](docs/37-fase-desktop-navegador-seguro.md) | Agente 19 Desktop com navegador seguro |
@@ -252,6 +279,43 @@ Agente 19 Desktop:
 | [docs/43-ui-chat-agente19-sei.md](docs/43-ui-chat-agente19-sei.md) | UI chat do Agente 19 na tela do SEI |
 | [docs/44-preview-local-ui-chat-agente19.md](docs/44-preview-local-ui-chat-agente19.md) | Preview local da UI chat |
 | [docs/45-ux-chat-v2-minuta-externa.md](docs/45-ux-chat-v2-minuta-externa.md) | UX Chat V2 e minuta externa supervisionada |
+
+## Estrutura-alvo
+
+```text
+agente-sei-inteligente/
+├── README.md
+├── .env.example
+├── docs/
+├── app/
+│   ├── core/
+│   ├── intake/
+│   ├── intelligence/
+│   ├── integrations/
+│   ├── sei/
+│   ├── storage/
+│   ├── workers/
+│   └── dashboard/
+├── knowledge_base/
+├── tests/
+└── scripts/
+```
+
+## Stack recomendada
+
+| Camada | Opcao inicial |
+| --- | --- |
+| Backend | Python com FastAPI |
+| Interface web | Streamlit para MVP ou React/Next.js para produto final |
+| Banco inicial | SQLite |
+| Banco futuro | PostgreSQL |
+| Fila simples | APScheduler ou RQ |
+| PDF | PyMuPDF ou pdfplumber |
+| E-mail | IMAP, Gmail API ou Microsoft Graph, conforme conta institucional |
+| Agenda | Google Calendar API |
+| Alertas | Telegram Bot API |
+| Automacao web assistida | Playwright, sempre protegido por guarda de acoes |
+| IA | Provedor configuravel, com opcao local ou API externa |
 
 ## Regra de ouro
 

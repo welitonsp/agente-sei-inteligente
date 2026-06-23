@@ -23,6 +23,9 @@ Logo, se um agente central usar uma credencial unica, o sistema registrara as ac
 5. Nao praticar ato oficial sem usuario humano autenticado.
 6. Nao mascarar autoria de acesso, edicao, ciencia, envio, conclusao ou assinatura.
 7. Nao permitir que um servidor opere processo em nome de outro pela interface do agente.
+8. Nao pedir senha do SEI em nenhuma interface do Agente 19.
+9. Nao armazenar cookie ou sessao do navegador.
+10. Nao capturar token de autenticacao.
 
 ## Modelo correto de sessao
 

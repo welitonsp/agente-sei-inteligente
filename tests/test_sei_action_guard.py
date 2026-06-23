@@ -85,3 +85,4 @@ def test_contrato_de_saida_tem_campos_obrigatorios():
     contrato = res.to_contract()
     assert set(contrato) == {"permitido", "motivo", "acao", "deve_registrar_log"}
     assert isinstance(res, GuardResult)
+

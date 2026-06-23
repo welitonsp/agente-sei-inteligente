@@ -59,3 +59,4 @@ def assert_safe_environment(settings: Settings | None = None) -> SafetyReport:
         joined = "; ".join(report.violations)
         raise RuntimeError(f"Ambiente inseguro para iniciar o Agente 19: {joined}")
     return report
+

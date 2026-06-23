@@ -149,3 +149,4 @@ def assert_allowed(request: GuardRequest) -> GuardResult:
             f"[GUARD] {result.decisao.value.upper()}: {result.motivo}"
         )
     return result
+
