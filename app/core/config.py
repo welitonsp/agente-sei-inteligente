@@ -67,9 +67,14 @@ class Settings(BaseSettings):
     minuta_token_secret: str = "dev-insecure-trocar-em-producao"
     log_full_text: bool = False
 
-    # IA (provedor configuravel)
+    # IA (provedor configuravel). Padrao: Claude (Anthropic).
+    #   claude/anthropic -> ClaudeProvider (requer ANTHROPIC_API_KEY)
+    #   echo/none        -> EchoProvider offline (testes / custo zero)
     ai_provider: str = ""
     ai_model: str = ""
+    # SEGREDO: apenas no .env local, nunca versionado. Se vazio, o SDK tenta
+    # resolver a credencial pelo ambiente (ANTHROPIC_API_KEY).
+    anthropic_api_key: str = ""
 
     # Seguranca e auditoria
     log_level: str = "INFO"

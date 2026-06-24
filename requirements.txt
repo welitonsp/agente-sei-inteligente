@@ -12,5 +12,9 @@ google-api-python-client>=2.0
 google-auth>=2.0
 google-auth-oauthlib>=1.0
 
+# Camada de IA (Claude no controle) - import tardio em ClaudeProvider.
+# Necessario apenas para o provedor real Claude; testes e modo echo nao usam.
+anthropic>=0.40
+
 # Desenvolvimento / testes
 pytest>=8.0
