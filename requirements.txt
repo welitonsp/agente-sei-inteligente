@@ -4,6 +4,7 @@ pydantic-settings>=2.3
 SQLAlchemy>=2.0
 python-dotenv>=1.0
 pypdf>=4.0
+PyMuPDF>=1.23.0
 
 # Integracao Google Agenda (Etapa 3) - import tardio em GoogleCalendarBackend.
 # Necessario apenas para criar eventos reais; testes usam backend em memoria.

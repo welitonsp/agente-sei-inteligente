@@ -2,47 +2,52 @@
   "version": "fase-5b-template",
   "environment": "homologacao",
   "real_write_enabled": false,
-  "notes": "Template sem seletores reais. Preencher somente em homologacao controlada.",
+  "notes": "Template com seletores candidatos não validados. Todos permanecem pending até homologação manual supervisionada. Não autoriza escrita real no SEI.",
   "selectors": {
-    "abrir_incluir_documento": {
-      "value": "",
-      "status": "pendente",
-      "evidence": ""
+    "process_number_area": {
+      "value": "#divArvoreInformacao > a",
+      "status": "pending",
+      "evidence": "Inspirado em projetos RPA e Extensões"
     },
-    "selecionar_tipo_documento": {
-      "value": "",
-      "status": "pendente",
-      "evidence": ""
+    "include_document_button": {
+      "value": "img[title='Incluir Documento']",
+      "status": "pending",
+      "evidence": "Inspirado em projetos RPA"
     },
-    "campo_descricao": {
-      "value": "",
-      "status": "pendente",
-      "evidence": ""
+    "document_type_search": {
+      "value": "#txtPesquisaProcedimento",
+      "status": "pending",
+      "evidence": "Padrão SEI"
     },
-    "campo_interessado": {
-      "value": "",
-      "status": "pendente",
-      "evidence": ""
+    "document_type_option": {
+      "value": "a.classeArvore[onclick*='escolherTipoDocumento']",
+      "status": "pending",
+      "evidence": "Padrão SEI"
     },
-    "campo_destinatario": {
-      "value": "",
-      "status": "pendente",
-      "evidence": ""
+    "document_description": {
+      "value": "#txtDescricao",
+      "status": "pending",
+      "evidence": "Padrão SEI"
     },
-    "campo_nivel_acesso": {
-      "value": "",
-      "status": "pendente",
-      "evidence": ""
+    "document_access_level": {
+      "value": "input[name='optNivelAcesso']",
+      "status": "pending",
+      "evidence": "Padrão SEI"
     },
-    "editor_texto": {
-      "value": "",
-      "status": "pendente",
-      "evidence": ""
+    "editor_frame": {
+      "value": "iframe#ifrEditor",
+      "status": "pending",
+      "evidence": "Padrão CKEditor/SEI"
     },
-    "salvar_minuta": {
-      "value": "",
-      "status": "pendente",
-      "evidence": ""
+    "editor_body": {
+      "value": "body.cke_editable",
+      "status": "pending",
+      "evidence": "Padrão CKEditor"
+    },
+    "save_button": {
+      "value": "#btnSalvar",
+      "status": "pending",
+      "evidence": "Padrão SEI"
     }
   }
 }
