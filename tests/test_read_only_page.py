@@ -3,9 +3,19 @@
 import pytest
 from app.sei.read_only_page import ReadOnlyPage, ReadOnlyPageSnapshot
 
+class FakeElement:
+    """Elemento simulado com leitura de texto."""
+
+    def __init__(self, texto: str) -> None:
+        self._texto = texto
+
+    def inner_text(self) -> str:
+        return self._texto
+
+
 class FakePage:
     """Mock simples simulando uma pagina Playwright."""
-    
+
     @property
     def url(self) -> str:
         return "https://sei.go.gov.br/sei/controlador.php?acao=procedimento_trabalhar"
@@ -17,6 +27,15 @@ class FakePage:
         if selector == "body":
             return "Processo 202600000123456 aberto."
         return ""
+
+    def query_selector_all(self, selector: str):
+        if selector == "a":
+            return [
+                FakeElement("Despacho 123 (0001)"),
+                FakeElement("Ofício 456 (0002)"),
+                FakeElement("   "),  # vazio: deve ser ignorado
+            ]
+        return []
 
 
 def test_read_only_page_permite_leitura_esperada():
@@ -67,3 +86,26 @@ def test_read_only_page_bloqueia_metodos_escrita():
 
     for method in forbidden_methods:
         assert not hasattr(ro_page, method), f"ReadOnlyPage nao deve possuir o metodo {method}"
+
+
+def test_read_only_page_le_arvore_de_documentos():
+    """A leitura da árvore devolve apenas títulos não vazios."""
+    ro_page = ReadOnlyPage(FakePage())
+    titulos = ro_page.document_tree()
+    assert titulos == ("Despacho 123 (0001)", "Ofício 456 (0002)")
+
+
+def test_document_tree_tolerante_a_pagina_sem_query():
+    """Sem query_selector_all a leitura da árvore retorna vazio, sem falhar."""
+
+    class PaginaSemQuery:
+        url = "x"
+
+        def title(self) -> str:
+            return "t"
+
+        def text_content(self, selector: str) -> str:
+            return ""
+
+    ro_page = ReadOnlyPage(PaginaSemQuery())
+    assert ro_page.document_tree() == ()
