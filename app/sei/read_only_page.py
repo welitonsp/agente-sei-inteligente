@@ -61,6 +61,37 @@ class ReadOnlyPage:
         text = self.visible_text()
         return tuple(match.group(0) for match in PROCESS_NUMBER_PATTERN.finditer(text))
 
+    def document_tree(self) -> tuple[str, ...]:
+        """Lê os títulos dos documentos da árvore do processo, somente leitura.
+
+        Usa um acessor de leitura (`query_selector_all`) defensivamente: se a
+        página não o expuser, devolve tupla vazia em vez de falhar. Nenhum
+        clique, navegação ou escrita é realizado.
+        """
+        query = getattr(self._page, "query_selector_all", None)
+        if not callable(query):
+            return ()
+        titulos: list[str] = []
+        for elemento in query("a") or ():
+            texto = _element_text(elemento)
+            if texto:
+                titulos.append(texto)
+        return tuple(titulos)
+
 
 def _digits(value: str) -> str:
     return "".join(ch for ch in str(value) if ch.isdigit())
+
+
+def _element_text(elemento: Any) -> str:
+    """Extrai texto de um elemento de forma read-only e tolerante."""
+    for attr in ("inner_text", "text_content"):
+        metodo = getattr(elemento, attr, None)
+        if callable(metodo):
+            try:
+                texto = metodo()
+            except Exception:
+                continue
+            if texto:
+                return str(texto).strip()
+    return ""

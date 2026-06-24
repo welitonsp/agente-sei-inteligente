@@ -34,6 +34,9 @@ def main():
     print(f"Resumo da Ação: {analysis_result.get('resumo_curto')}")
     print(f"Providência Sugerida: {analysis_result.get('providencia_sugerida')}")
     print(f"Tem Prazo? {'Sim' if analysis_result.get('prazo_detectado') else 'Não'}")
+    for prazo in analysis_result.get("prazos", []):
+        limite = f" | data-limite: {prazo['data_limite']}" if prazo.get("data_limite") else ""
+        print(f"   - Prazo identificado: {prazo['descricao']} ({prazo['tipo']}){limite}")
     print(f"Confiança: {analysis_result.get('confianca')}")
     print("-" * 40)
     print(f"Preview Seguro (Higienizado):\n{pipeline_result.get('safe_preview')}")

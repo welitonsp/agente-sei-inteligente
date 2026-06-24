@@ -6,9 +6,15 @@ Esta fase implementa o esqueleto técnico inicial do Agente 19, garantindo que t
 ## Principais Componentes Implementados
 
 ### 1. Guardião de Ações (SEI Action Guard)
-O arquivo `app/sei/sei_action_guard.py` contém uma lista rígida de ações proibidas (`PROHIBITED_ACTIONS`). A função `validate_action` atua como interceptadora, lançando `ActionBlockedError` caso haja qualquer tentativa de:
-- Assinar, tramitar, concluir ou excluir documentos/processos.
-- Capturar ou vazar senhas, cookies, sessões ou tokens.
+A fonte única da verdade sobre ações vive em `app/core/permissions.py`
+(`ALLOWED_ACTIONS`, `FORBIDDEN_ACTIONS`, `SENSITIVE_ACTIONS`), com política de
+**negação por padrão**. O guard em `app/sei/sei_action_guard.py` expõe a função
+pura `evaluate(GuardRequest) -> GuardResult` e o atalho defensivo
+`assert_allowed`, que levanta `PermissionError` quando a ação não é permitida.
+A fachada `app/sei/sei_guardian.py` (`SeiGuardian`) encaminha o nome da ação a
+esse guard. Atos oficiais (assinar, tramitar, concluir, excluir, dar ciência,
+liberar acesso externo, alterar sigilo) são **bloqueio duro**, independentemente
+de qualquer flag de ambiente.
 
 ### 2. Política de Navegador (Browser Policy)
 O `app/sei/browser_policy.py` garante que:
@@ -23,7 +29,10 @@ O módulo de auditoria (`app/core/audit.py`) foi desenvolvido com base no princ�
 - Campos sensíveis submetidos por engano (como `password` ou `cookie` em requests malformadas) são filtrados agressivamente antes de registrar a auditoria.
 
 ### 4. Inteligência Institucional Básica e Aprendizado
-- O `institutional_analyzer.py` introduz classificações básicas (ex. identificação de ofícios e prazos).
+- O `institutional_analyzer.py` faz classificação de tipo (insensível a acento),
+  resumo extractivo real (via `summarizer.py`, sanitizado contra PII) e extração
+  estruturada de prazos relativos e absolutos com data-limite (via
+  `prazo_extractor.py`). A confiança é derivada de sinais, não fixa.
 - O `draft_generator.py` assegura que minutas são produzidas e retidas **apenas em memória** até aprovação humana, sem injeção direta no SEI nesta etapa.
 - O `learning_policy.py` implementa a retenção de correções para melhoria de prompts, cuidando explicitamente de não salvar senhas e tokens atrelados à ação.
 
