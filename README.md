@@ -283,6 +283,7 @@ Agente 19 Desktop:
 | [docs/47-seletores-descobertos-referencia.md](docs/47-seletores-descobertos-referencia.md) | Mapeamento Padrão Descoberto de Seletores |
 | [docs/48-fase5c-validacao-supervisionada-seletores.md](docs/48-fase5c-validacao-supervisionada-seletores.md) | FASE 5C-H: Coleta Manual de Seletores |
 | [docs/51-fase5d-simulacao-operacional.md](docs/51-fase5d-simulacao-operacional.md) | FASE 5D-S: Simulação Operacional Ponta a Ponta |
+| [docs/52-referencias-github-sei.md](docs/52-referencias-github-sei.md) | Estudo de repositórios GitHub do SEI e aprendizados aplicáveis |
 
 ## Estrutura-alvo
 
