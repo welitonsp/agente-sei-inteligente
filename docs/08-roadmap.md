@@ -49,7 +49,7 @@ Resultado:
 6. Knowledge base local 19 CRPM.
 7. Agenda em dry-run.
 
-## FASE 4 - Leitura/anÃ¡lise supervisionada
+## FASE 4 - Leitura/análise supervisionada
 
 Status: em desenvolvimento.
 
@@ -241,21 +241,21 @@ Resultado:
 7. Logs.
 8. Seguranca.
 
-## Etapa 12 - FASE 38: Agente SEI RPA Assistido (NÃºmero de Processo)
+## Etapa 12 - FASE 38: Agente SEI RPA Assistido (Número de Processo)
 
 Resultado:
 
-1. O servidor aciona o Agente 19 por uma janela/logo flutuante, informando o nÃºmero do processo.
-2. O Agente abre o processo e exporta para PDF usando a sessÃ£o ativa do usuÃ¡rio, sem capturar token ou senha.
-3. AnÃ¡lise integral do processo identificando metadados essenciais.
-4. Pergunta proativa sobre criaÃ§Ã£o de minuta (OfÃ­cio, Despacho, etc.).
-5. CriaÃ§Ã£o da minuta (apÃ³s confirmaÃ§Ã£o), preenchimento sem assinatura e aviso de prontidÃ£o.
+1. O servidor aciona o Agente 19 por uma janela/logo flutuante, informando o número do processo.
+2. O Agente abre o processo e exporta para PDF usando a sessão ativa do usuário, sem capturar token ou senha.
+3. Análise integral do processo identificando metadados essenciais.
+4. Pergunta proativa sobre criação de minuta (Ofício, Despacho, etc.).
+5. Criação da minuta (após confirmação), preenchimento sem assinatura e aviso de prontidão.
 
-## Etapa 13 - FASE 39: MemÃ³ria Institucional e Aprendizado Supervisionado
+## Etapa 13 - FASE 39: Memória Institucional e Aprendizado Supervisionado
 
 Resultado:
 
-1. O Agente 19 registra e mantÃ©m o histÃ³rico institucional de decisÃµes e minutas (MemÃ³ria Institucional).
-2. O Agente aprende supervisionadamente com as correÃ§Ãµes de texto feitas pelos humanos durante a revisÃ£o.
-3. Melhoria contÃ­nua e segura nas sugestÃµes de providÃªncias e classificaÃ§Ãµes.
+1. O Agente 19 registra e mantém o histórico institucional de decisões e minutas (Memória Institucional).
+2. O Agente aprende supervisionadamente com as correções de texto feitas pelos humanos durante a revisão.
+3. Melhoria contínua e segura nas sugestões de providências e classificações.
 
