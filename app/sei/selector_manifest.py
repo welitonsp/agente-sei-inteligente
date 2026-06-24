@@ -13,14 +13,15 @@ from typing import Any
 
 
 REQUIRED_SELECTOR_KEYS = (
-    "abrir_incluir_documento",
-    "selecionar_tipo_documento",
-    "campo_descricao",
-    "campo_interessado",
-    "campo_destinatario",
-    "campo_nivel_acesso",
-    "editor_texto",
-    "salvar_minuta",
+    "process_number_area",
+    "include_document_button",
+    "document_type_search",
+    "document_type_option",
+    "document_description",
+    "document_access_level",
+    "editor_frame",
+    "editor_body",
+    "save_button",
 )
 
 FORBIDDEN_SELECTOR_TERMS = (
@@ -34,6 +35,8 @@ FORBIDDEN_SELECTOR_TERMS = (
     "excluir",
     "liberar_acesso_externo",
 )
+
+ALLOWED_STATUSES = ("required", "optional", "pending", "validated")
 
 
 @dataclass(frozen=True)
@@ -64,30 +67,47 @@ def evaluate_selector_manifest(manifest: dict[str, Any]) -> SelectorManifestRepo
     """Avalia se o manifesto esta pronto para homologacao controlada."""
     version = str(manifest.get("version", ""))
     selectors = manifest.get("selectors", {})
-    if not isinstance(selectors, dict):
+    if not isinstance(selectors, dict) or not selectors:
         selectors = {}
 
     missing: list[str] = []
     not_homologated: list[str] = []
     forbidden: list[str] = []
 
+    if not selectors:
+        missing.extend(REQUIRED_SELECTOR_KEYS)
+
     for key in REQUIRED_SELECTOR_KEYS:
-        selector = selectors.get(key)
-        if not isinstance(selector, dict):
+        if key not in selectors and key not in missing:
             missing.append(key)
             continue
+            
+        selector = selectors.get(key)
+        if not isinstance(selector, dict):
+            if key not in missing:
+                missing.append(key)
+            continue
+            
         value = str(selector.get("value", "")).strip()
         status = str(selector.get("status", "")).strip().lower()
+        
         if not value:
-            missing.append(key)
-        if status != "homologado":
-            not_homologated.append(key)
+            if key not in missing:
+                missing.append(key)
+        
+        if status == "pending" or status not in ALLOWED_STATUSES or status != "validated":
+            if key not in not_homologated:
+                not_homologated.append(key)
+                
         _collect_forbidden_terms(key, value, forbidden)
 
     for key, selector in selectors.items():
         value = ""
         if isinstance(selector, dict):
             value = str(selector.get("value", ""))
+            status = str(selector.get("status", "")).strip().lower()
+            if status == "pending" and key not in not_homologated:
+                not_homologated.append(key)
         _collect_forbidden_terms(str(key), value, forbidden)
 
     unique_forbidden = tuple(dict.fromkeys(forbidden))

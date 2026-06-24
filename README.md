@@ -279,6 +279,8 @@ Agente 19 Desktop:
 | [docs/43-ui-chat-agente19-sei.md](docs/43-ui-chat-agente19-sei.md) | UI chat do Agente 19 na tela do SEI |
 | [docs/44-preview-local-ui-chat-agente19.md](docs/44-preview-local-ui-chat-agente19.md) | Preview local da UI chat |
 | [docs/45-ux-chat-v2-minuta-externa.md](docs/45-ux-chat-v2-minuta-externa.md) | UX Chat V2 e minuta externa supervisionada |
+| [docs/46-fase5b-homologacao-seletores.md](docs/46-fase5b-homologacao-seletores.md) | FASE 5B-H: Homologação de Seletores |
+| [docs/47-seletores-descobertos-referencia.md](docs/47-seletores-descobertos-referencia.md) | Mapeamento Padrão Descoberto de Seletores |
 
 ## Estrutura-alvo
 

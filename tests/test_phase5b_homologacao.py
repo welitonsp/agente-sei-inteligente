@@ -11,14 +11,15 @@ def _valid_manifest() -> dict:
     return {
         "version": "teste",
         "selectors": {
-            "abrir_incluir_documento": {"value": "#incluir", "status": "homologado"},
-            "selecionar_tipo_documento": {"value": "#tipo", "status": "homologado"},
-            "campo_descricao": {"value": "#descricao", "status": "homologado"},
-            "campo_interessado": {"value": "#interessado", "status": "homologado"},
-            "campo_destinatario": {"value": "#destinatario", "status": "homologado"},
-            "campo_nivel_acesso": {"value": "#nivel", "status": "homologado"},
-            "editor_texto": {"value": "#editor", "status": "homologado"},
-            "salvar_minuta": {"value": "#salvar", "status": "homologado"},
+            "process_number_area": {"value": "#process", "status": "validated"},
+            "include_document_button": {"value": "#incluir", "status": "validated"},
+            "document_type_search": {"value": "#tipo_search", "status": "validated"},
+            "document_type_option": {"value": "#tipo_option", "status": "validated"},
+            "document_description": {"value": "#descricao", "status": "validated"},
+            "document_access_level": {"value": "#nivel", "status": "validated"},
+            "editor_frame": {"value": "#frame", "status": "validated"},
+            "editor_body": {"value": "#editor", "status": "validated"},
+            "save_button": {"value": "#salvar", "status": "validated"},
         },
     }
 
@@ -71,19 +72,19 @@ def test_cadastro_exige_campos_aplicaveis_por_tipo_documental():
 
 def test_manifesto_de_seletores_exige_todos_homologados():
     manifest = _valid_manifest()
-    manifest["selectors"]["editor_texto"]["status"] = "pendente"
+    manifest["selectors"]["editor_body"]["status"] = "pending"
 
     report = evaluate_selector_manifest(manifest)
 
     assert not report.ok
-    assert "editor_texto" in report.not_homologated
+    assert "editor_body" in report.not_homologated
 
 
 def test_manifesto_bloqueia_termos_de_ato_oficial():
     manifest = _valid_manifest()
     manifest["selectors"]["assinar_documento"] = {
         "value": "#assinar",
-        "status": "homologado",
+        "status": "validated",
     }
 
     report = evaluate_selector_manifest(manifest)
@@ -116,7 +117,7 @@ def test_template_sem_seletores_reais_nao_fica_pronto():
     manifest = {
         "version": "template",
         "selectors": {
-            "abrir_incluir_documento": {"value": "", "status": "pendente"},
+            "include_document_button": {"value": "", "status": "pending"},
         },
     }
     cadastro = MinutaCadastro(
@@ -133,4 +134,74 @@ def test_template_sem_seletores_reais_nao_fica_pronto():
 
     assert readiness.ready_for_homologation is False
     assert readiness.real_write_allowed is False
-    assert "abrir_incluir_documento" in readiness.blockers
+    assert "include_document_button" in readiness.blockers
+    assert "process_number_area" in readiness.blockers
+
+
+def test_manifesto_vazio_falha():
+    manifest = {}
+    report = evaluate_selector_manifest(manifest)
+    assert not report.ok
+    assert len(report.missing) > 0
+
+
+def test_manifesto_sem_seletor_obrigatorio_falha():
+    manifest = _valid_manifest()
+    del manifest["selectors"]["save_button"]
+    report = evaluate_selector_manifest(manifest)
+    assert not report.ok
+    assert "save_button" in report.missing
+
+
+def test_manifesto_completo_passa():
+    manifest = _valid_manifest()
+    report = evaluate_selector_manifest(manifest)
+    assert report.ok
+    assert not report.missing
+    assert not report.not_homologated
+    assert not report.forbidden
+
+
+def test_fase_5b_h_nao_chama_playwright_e_nao_escreve_no_sei():
+    # O simples fato de evaluate_phase5b_readiness nao usar Playwright 
+    # e ter real_write_allowed=False cobre isso.
+    cadastro = MinutaCadastro(
+        processo_sei="202600000123456",
+        tipo_documento="Despacho",
+        nivel_acesso="publico",
+        text_hash="a" * 64,
+    )
+    readiness = evaluate_phase5b_readiness(
+        cadastro=cadastro,
+        selector_manifest=_valid_manifest()
+    )
+    assert readiness.real_write_allowed is False
+    assert not hasattr(readiness, "playwright_page")
+
+
+def test_fase_5b_h_nao_habilita_minuta_creation():
+    # evaluate_phase5b_readiness deve retornar real_write_allowed=False, 
+    # garantindo que nao esta ativando MINUTA_CREATION acidentalmente
+    cadastro = MinutaCadastro(
+        processo_sei="202600000123456",
+        tipo_documento="Despacho",
+        nivel_acesso="publico",
+        text_hash="a" * 64,
+    )
+    readiness = evaluate_phase5b_readiness(
+        cadastro=cadastro,
+        selector_manifest=_valid_manifest()
+    )
+    assert readiness.real_write_allowed is False
+
+
+def test_acoes_oficiais_continuam_proibidas():
+    manifest = _valid_manifest()
+    manifest["selectors"]["assinar_documento"] = {"value": "#assinar", "status": "validated"}
+    manifest["selectors"]["tramitar_processo"] = {"value": "#tramitar", "status": "validated"}
+    
+    report = evaluate_selector_manifest(manifest)
+    
+    assert not report.ok
+    assert "seletor proibido: assinar_documento" in report.forbidden
+    assert "seletor proibido: tramitar_processo" in report.forbidden
