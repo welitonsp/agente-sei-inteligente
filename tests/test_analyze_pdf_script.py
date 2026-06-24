@@ -1,5 +1,6 @@
 import subprocess
 import os
+import sys
 import fitz
 import pytest
 
@@ -15,15 +16,15 @@ def test_pdf(tmp_path):
 
 def test_analyze_pdf_script(test_pdf):
     script_path = os.path.join("scripts", "analyze_pdf.py")
-    
-    # Adicionamos a VENV atual se disponível para rodar o subprocess
-    python_exec = "python"
-    if os.path.exists(".venv/Scripts/python.exe"):
-        python_exec = ".venv/Scripts/python.exe"
-        
+
+    # Usa o mesmo interpretador que roda os testes: garante portabilidade
+    # entre Windows/Linux e CI, sem depender de "python" estar no PATH.
+    # Força o processo-filho a emitir UTF-8 para que a decodificação seja
+    # determinística (no Windows o padrão seria cp1252 e quebraria acentos).
+    env = {**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"}
     result = subprocess.run(
-        [python_exec, script_path, test_pdf],
-        capture_output=True, text=True
+        [sys.executable, script_path, test_pdf],
+        capture_output=True, text=True, encoding="utf-8", env=env,
     )
     
     output = result.stdout
