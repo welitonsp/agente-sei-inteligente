@@ -285,6 +285,7 @@ Agente 19 Desktop:
 | [docs/51-fase5d-simulacao-operacional.md](docs/51-fase5d-simulacao-operacional.md) | FASE 5D-S: Simulação Operacional Ponta a Ponta |
 | [docs/52-referencias-github-sei.md](docs/52-referencias-github-sei.md) | Estudo de repositórios GitHub do SEI e aprendizados aplicáveis |
 | [docs/53-camada-ia-claude.md](docs/53-camada-ia-claude.md) | Camada de IA com Claude (papéis lógicos, guard como barreira) |
+| [docs/54-guia-rapido-operacao.md](docs/54-guia-rapido-operacao.md) | Guia rápido: como usar o Agente 19 com o SEI (passo a passo) |
 
 ## Estrutura-alvo
 

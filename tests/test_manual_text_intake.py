@@ -134,3 +134,17 @@ def test_extract_deadline_converte_data_brasileira():
     assert deadline.hora_limite == "17:30"
     assert deadline.risco == "urgente"
     assert deadline.lembretes_sugeridos == [1440, 0]
+
+
+def test_extract_deadline_detecta_prazo_relativo():
+    # Caso real do SEI: "no prazo de 10 dias uteis" sem data escrita.
+    from datetime import date
+
+    deadline = extract_deadline(
+        "Responder no prazo de 10 (dez) dias uteis.",
+        reference_date=date(2026, 6, 24),
+    )
+    assert deadline.ha_prazo is True
+    assert deadline.tipo_prazo == "relativo"
+    # 24/06/2026 (quarta) + 10 dias uteis -> 08/07/2026.
+    assert deadline.data_limite == "2026-07-08"

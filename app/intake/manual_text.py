@@ -10,9 +10,11 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Any
 
 from app.core import audit
+from app.intelligence.prazo_extractor import extract_prazos
 from app.sei.sei_action_guard import GuardRequest, GuardResult, evaluate
 from app.storage.db import session_scope
 from app.storage.models import Document, Process
@@ -286,25 +288,54 @@ def extract_event(text: str, title: str = "") -> ExtractedEvent:
     )
 
 
-def extract_deadline(text: str) -> ExtractedDeadline:
-    normalized = _normalize(text)
-    has_keyword = any(keyword in normalized for keyword in _DEADLINE_KEYWORDS)
-    date = _first_date(text)
-    time = _first_time(text)
-    if not (has_keyword and date):
-        return ExtractedDeadline()
+def extract_deadline(
+    text: str, *, reference_date: date | None = None
+) -> ExtractedDeadline:
+    """Detecta prazo no texto.
 
+    Usa o extrator estruturado (`prazo_extractor`), que reconhece prazos
+    relativos ("no prazo de 10 dias úteis", "em 48 horas") e absolutos ("até
+    30/06/2026") e calcula a data-limite. Mantém o caminho legado (palavra-chave
+    + data explícita) como fallback de compatibilidade.
+    """
+    referencia = reference_date or date.today()
+    normalized = _normalize(text)
+    time = _first_time(text)
     risco = "urgente" if any(w in normalized for w in ("urgente", "imediato")) else "medio"
-    return ExtractedDeadline(
-        ha_prazo=True,
-        data_limite=date,
-        hora_limite=time,
-        tipo_prazo="administrativo",
-        risco=risco,
-        texto_fonte="texto_colado",
-        lembretes_sugeridos=[1440, 0] if risco == "urgente" else [4320, 1440],
-        confianca=0.6 if time else 0.45,
-    )
+    lembretes = [1440, 0] if risco == "urgente" else [4320, 1440]
+
+    prazos = extract_prazos(text, reference_date=referencia)
+    if prazos:
+        prazo = prazos[0]
+        data_limite = (
+            prazo.data_limite.isoformat() if prazo.data_limite else _first_date(text)
+        )
+        return ExtractedDeadline(
+            ha_prazo=True,
+            data_limite=data_limite,
+            hora_limite=time,
+            tipo_prazo=prazo.tipo,
+            risco=risco,
+            texto_fonte=prazo.trecho or "texto_colado",
+            lembretes_sugeridos=lembretes,
+            confianca=0.6 if (time or prazo.data_limite) else 0.45,
+        )
+
+    # Fallback legado: palavra-chave de prazo + data explícita no texto.
+    has_keyword = any(keyword in normalized for keyword in _DEADLINE_KEYWORDS)
+    data_explicita = _first_date(text)
+    if has_keyword and data_explicita:
+        return ExtractedDeadline(
+            ha_prazo=True,
+            data_limite=data_explicita,
+            hora_limite=time,
+            tipo_prazo="administrativo",
+            risco=risco,
+            texto_fonte="texto_colado",
+            lembretes_sugeridos=lembretes,
+            confianca=0.6 if time else 0.45,
+        )
+    return ExtractedDeadline()
 
 
 def _guard(action: str, request: ManualTextRequest) -> GuardResult:
