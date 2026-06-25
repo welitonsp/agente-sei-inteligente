@@ -49,10 +49,19 @@ def run(settings: Settings | None = None) -> str:
         print("\n[LEITURA REALIZADA - SOMENTE LEITURA]")
         print("Titulo da pagina:", snap.title)
         print("URL atual:", snap.url)
-        print("Numeros de processo visiveis:", ", ".join(numeros) or "nenhum")
-        print(f"Itens lidos na arvore de documentos: {len(arvore)}")
-        for i, titulo in enumerate(arvore[:10], 1):
-            print(f"  {i:02d}. {titulo}")
+        print("Numeros de processo visiveis (pagina de cima):", ", ".join(numeros[:8]) or "nenhum")
+        print(f"Links na pagina de cima: {len(arvore)}")
+
+        print("\n[FRAMES DETECTADOS - diagnostico read-only]")
+        print("(o SEI monta o processo em iframes; a arvore/conteudo ficam aqui)")
+        frames = page.frames_overview()
+        if not frames:
+            print("  Nenhum frame detectado nesta pagina.")
+        for fr in frames:
+            print(f"- frame name='{fr['name']}' links={fr['num_links']}")
+            print(f"    url: {fr['url'][:90]}")
+            for texto in fr["amostra"]:
+                print(f"    . {texto}")
     print("\nSessao encerrada. Nenhuma escrita foi realizada.")
     print("Confirme os seletores reais no read_selectors.template.json e marque-os 'validated'.")
     return "ok"

@@ -78,6 +78,38 @@ class ReadOnlyPage:
                 titulos.append(texto)
         return tuple(titulos)
 
+    def frames_overview(self) -> tuple[dict[str, Any], ...]:
+        """Diagnóstico read-only dos frames (o SEI monta o processo em iframes).
+
+        Para cada frame, relata nome, URL, contagem de links e uma amostra dos
+        textos — sem clicar, navegar ou escrever. Ajuda a homologar onde está a
+        árvore de documentos e o conteúdo.
+        """
+        frames = getattr(self._page, "frames", None)
+        if not frames:
+            return ()
+        overview: list[dict[str, Any]] = []
+        for frame in frames:
+            try:
+                query = getattr(frame, "query_selector_all", None)
+                anchors = list(query("a") or ()) if callable(query) else []
+                amostra = []
+                for elemento in anchors[:8]:
+                    texto = _element_text(elemento)
+                    if texto:
+                        amostra.append(texto)
+                overview.append(
+                    {
+                        "name": str(getattr(frame, "name", "") or ""),
+                        "url": str(getattr(frame, "url", "") or ""),
+                        "num_links": len(anchors),
+                        "amostra": amostra,
+                    }
+                )
+            except Exception:
+                continue
+        return tuple(overview)
+
 
 def _digits(value: str) -> str:
     return "".join(ch for ch in str(value) if ch.isdigit())
