@@ -8,6 +8,13 @@ SEI com você, de forma supervisionada.
 > Esta frente fica **desligada por padrão** (`ENABLE_SEI_BROWSER_AUTOMATION=false`).
 > A homologação é feita por você, logado, na sua máquina.
 
+> ✅ **Já homologado para o SEI Goiás (2026-06-25).** A captura supervisionada
+> identificou que o processo é montado em frames nomeados: a **árvore de
+> documentos** vive em `ifrArvore` e o **conteúdo** em `ifrVisualizacao`. O
+> `read_selectors.template.json` já está `validated` com esses valores. Você só
+> precisa **ligar a flag** (passo 2) — os passos 3 e 4 de captura/F12 não são mais
+> necessários, exceto se o SEI mudar de versão.
+
 ## Passo a passo (você executa)
 
 ### 1. Instalar o Playwright (uma vez)

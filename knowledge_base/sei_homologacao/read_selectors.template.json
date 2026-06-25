@@ -1,33 +1,19 @@
 {
-  "version": "fase-5c-leitura-template",
+  "version": "fase-5c-leitura-sei-goias",
   "environment": "homologacao",
-  "purpose": "Somente leitura: abrir processo pelo numero, confirmar, ler arvore e conteudo.",
-  "notes": "Seletores candidatos NAO validados. Permanecem pending ate homologacao manual supervisionada (usuario logado no SEI). Nao autoriza nenhuma escrita.",
+  "homologado_em": "2026-06-25",
+  "purpose": "Somente leitura: ler a arvore de documentos e o conteudo do processo aberto.",
+  "notes": "Frames reais do SEI Goias homologados de forma supervisionada (read-only). Confirmado em ambiente real: a arvore vive no frame ifrArvore (comeca com o numero do processo) e o conteudo no frame ifrVisualizacao. Nao autoriza nenhuma escrita.",
   "selectors": {
-    "process_search_box": {
-      "value": "#txtPesquisaRapida",
-      "status": "pending",
-      "evidence": "Caixa de pesquisa rapida do SEI (padrao). Confirmar no ambiente real."
+    "tree_frame": {
+      "value": "ifrArvore",
+      "status": "validated",
+      "evidence": "Frame da arvore de documentos. Primeiro link e o numero do processo (ex.: 202600002075948)."
     },
-    "process_number_label": {
-      "value": "#divArvoreInformacao",
-      "status": "pending",
-      "evidence": "Area da arvore mostra o numero do processo aberto. Confirmar."
-    },
-    "document_tree": {
-      "value": "#divArvoreInformacao a",
-      "status": "pending",
-      "evidence": "Links dos documentos na arvore do processo. Confirmar."
-    },
-    "document_content_frame": {
-      "value": "iframe#ifrVisualizacao",
-      "status": "pending",
-      "evidence": "Iframe de visualizacao do documento. Confirmar o id real."
-    },
-    "document_content_body": {
-      "value": "body",
-      "status": "pending",
-      "evidence": "Corpo visivel do documento dentro do iframe. Confirmar."
+    "content_frame": {
+      "value": "ifrVisualizacao",
+      "status": "validated",
+      "evidence": "Frame de visualizacao do conteudo do documento selecionado."
     }
   }
 }

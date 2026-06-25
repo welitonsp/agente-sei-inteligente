@@ -64,24 +64,45 @@ def read_current_process(
             motivo="Seletores de leitura ainda não homologados.",
         )
 
-    return _read_with_session(numero, cfg)
+    selectors = manifest.get("selectors", {})
+    tree_frame = str(selectors.get("tree_frame", {}).get("value", "")).strip()
+    content_frame = str(selectors.get("content_frame", {}).get("value", "")).strip()
+    return _read_with_session(numero, cfg, tree_frame, content_frame)
 
 
-def _read_with_session(numero: str, cfg: Settings) -> ReadResult:  # pragma: no cover - requer navegador/SEI
-    """Caminho real (gated): abre a sessão efêmera e lê a página atual."""
+def _digits(value: str) -> str:
+    return "".join(c for c in str(value) if c.isdigit())
+
+
+def _confere_numero(numero: str, titulos: tuple[str, ...]) -> bool:
+    alvo = _digits(numero)
+    if not alvo:
+        return False
+    return alvo in _digits(" ".join(titulos))
+
+
+def _read_with_session(  # pragma: no cover - requer navegador/SEI
+    numero: str, cfg: Settings, tree_frame: str, content_frame: str
+) -> ReadResult:
+    """Caminho real (gated): abre a sessão efêmera e lê os frames do processo."""
     from app.sei.playwright_session import open_ephemeral_readonly_session
 
     try:
         with open_ephemeral_readonly_session(cfg) as page:
-            if not page.confirm_process_number(numero):
+            titulos = page.frame_links(tree_frame) if tree_frame else ()
+            if not _confere_numero(numero, titulos):
                 visiveis = ", ".join(page.visible_process_numbers()) or "nenhum"
                 return ReadResult(
                     status="processo_divergente",
-                    motivo=f"Processo aberto não confere com {numero} (visíveis: {visiveis}).",
+                    motivo=(
+                        f"Não encontrei o processo {numero} na árvore aberta. "
+                        f"Abra esse processo no SEI. (visíveis na caixa: {visiveis})"
+                    ),
                 )
-            titulos = page.document_tree()
-            visivel = page.visible_text()
-            texto = "\n".join([*titulos, visivel]).strip()
-            return ReadResult(status="ok", texto=texto, titulos=titulos)
+            conteudo = page.frame_text(content_frame) if content_frame else ""
+            # Remove o próprio número/cabeçalho repetido para um texto mais limpo.
+            docs = tuple(t for t in titulos if _digits(t) != _digits(numero))
+            texto = "\n".join([*docs, conteudo]).strip()
+            return ReadResult(status="ok", texto=texto, titulos=docs)
     except Exception as exc:
         return ReadResult(status="erro", motivo=str(exc) or exc.__class__.__name__)

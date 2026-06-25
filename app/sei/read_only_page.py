@@ -78,6 +78,43 @@ class ReadOnlyPage:
                 titulos.append(texto)
         return tuple(titulos)
 
+    def _frame(self, name: str) -> Any:
+        for frame in getattr(self._page, "frames", None) or ():
+            if str(getattr(frame, "name", "") or "") == name:
+                return frame
+        return None
+
+    def frame_links(self, name: str) -> tuple[str, ...]:
+        """Lê os textos dos links de um frame nomeado (somente leitura)."""
+        frame = self._frame(name)
+        if frame is None:
+            return ()
+        query = getattr(frame, "query_selector_all", None)
+        if not callable(query):
+            return ()
+        out: list[str] = []
+        for elemento in query("a") or ():
+            texto = _element_text(elemento)
+            if texto:
+                out.append(texto)
+        return tuple(out)
+
+    def frame_text(self, name: str) -> str:
+        """Lê o texto visível do corpo de um frame nomeado (somente leitura)."""
+        frame = self._frame(name)
+        if frame is None:
+            return ""
+        for attr in ("inner_text", "text_content"):
+            metodo = getattr(frame, attr, None)
+            if callable(metodo):
+                try:
+                    valor = metodo("body")
+                except Exception:
+                    continue
+                if valor:
+                    return str(valor).strip()
+        return ""
+
     def frames_overview(self) -> tuple[dict[str, Any], ...]:
         """Diagnóstico read-only dos frames (o SEI monta o processo em iframes).
 

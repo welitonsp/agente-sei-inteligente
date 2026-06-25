@@ -16,12 +16,11 @@ from typing import Any
 from app.sei.selector_manifest import ALLOWED_STATUSES, FORBIDDEN_SELECTOR_TERMS
 
 # Seletores mínimos para o agente LER um processo (somente leitura).
+# Homologado no SEI Goiás: o processo é montado em frames nomeados; a árvore de
+# documentos vive em `ifrArvore` e o conteúdo em `ifrVisualizacao`.
 REQUIRED_READ_SELECTOR_KEYS = (
-    "process_search_box",       # campo de pesquisa para abrir o processo pelo número
-    "process_number_label",     # onde o número do processo aparece (confirmação)
-    "document_tree",            # árvore de documentos do processo
-    "document_content_frame",   # iframe de visualização do documento
-    "document_content_body",    # corpo do conteúdo visível a ser lido
+    "tree_frame",       # nome do frame da árvore de documentos (confirma o nº e lista docs)
+    "content_frame",    # nome do frame de visualização do conteúdo
 )
 
 

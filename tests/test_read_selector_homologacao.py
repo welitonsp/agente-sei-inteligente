@@ -24,12 +24,12 @@ def _manifest_validado() -> dict:
     }
 
 
-def test_template_existe_e_esta_pending():
+def test_template_homologado_esta_ok():
+    # Apos a homologacao supervisionada no SEI Goias, o template ja esta validado.
     manifest = load_read_selector_manifest(TEMPLATE)
     report = evaluate_read_selector_manifest(manifest)
-    # O template vem como candidato: nao homologado ainda.
-    assert report.ok is False
-    assert set(report.not_homologated) == set(REQUIRED_READ_SELECTOR_KEYS)
+    assert report.ok is True
+    assert set(manifest["selectors"]) >= set(REQUIRED_READ_SELECTOR_KEYS)
 
 
 def test_manifesto_validado_fica_ok():
@@ -40,15 +40,15 @@ def test_manifesto_validado_fica_ok():
 
 def test_seletor_ausente_vira_missing():
     manifest = _manifest_validado()
-    del manifest["selectors"]["document_tree"]
+    del manifest["selectors"]["tree_frame"]
     report = evaluate_read_selector_manifest(manifest)
-    assert "document_tree" in report.missing
+    assert "tree_frame" in report.missing
     assert report.ok is False
 
 
 def test_seletor_de_leitura_nao_pode_apontar_para_ato_oficial():
     manifest = _manifest_validado()
-    manifest["selectors"]["document_tree"] = {
+    manifest["selectors"]["tree_frame"] = {
         "value": "a[title='Assinar Documento']",
         "status": "validated",
     }
