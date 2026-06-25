@@ -147,7 +147,14 @@ def run() -> None:
     from app.storage.db import init_db
 
     init_db()
-    FloatingAgentApp().mainloop()
+
+    # Leitura automática (Frente 2): ligada ao chat, porém gated. Com a flag
+    # desligada ou seletores não homologados, o leitor devolve um status que o
+    # chat usa para pedir o texto colado — inerte até a homologação.
+    from app.sei.process_reader import read_current_process
+
+    controller = AgentChatController(ler_processo=lambda numero: read_current_process(numero))
+    FloatingAgentApp(controller).mainloop()
 
 
 if __name__ == "__main__":
