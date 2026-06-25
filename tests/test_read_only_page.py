@@ -95,6 +95,37 @@ def test_read_only_page_le_arvore_de_documentos():
     assert titulos == ("Despacho 123 (0001)", "Ofício 456 (0002)")
 
 
+class FakeFrame:
+    def __init__(self, name: str, url: str, links: list[str]) -> None:
+        self.name = name
+        self.url = url
+        self._links = links
+
+    def query_selector_all(self, selector: str):
+        return [FakeElement(t) for t in self._links] if selector == "a" else []
+
+
+def test_frames_overview_relata_frames_read_only():
+    class PaginaComFrames(FakePage):
+        @property
+        def frames(self):
+            return [
+                FakeFrame("", "https://sei/topo", ["Menu"]),
+                FakeFrame("ifrArvore", "https://sei/arvore", ["Despacho 1", "Ofício 2"]),
+            ]
+
+    overview = ReadOnlyPage(PaginaComFrames()).frames_overview()
+    nomes = [f["name"] for f in overview]
+    assert "ifrArvore" in nomes
+    arvore = next(f for f in overview if f["name"] == "ifrArvore")
+    assert arvore["num_links"] == 2
+    assert "Despacho 1" in arvore["amostra"]
+
+
+def test_frames_overview_vazio_sem_frames():
+    assert ReadOnlyPage(FakePage()).frames_overview() == ()
+
+
 def test_document_tree_tolerante_a_pagina_sem_query():
     """Sem query_selector_all a leitura da árvore retorna vazio, sem falhar."""
 
