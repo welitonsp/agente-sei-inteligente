@@ -286,6 +286,7 @@ Agente 19 Desktop:
 | [docs/52-referencias-github-sei.md](docs/52-referencias-github-sei.md) | Estudo de repositórios GitHub do SEI e aprendizados aplicáveis |
 | [docs/53-camada-ia-claude.md](docs/53-camada-ia-claude.md) | Camada de IA com Claude (papéis lógicos, guard como barreira) |
 | [docs/54-guia-rapido-operacao.md](docs/54-guia-rapido-operacao.md) | Guia rápido: como usar o Agente 19 com o SEI (passo a passo) |
+| [docs/55-icone-flutuante-chat.md](docs/55-icone-flutuante-chat.md) | Ícone flutuante + chat do Agente 19 (FASE 38 — Frente 1) |
 
 ## Estrutura-alvo
 
