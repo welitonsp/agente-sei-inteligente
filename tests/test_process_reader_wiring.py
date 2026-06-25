@@ -14,11 +14,27 @@ def test_leitor_desabilitado_quando_flag_off():
     assert r.status == "desabilitado"
 
 
-def test_leitor_nao_homologado_quando_flag_on_e_template_pending(tmp_path):
-    # Flag ligada, mas manifesto ainda 'pending' -> nao_homologado (sem abrir navegador).
+def test_leitor_nao_homologado_quando_manifesto_pending(tmp_path):
+    # Flag ligada, mas um manifesto 'pending' -> nao_homologado (sem abrir navegador).
+    import json
+
+    pend = tmp_path / "pending.json"
+    pend.write_text(
+        json.dumps(
+            {
+                "version": "x",
+                "selectors": {
+                    "tree_frame": {"value": "ifrArvore", "status": "pending"},
+                    "content_frame": {"value": "ifrVisualizacao", "status": "pending"},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
     r = read_current_process(
         "202600000123456",
         settings=Settings(enable_sei_browser_automation=True),
+        manifest_path=pend,
     )
     assert r.status == "nao_homologado"
 

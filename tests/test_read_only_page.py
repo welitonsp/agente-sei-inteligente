@@ -96,13 +96,42 @@ def test_read_only_page_le_arvore_de_documentos():
 
 
 class FakeFrame:
-    def __init__(self, name: str, url: str, links: list[str]) -> None:
+    def __init__(self, name: str, url: str, links: list[str], body: str = "") -> None:
         self.name = name
         self.url = url
         self._links = links
+        self._body = body
 
     def query_selector_all(self, selector: str):
         return [FakeElement(t) for t in self._links] if selector == "a" else []
+
+    def inner_text(self, selector: str) -> str:
+        return self._body if selector == "body" else ""
+
+
+def _pagina_com_frames():
+    class PaginaComFrames(FakePage):
+        @property
+        def frames(self):
+            return [
+                FakeFrame("", "https://sei/topo", ["Menu"]),
+                FakeFrame("ifrArvore", "https://sei/arvore", ["202600002075948", "Despacho 1"]),
+                FakeFrame("ifrVisualizacao", "https://sei/conteudo", [], body="Conteudo do documento."),
+            ]
+
+    return PaginaComFrames()
+
+
+def test_frame_links_le_frame_nomeado():
+    page = ReadOnlyPage(_pagina_com_frames())
+    assert page.frame_links("ifrArvore") == ("202600002075948", "Despacho 1")
+    assert page.frame_links("inexistente") == ()
+
+
+def test_frame_text_le_corpo_do_frame():
+    page = ReadOnlyPage(_pagina_com_frames())
+    assert page.frame_text("ifrVisualizacao") == "Conteudo do documento."
+    assert page.frame_text("inexistente") == ""
 
 
 def test_frames_overview_relata_frames_read_only():
