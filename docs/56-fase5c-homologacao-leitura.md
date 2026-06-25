@@ -65,6 +65,14 @@ nenhum apontar para ato oficial.
   seguinte e separada, que exige autorização expressa.
 
 ## Depois da homologação
-Com os seletores `validated`, conectamos a leitura ao chat (frente 1): você
-manda só o **número** e o agente busca e analisa o processo — sem copiar/colar.
-Esse passo de ligação eu faço no código, após a sua homologação.
+A ligação leitura→chat **já está pronta no código** (`app/sei/process_reader.py`
+ligado ao `AgentChatController`), porém **inerte**: enquanto a flag estiver
+desligada ou os seletores `pending`, o chat pede o texto colado. Assim que você
+concluir a homologação (flag ligada + seletores `validated`), o chat passa a
+**ler sozinho**: você abre o processo no SEI, manda só o **número** no chat e o
+agente lê e analisa — sem copiar/colar.
+
+Como funciona a leitura (100% read-only): o agente lê o **processo que você já
+abriu** (não digita nem clica para abrir), confere se o número confere e lê a
+árvore + o conteúdo visível pela `ReadOnlyPage`. Se o processo aberto não bater
+com o número enviado, ele avisa.

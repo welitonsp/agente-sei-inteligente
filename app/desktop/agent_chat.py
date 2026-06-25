@@ -61,6 +61,29 @@ def _gerar_minuta_padrao(payload: dict[str, Any]) -> dict[str, Any]:
     return create_draft_response(payload)
 
 
+def _fallback_leitura(processo: str, status: str) -> str:
+    """Mensagem quando a leitura automática não está disponível."""
+    if status == "desabilitado":
+        return (
+            f"A leitura automática está desligada (Frente 2). Por enquanto, cole "
+            f"aqui o texto do processo {processo} que eu analiso."
+        )
+    if status == "nao_homologado":
+        return (
+            f"Os seletores de leitura ainda não foram homologados. Cole o texto do "
+            f"processo {processo} por enquanto."
+        )
+    if status == "processo_divergente":
+        return (
+            f"O processo aberto no SEI não confere com {processo}. Abra esse "
+            f"processo no SEI e tente de novo, ou cole o texto aqui."
+        )
+    return (
+        f"Não consegui ler o processo {processo} automaticamente. Pode colar o "
+        f"texto aqui que eu analiso."
+    )
+
+
 def telegram_summary(analise: dict[str, Any], processo: str) -> str:
     """Monta um resumo curto e sanitizado para WhatsApp/Telegram."""
     tipo = analise.get("tipo_provavel", "indefinido")
@@ -92,9 +115,13 @@ class AgentChatController:
         *,
         analisar: Callable[[str], dict[str, Any]] | None = None,
         gerar_minuta: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
+        ler_processo: Callable[[str], Any] | None = None,
     ) -> None:
         self._analisar = analisar or _analisar_padrao
         self._gerar = gerar_minuta or _gerar_minuta_padrao
+        # Leitura automática (Frente 2): opcional e gated. Quando ausente ou
+        # indisponível, o chat pede o texto colado (comportamento atual).
+        self._ler_processo = ler_processo
 
     def saudacao(self) -> ChatReply:
         return ChatReply(
@@ -116,16 +143,32 @@ class AgentChatController:
             return [ChatReply("agente", "Qual é o número do processo SEI?")]
 
         if len(conteudo) < _MIN_CONTEUDO:
-            return [
-                ChatReply(
-                    "agente",
-                    f"Recebi o processo {processo}. Por enquanto, cole aqui o texto do "
-                    "documento — a leitura automática pela sua sessão logada é a "
-                    "próxima fase. Quando você colar, eu analiso.",
-                )
-            ]
+            return self._ler_ou_pedir_texto(processo)
 
         return self._analisar_e_sugerir(processo, conteudo)
+
+    def _ler_ou_pedir_texto(self, processo: str) -> list[ChatReply]:
+        """Tenta a leitura automática (gated); senão, pede o texto colado."""
+        if self._ler_processo is not None:
+            resultado = self._ler_processo(processo)
+            status = getattr(resultado, "status", "erro")
+            if status == "ok":
+                texto = getattr(resultado, "texto", "")
+                intro = ChatReply(
+                    "agente",
+                    f"Li o processo {processo} pela sua sessão (somente leitura).",
+                )
+                return [intro] + self._analisar_e_sugerir(processo, texto)
+            return [ChatReply("agente", _fallback_leitura(processo, status))]
+
+        return [
+            ChatReply(
+                "agente",
+                f"Recebi o processo {processo}. Por enquanto, cole aqui o texto do "
+                "documento — a leitura automática pela sua sessão logada é a "
+                "próxima fase. Quando você colar, eu analiso.",
+            )
+        ]
 
     def _analisar_e_sugerir(self, processo: str, conteudo: str) -> list[ChatReply]:
         analise = self._analisar(conteudo)
