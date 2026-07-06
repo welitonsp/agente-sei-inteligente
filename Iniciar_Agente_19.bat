@@ -14,7 +14,7 @@ cd /d "%~dp0"
 :: Verifica se o ambiente virtual existe
 if not exist ".venv\Scripts\python.exe" (
     color 0C
-    echo ERRO CRITICO: O ambiente virtual (motor de IA) nao foi encontrado!
+    echo ERRO CRITICO: O ambiente virtual motor de IA nao foi encontrado!
     echo Certifique-se de que o sistema foi instalado corretamente.
     pause
     exit /b

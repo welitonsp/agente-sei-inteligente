@@ -327,6 +327,13 @@ class SecureDesktopApp:
         self.root.title("Agente 19 Desktop")
         self.root.geometry("1120x720")
         self.root.minsize(860, 560)
+        
+        # Forca a janela a saltar para a frente (rouba o foco)
+        self.root.attributes("-topmost", True)
+        self.root.update()
+        self.root.attributes("-topmost", False)
+        self.root.lift()
+        self.root.focus_force()
         self.pdf_path: Path | None = None
         self.last_result = ""
         self.last_analysis: dict[str, Any] | None = None
