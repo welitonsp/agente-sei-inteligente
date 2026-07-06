@@ -60,11 +60,6 @@
       </div>
 
 
-      <div class="agente-sei-statusbar" aria-label="Status operacional">
-        <span>Somente leitura</span>
-        <span>Backend local</span>
-        <span>Revisao humana</span>
-      </div>
 
       <div id="agente-sei-messages" class="agente-sei-messages" role="log" aria-live="polite"></div>
 

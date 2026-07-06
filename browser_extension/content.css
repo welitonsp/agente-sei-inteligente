@@ -215,26 +215,7 @@
 
 
 
-/* 4. Agrupamento de Botões (Status e Ações Rápidas) */
-.agente-sei-statusbar {
-  padding: 0 24px !important;
-  margin-bottom: 16px !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 10px !important;
-}
 
-.agente-sei-statusbar span {
-  padding: 8px 12px !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-radius: 8px !important;
-  background: rgba(255, 255, 255, 0.02) !important;
-  color: #cbd5e1 !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  text-align: center !important;
-  flex: 1 1 auto !important;
-}
 
 .agente-sei-quick {
   padding: 16px 24px !important;
