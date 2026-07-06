@@ -7,9 +7,12 @@ pequenos e auditaveis.
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
 PROCESS_NUMBER_PATTERN = re.compile(r"\b\d{4,}\.?\d{4,}[\d./-]*\b")
@@ -109,7 +112,8 @@ class ReadOnlyPage:
             if callable(metodo):
                 try:
                     valor = metodo("body")
-                except Exception:
+                except Exception as exc:
+                    logger.debug("Falha na extração '%s' no frame '%s'. Erro: %s", attr, name, exc)
                     continue
                 if valor:
                     return str(valor).strip()
@@ -143,7 +147,8 @@ class ReadOnlyPage:
                         "amostra": amostra,
                     }
                 )
-            except Exception:
+            except Exception as exc:
+                logger.debug("Falha no frame '%s': %s", getattr(frame, "name", ""), exc)
                 continue
         return tuple(overview)
 
@@ -159,7 +164,8 @@ def _element_text(elemento: Any) -> str:
         if callable(metodo):
             try:
                 texto = metodo()
-            except Exception:
+            except Exception as exc:
+                logger.debug("Falha ao extrair texto com '%s': %s", attr, exc)
                 continue
             if texto:
                 return str(texto).strip()
