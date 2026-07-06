@@ -15,7 +15,7 @@ from app.sei.sei_action_guard import GuardRequest, evaluate
 
 
 VALID_DRAFT_TYPES = frozenset(
-    {"despacho", "oficio", "informacao", "encaminhamento"}
+    {"despacho", "oficio", "informacao", "encaminhamento", "parte", "portaria", "memorando"}
 )
 
 OFFICIAL_ACTIONS_BLOCKED = [
@@ -168,6 +168,12 @@ def infer_draft_type(text: str) -> str:
         return "informacao"
     if any(term in normalized for term in ("encaminhamento", "encaminhar", "remeter")):
         return "encaminhamento"
+    if any(term in normalized for term in ("parte", "relato de servico", "boletim")):
+        return "parte"
+    if any(term in normalized for term in ("portaria", "instauracao", "sindicancia", "ipm")):
+        return "portaria"
+    if any(term in normalized for term in ("memorando", "interno")):
+        return "memorando"
     if any(term in normalized for term in ("providencia", "despacho", "prazo", "autos")):
         return "despacho"
     return "despacho"
@@ -213,6 +219,40 @@ def _render_template(tipo: str, values: dict[str, str]) -> str:
             "Apos a analise, restituam-se os autos ou informe-se a providencia "
             "adotada, conforme orientacao superior."
         )
+    if tipo == "parte":
+        return (
+            "PARTE\n\n"
+            f"Do: {values['unidade_destino']}\n"
+            f"Ao: Senhor {values['destinatario']}\n\n"
+            f"Assunto: {values['assunto']} (Ref. SEI: {values['processo_sei']})\n\n"
+            f"Comunico a Vossa Senhoria que {values['resumo']}.\n\n"
+            f"Providencia sugerida / Adotada: {values['providencia']}.\n"
+            f"Prazo/evento: {values['prazo_evento']}.\n\n"
+            "Respeitosamente,"
+        )
+    if tipo == "memorando":
+        return (
+            "MEMORANDO\n\n"
+            f"Processo SEI: {values['processo_sei']}\n"
+            f"Assunto: {values['assunto']}\n\n"
+            f"A(o) {values['destinatario']},\n\n"
+            f"Levo ao conhecimento dessa unidade que {values['resumo']}.\n\n"
+            f"Solicito/Sugiro a seguinte providencia: {values['providencia']}.\n"
+            f"Prazo/evento estipulado: {values['prazo_evento']}.\n\n"
+            "Atenciosamente,"
+        )
+    if tipo == "portaria":
+        return (
+            "PORTARIA\n\n"
+            f"O COMANDANTE DA {values['unidade_destino']}, no uso de suas atribuicoes legais,\n\n"
+            "RESOLVE:\n\n"
+            f"Art. 1 - Instaurar procedimento administrativo (Ref. SEI {values['processo_sei']}) "
+            f"com a finalidade de apurar fatos relativos a {values['assunto']}.\n\n"
+            f"Art. 2 - Designar o {values['destinatario']} para conduzir os trabalhos.\n\n"
+            f"Art. 3 - Estabelecer o prazo de {values['prazo_evento']} para a conclusao.\n\n"
+            f"Art. 4 - Fica determinado que: {values['providencia']}.\n\n"
+            "PUBLIQUE-SE E REGISTRE-SE."
+        )
     return (
         "DESPACHO\n\n"
         f"Processo SEI: {values['processo_sei']}\n"
@@ -256,6 +296,12 @@ def _suggest_providence(tipo: str, request: DraftRequest) -> str:
         return "responder formalmente apos revisao da autoridade competente"
     if tipo == "informacao":
         return "prestar informacao administrativa para subsidiar decisao"
+    if tipo == "parte":
+        return "tomar conhecimento dos fatos relatados para fins disciplinares ou operacionais"
+    if tipo == "portaria":
+        return "conduzir a apuracao de forma isenta dentro do prazo regulamentar"
+    if tipo == "memorando":
+        return "dar cumprimento as diretrizes internas assinaladas"
     return "encaminhar para conhecimento e providencias cabiveis"
 
 
@@ -321,6 +367,10 @@ def _normalize_type(value: str) -> str:
         "informacao": "informacao",
         "comunicacao_interna": "informacao",
         "encaminhamento": "encaminhamento",
+        "parte": "parte",
+        "parte_diaria": "parte",
+        "portaria": "portaria",
+        "memorando": "memorando",
     }
     return aliases.get(normalized, "")
 
