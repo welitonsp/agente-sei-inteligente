@@ -217,16 +217,6 @@
 
 
 
-.agente-sei-quick {
-  padding: 16px 24px !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 12px !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
-  background: rgba(0, 0, 0, 0.1) !important;
-}
-
-.agente-sei-chip,
 .agente-sei-secondary,
 .agente-sei-primary {
   min-height: 44px !important;
@@ -243,7 +233,6 @@
   flex: 1 1 auto !important;
 }
 
-.agente-sei-chip,
 .agente-sei-secondary {
   background: rgba(255, 255, 255, 0.05) !important;
   color: #cbd5e1 !important;
@@ -256,7 +245,6 @@
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
 }
 
-.agente-sei-chip:hover,
 .agente-sei-secondary:hover {
   background: rgba(255, 255, 255, 0.12) !important;
   transform: translateY(-2px) !important;
@@ -353,8 +341,7 @@
   min-width: 120px !important;
 }
 
-.agente-sei-busy .agente-sei-primary,
-.agente-sei-busy .agente-sei-chip {
+.agente-sei-busy .agente-sei-primary {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
   transform: none !important;

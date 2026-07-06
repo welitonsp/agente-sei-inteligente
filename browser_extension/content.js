@@ -63,13 +63,7 @@
 
       <div id="agente-sei-messages" class="agente-sei-messages" role="log" aria-live="polite"></div>
 
-      <div class="agente-sei-quick">
-        <button id="agente-sei-capturar" class="agente-sei-chip" type="button">Capturar</button>
-        <button data-intent="resumo" class="agente-sei-chip" type="button">Resumo</button>
-        <button data-intent="prazo" class="agente-sei-chip" type="button">Prazos</button>
-        <button data-intent="providencia" class="agente-sei-chip" type="button">Providencia</button>
-        <button data-intent="minuta" class="agente-sei-chip" type="button">Minuta</button>
-      </div>
+
 
       <div class="agente-sei-composer">
         <textarea id="agente-sei-prompt" rows="2" placeholder="Pergunte sobre o processo aberto no SEI..."></textarea>
@@ -84,14 +78,12 @@
 
   const launchButton = root.querySelector(".agente-sei-launch");
   const closeButton = root.querySelector(".agente-sei-close");
-  const captureButton = root.querySelector("#agente-sei-capturar");
   const sendButton = root.querySelector("#agente-sei-enviar");
   const copyButton = root.querySelector("#agente-sei-copy");
   const processInput = root.querySelector("#agente-sei-processo");
   const titleInput = root.querySelector("#agente-sei-titulo");
   const promptInput = root.querySelector("#agente-sei-prompt");
   const messages = root.querySelector("#agente-sei-messages");
-  const quickButtons = root.querySelectorAll(".agente-sei-chip");
 
   launchButton.addEventListener("click", () => {
     root.classList.add("agente-sei-open");
@@ -106,12 +98,6 @@
 
   closeButton.addEventListener("click", () => {
     root.classList.remove("agente-sei-open");
-  });
-
-  captureButton.addEventListener("click", () => {
-    hydrateContext(true);
-    const count = state.capturedText.length;
-    addMessage("assistant", count ? `Capturei ${count} caracteres da tela atual.` : "Nao encontrei texto visivel para capturar.");
   });
 
   sendButton.addEventListener("click", () => {
@@ -142,18 +128,6 @@
     } else {
       addMessage("assistant", "Copie manualmente a ultima resposta exibida.");
     }
-  });
-
-  root.querySelectorAll("[data-intent]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const intent = button.getAttribute("data-intent") || "analise";
-      const label = button.textContent || "Analise";
-      if (intent === "minuta") {
-        runAnalysis("Gere um rascunho de minuta fora do SEI, indicando se parece despacho ou oficio e deixando claro que preciso revisar antes de usar.", intent);
-      } else {
-        runAnalysis(`Preciso de ${label.toLowerCase()} do processo.`, intent);
-      }
-    });
   });
 
   function submitPrompt() {
@@ -303,10 +277,6 @@
   function setBusy(isBusy) {
     state.busy = isBusy;
     sendButton.disabled = isBusy;
-    captureButton.disabled = isBusy;
-    quickButtons.forEach((button) => {
-      button.disabled = isBusy;
-    });
     root.classList.toggle("agente-sei-busy", isBusy);
     if (isBusy) {
       addMessage("assistant", "Analisando no backend local...");
