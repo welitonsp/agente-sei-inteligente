@@ -77,12 +77,6 @@
   launchButton.addEventListener("click", () => {
     root.classList.add("agente-sei-open");
     hydrateContext(false);
-    if (!messages.children.length) {
-      addMessage(
-        "assistant",
-        "Estou pronto. Posso resumir, apontar prazo, identificar assunto e sugerir providencia com base no texto visivel ou selecionado."
-      );
-    }
   });
 
   closeButton.addEventListener("click", () => {
