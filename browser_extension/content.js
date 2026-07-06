@@ -48,16 +48,7 @@
         <button class="agente-sei-close" type="button" aria-label="Fechar">x</button>
       </header>
 
-      <div class="agente-sei-context">
-        <label class="agente-sei-context-field">
-          <span>Processo</span>
-          <input id="agente-sei-processo" autocomplete="off" placeholder="Detectar">
-        </label>
-        <label class="agente-sei-context-field">
-          <span>Titulo</span>
-          <input id="agente-sei-titulo" autocomplete="off" placeholder="Pagina SEI">
-        </label>
-      </div>
+
 
 
 
@@ -80,8 +71,6 @@
   const closeButton = root.querySelector(".agente-sei-close");
   const sendButton = root.querySelector("#agente-sei-enviar");
   const copyButton = root.querySelector("#agente-sei-copy");
-  const processInput = root.querySelector("#agente-sei-processo");
-  const titleInput = root.querySelector("#agente-sei-titulo");
   const promptInput = root.querySelector("#agente-sei-prompt");
   const messages = root.querySelector("#agente-sei-messages");
 
@@ -162,9 +151,9 @@
       {
         type: "AGENTE_SEI_ANALYZE",
         payload: {
-          titulo: titleInput.value || document.title || "Pagina SEI",
+          titulo: document.title || "Pagina SEI",
           texto: text,
-          processo_sei: processInput.value || guessProcessNumber(),
+          processo_sei: guessProcessNumber(),
           origem: "extensao_sei_chat_readonly",
           usuario_local: "",
           intent: intent
@@ -188,13 +177,6 @@
   }
 
   function hydrateContext(forceText) {
-    const processo = guessProcessNumber();
-    if (processo && !processInput.value.trim()) {
-      processInput.value = processo;
-    }
-    if (!titleInput.value.trim()) {
-      titleInput.value = document.title.replace(/\s+/g, " ").trim() || "Pagina SEI";
-    }
     if (forceText || !state.capturedText) {
       state.capturedText = getVisibleText();
     }
