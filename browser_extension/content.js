@@ -18,6 +18,11 @@
     return;
   }
 
+  // Evita injetar o robozinho em frames pequenos (como o menu lateral ou barra superior do SEI)
+  if (window.innerWidth < 450 || window.innerHeight < 400) {
+    return;
+  }
+
   const state = {
     capturedText: "",
     lastAnswer: "",
