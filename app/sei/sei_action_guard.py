@@ -25,7 +25,6 @@ from enum import Enum
 from typing import Any
 
 from app.core import permissions
-from app.core.permissions import Action
 
 
 class GuardDecision(str, Enum):

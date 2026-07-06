@@ -8,7 +8,6 @@ economiza tokens e zera a latência de documentos já lidos no processo.
 from __future__ import annotations
 
 import hashlib
-import json
 import sqlite3
 from contextlib import contextmanager
 from typing import Optional

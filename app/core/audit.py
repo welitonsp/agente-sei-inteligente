@@ -20,7 +20,6 @@ def mask_process_number(process_number: str) -> str:
     return "***"
 
 def log_audit_event(event_type: str, action: str, status: str, process_number: str | None = None, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
-    from app.core.security_filter import sanitize
     process_info = None
     if process_number:
         process_info = {

@@ -24,7 +24,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Protocol
 
-from app.core import permissions
 from app.core.config import Settings, get_settings
 from app.core.permissions import Action
 from app.sei.sei_action_guard import GuardRequest, evaluate

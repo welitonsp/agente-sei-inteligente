@@ -139,10 +139,10 @@ def extract_prazos(text: str, *, reference_date: date | None = None) -> list[Pra
 
     for m in _RE_ABSOLUTO_EXTENSO.finditer(text):
         dia, mes_nome, ano = int(m.group(1)), _strip_accents(m.group(2)), int(m.group(3))
-        mes = _MESES.get(mes_nome)
-        if mes is None:
+        mes_num = _MESES.get(mes_nome)
+        if mes_num is None:
             continue
-        data_limite = _safe_date(ano, mes, dia)
+        data_limite = _safe_date(ano, mes_num, dia)
         if data_limite is None:
             continue
         prazos.append(Prazo(tipo="absoluto", trecho=m.group(0).strip(), data_limite=data_limite))

@@ -12,6 +12,9 @@ google-api-python-client>=2.0
 google-auth>=2.0
 google-auth-oauthlib>=1.0
 
+# Automacao e extracao assistida (Etapa 4/5)
+playwright>=1.40.0
+
 # Camada de IA (Claude no controle) - import tardio em ClaudeProvider.
 # Necessario apenas para o provedor real Claude; testes e modo echo nao usam.
 anthropic>=0.40
