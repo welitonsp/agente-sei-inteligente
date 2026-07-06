@@ -20,9 +20,14 @@ if not exist ".venv\Scripts\python.exe" (
     exit /b
 )
 
-:: Abre a versao Desktop (Navegador Seguro)
-echo Abrindo o Navegador Seguro...
-.venv\Scripts\python.exe -m app.desktop
+:: Liga o Cérebro do Agente (API Local para a Extensao do Chrome)
+echo O Cerebro do Agente 19 esta ATIVO!
+echo.
+echo Va para o seu Google Chrome e abra o SEI.
+echo O robo flutuante ja estara la aguardando suas ordens.
+echo.
+echo ^(Pode minimizar esta janela, ela e o motor da Inteligencia Artificial^)
+.venv\Scripts\python.exe -m app.dashboard
 
 echo.
 echo Sessao encerrada com seguranca.
