@@ -11,9 +11,9 @@
 }
 
 #agente-sei-root * {
-  box-sizing: border-box;
-  font-family: 'Outfit', "Segoe UI", sans-serif;
-  letter-spacing: 0.3px;
+  box-sizing: border-box !important;
+  font-family: 'Outfit', "Segoe UI", sans-serif !important;
+  letter-spacing: 0.3px !important;
 }
 
 /* Launch Button - Pulsing Gradient */
@@ -22,8 +22,9 @@
   height: 64px;
   border: none;
   border-radius: 50%;
-  display: grid;
-  place-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
   background: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
   color: #ffffff;
@@ -69,301 +70,328 @@
   100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
-/* Chat Window - Premium Glassmorphism */
+/* Chat Window - Premium Glassmorphism & Flexbox Layout */
 .agente-sei-chat {
-  width: min(540px, calc(100vw - 40px));
-  height: min(840px, calc(100vh - 40px));
+  width: min(540px, calc(100vw - 40px)) !important;
+  height: min(840px, calc(100vh - 40px)) !important;
   display: none;
+  flex-direction: column;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 20px !important;
+  background: rgba(15, 23, 42, 0.95) !important;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05) inset !important;
   transform: translateY(20px);
   opacity: 0;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .agente-sei-open .agente-sei-chat {
-  display: grid;
-  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
+  display: flex !important;
   transform: translateY(0);
   opacity: 1;
 }
 
 .agente-sei-open .agente-sei-launch {
-  display: none;
+  display: none !important;
 }
 
+/* 1. Cabeçalho */
 .agente-sei-chat-head {
-  padding: 16px 20px;
+  padding: 20px 24px !important;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(217, 70, 239, 0.15));
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(217, 70, 239, 0.15)) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  margin-bottom: 8px !important;
 }
 
 .agente-sei-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px !important;
 }
 
 .agente-sei-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  font-weight: 800;
-  font-size: 16px;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 12px !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  font-weight: 800 !important;
+  font-size: 18px !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
 }
 
 .agente-sei-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #f8fafc;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: #f8fafc !important;
+  margin-bottom: 4px !important;
 }
 
 .agente-sei-subtitle {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #94a3b8;
+  font-size: 13px !important;
+  color: #94a3b8 !important;
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
 .agente-sei-close {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #94a3b8;
+  width: 36px !important;
+  height: 36px !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #94a3b8 !important;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px !important;
 }
 
 .agente-sei-close:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #fca5a5 !important;
   transform: scale(1.05);
 }
 
-/* Context & Inputs */
+/* 2. Campos de Entrada (Inputs) - Stacking vertically for full width */
 .agente-sei-context {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
-  gap: 12px;
-  padding: 16px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  padding: 8px 24px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.agente-sei-context-field {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
 }
 
 .agente-sei-context-field span {
-  display: block;
-  margin-bottom: 6px;
-  color: #94a3b8;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  display: block !important;
+  margin-bottom: 8px !important;
+  color: #94a3b8 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
 }
 
 .agente-sei-context-field input,
 .agente-sei-composer textarea {
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  color: #f1f5f9;
-  background: rgba(15, 23, 42, 0.4);
-  font-size: 15px;
-  outline: none;
-  transition: all 0.3s ease;
+  width: 100% !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+  color: #f1f5f9 !important;
+  background: rgba(15, 23, 42, 0.6) !important;
+  font-size: 15px !important;
+  outline: none !important;
+  transition: all 0.3s ease !important;
 }
 
 .agente-sei-context-field input {
-  height: 38px;
-  padding: 0 12px;
+  height: 44px !important;
+  padding: 0 16px !important;
 }
 
 .agente-sei-context-field input:focus,
 .agente-sei-composer textarea:focus {
-  border-color: #8b5cf6;
-  background: rgba(15, 23, 42, 0.6);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+  border-color: #8b5cf6 !important;
+  background: rgba(15, 23, 42, 0.8) !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25) !important;
 }
 
+/* 3. Caixa de Alerta (Notice) */
 .agente-sei-notice {
-  margin: 16px 20px 0;
-  padding: 12px 16px;
-  border: 1px solid rgba(245, 158, 11, 0.2);
-  border-radius: 10px;
-  background: rgba(245, 158, 11, 0.05);
-  color: #fcd34d;
-  font-size: 12px;
-  line-height: 1.5;
+  margin: 16px 24px 20px !important;
+  padding: 16px !important;
+  border: 1px solid rgba(245, 158, 11, 0.2) !important;
+  border-radius: 12px !important;
+  background: rgba(245, 158, 11, 0.05) !important;
+  color: #fcd34d !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
 }
 
+/* 4. Agrupamento de Botões (Status e Ações Rápidas) */
 .agente-sei-statusbar {
-  padding: 12px 20px 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  padding: 0 24px !important;
+  margin-bottom: 16px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
 }
 
 .agente-sei-statusbar span {
-  padding: 6px 4px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.02);
-  color: #cbd5e1;
-  font-size: 10px;
-  font-weight: 600;
-  text-align: center;
-}
-
-.agente-sei-messages {
-  padding: 20px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.agente-sei-messages::-webkit-scrollbar {
-  width: 6px;
-}
-.agente-sei-messages::-webkit-scrollbar-track {
-  background: transparent;
-}
-.agente-sei-messages::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-}
-
-.agente-sei-message {
-  max-width: 90%;
-  padding: 16px 20px;
-  border-radius: 16px;
-  font-size: 15px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.agente-sei-assistant {
-  align-self: flex-start;
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-bottom-left-radius: 4px;
-  color: #e2e8f0;
-}
-
-.agente-sei-user {
-  align-self: flex-end;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  border-bottom-right-radius: 4px;
-  color: #ffffff;
-}
-
-.agente-sei-message-error {
-  border-color: rgba(239, 68, 68, 0.3);
-  background: rgba(239, 68, 68, 0.1);
-  color: #fca5a5;
+  padding: 8px 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: #cbd5e1 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  flex: 1 1 auto !important;
 }
 
 .agente-sei-quick {
-  padding: 12px 20px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 16px 24px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background: rgba(0, 0, 0, 0.1) !important;
 }
 
 .agente-sei-chip,
 .agente-sei-secondary,
 .agente-sei-primary {
-  min-height: 38px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
+  min-height: 44px !important;
+  padding: 0 16px !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  border: 1px solid transparent !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1 1 auto !important;
 }
 
 .agente-sei-chip,
 .agente-sei-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  color: #cbd5e1;
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #cbd5e1 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 .agente-sei-primary {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
 }
 
 .agente-sei-chip:hover,
 .agente-sei-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.12) !important;
+  transform: translateY(-2px) !important;
 }
 
 .agente-sei-primary:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+  filter: brightness(1.1) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3) !important;
 }
 
+/* Área de Mensagens */
+.agente-sei-messages {
+  flex: 1 !important;
+  padding: 16px 24px !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+}
+
+.agente-sei-messages::-webkit-scrollbar {
+  width: 8px !important;
+}
+.agente-sei-messages::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+.agente-sei-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+}
+
+.agente-sei-message {
+  max-width: 90% !important;
+  padding: 16px 20px !important;
+  border-radius: 16px !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+}
+
+.agente-sei-assistant {
+  align-self: flex-start !important;
+  background: rgba(30, 41, 59, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom-left-radius: 4px !important;
+  color: #e2e8f0 !important;
+}
+
+.agente-sei-user {
+  align-self: flex-end !important;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  border-bottom-right-radius: 4px !important;
+  color: #ffffff !important;
+}
+
+.agente-sei-message-error {
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #fca5a5 !important;
+}
+
+/* 5. Área de Texto e Botões Inferiores */
 .agente-sei-composer {
-  padding: 16px 20px 20px;
-  display: grid;
-  gap: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 20px 24px 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background: rgba(15, 23, 42, 0.95) !important;
 }
 
 .agente-sei-composer textarea {
-  min-height: 60px;
-  max-height: 120px;
-  resize: vertical;
-  padding: 12px 14px;
+  min-height: 70px !important;
+  max-height: 150px !important;
+  resize: vertical !important;
+  padding: 16px !important;
+  line-height: 1.5 !important;
 }
 
 .agente-sei-composer-actions {
-  display: grid;
-  grid-template-columns: 100px minmax(0, 1fr);
-  gap: 12px;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 16px !important;
+}
+
+.agente-sei-composer-actions button {
+  min-width: 120px !important;
 }
 
 .agente-sei-busy .agente-sei-primary,
 .agente-sei-busy .agente-sei-chip {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
 }
 
 @media (max-width: 520px) {
   #agente-sei-root {
-    right: 10px;
-    bottom: 70px;
+    right: 10px !important;
+    bottom: 20px !important;
   }
 
   .agente-sei-chat {
-    width: calc(100vw - 20px);
-  }
-
-  .agente-sei-context,
-  .agente-sei-quick,
-  .agente-sei-statusbar {
-    grid-template-columns: 1fr 1fr;
+    width: calc(100vw - 20px) !important;
   }
 }
