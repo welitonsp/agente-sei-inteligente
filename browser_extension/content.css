@@ -213,17 +213,7 @@
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25) !important;
 }
 
-/* 3. Caixa de Alerta (Notice) */
-.agente-sei-notice {
-  margin: 16px 24px 20px !important;
-  padding: 16px !important;
-  border: 1px solid rgba(245, 158, 11, 0.2) !important;
-  border-radius: 12px !important;
-  background: rgba(245, 158, 11, 0.05) !important;
-  color: #fcd34d !important;
-  font-size: 13px !important;
-  line-height: 1.6 !important;
-}
+
 
 /* 4. Agrupamento de Botões (Status e Ações Rápidas) */
 .agente-sei-statusbar {

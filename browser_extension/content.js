@@ -59,9 +59,6 @@
         </label>
       </div>
 
-      <div class="agente-sei-notice">
-        Login, senha, cookie e atos oficiais ficam fora do Agente 19.
-      </div>
 
       <div class="agente-sei-statusbar" aria-label="Status operacional">
         <span>Somente leitura</span>
