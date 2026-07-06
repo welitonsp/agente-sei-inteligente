@@ -1,63 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
 #agente-sei-root {
   all: initial;
   position: fixed;
-  right: 18px;
-  bottom: 82px;
+  right: 24px;
+  bottom: 24px;
   z-index: 2147483647;
-  color: #15202b;
-  font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
+  color: #e2e8f0;
+  font-family: 'Outfit', "Segoe UI", sans-serif;
 }
 
 #agente-sei-root * {
   box-sizing: border-box;
-  font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
-  letter-spacing: 0;
+  font-family: 'Outfit', "Segoe UI", sans-serif;
+  letter-spacing: 0.3px;
 }
 
+/* Launch Button - Pulsing Gradient */
 .agente-sei-launch {
-  width: 62px;
-  height: 62px;
-  border: 0;
+  width: 64px;
+  height: 64px;
+  border: none;
   border-radius: 50%;
   display: grid;
   place-items: center;
   position: relative;
-  background: #045f73;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
   color: #ffffff;
   cursor: pointer;
-  box-shadow: 0 14px 34px rgba(7, 32, 43, .28);
+  box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.5);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  animation: float 4s ease-in-out infinite;
+}
+
+.agente-sei-launch:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 15px 35px -5px rgba(139, 92, 246, 0.7);
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
 }
 
 .agente-sei-launch-mark {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .agente-sei-launch-dot {
-  width: 12px;
-  height: 12px;
-  border: 2px solid #ffffff;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #1e1e2f;
   border-radius: 50%;
   position: absolute;
-  right: 5px;
-  top: 6px;
-  background: #35c979;
+  right: 2px;
+  top: 2px;
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  animation: pulse 2s infinite;
 }
 
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Chat Window - Premium Glassmorphism */
 .agente-sei-chat {
-  width: min(430px, calc(100vw - 28px));
-  height: min(720px, calc(100vh - 106px));
+  width: min(450px, calc(100vw - 40px));
+  height: min(780px, calc(100vh - 40px));
   display: none;
   overflow: hidden;
-  border: 1px solid #cfd9df;
-  border-radius: 8px;
-  background: #f7f9fa;
-  box-shadow: 0 18px 50px rgba(7, 32, 43, .28);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .agente-sei-open .agente-sei-chat {
   display: grid;
   grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
+  transform: translateY(0);
+  opacity: 1;
 }
 
 .agente-sei-open .agente-sei-launch {
@@ -65,235 +98,255 @@
 }
 
 .agente-sei-chat-head {
-  min-height: 58px;
-  padding: 10px 12px;
+  padding: 16px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  background: #045f73;
-  color: #ffffff;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(217, 70, 239, 0.15));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .agente-sei-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-width: 0;
+  gap: 12px;
 }
 
 .agente-sei-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
-  flex: 0 0 auto;
-  background: rgba(255, 255, 255, .16);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   font-weight: 800;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .agente-sei-title {
-  font-size: 15px;
-  font-weight: 800;
-  line-height: 1.15;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f8fafc;
 }
 
 .agente-sei-subtitle {
-  margin-top: 2px;
+  margin-top: 4px;
   font-size: 12px;
-  line-height: 1.2;
-  color: rgba(255, 255, 255, .78);
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .agente-sei-close {
   width: 32px;
   height: 32px;
-  border: 1px solid rgba(255, 255, 255, .16);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, .12);
-  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
   cursor: pointer;
-  font-size: 15px;
-  font-weight: 800;
+  transition: all 0.2s ease;
 }
 
+.agente-sei-close:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  transform: scale(1.05);
+}
+
+/* Context & Inputs */
 .agente-sei-context {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
-  gap: 8px;
-  padding: 10px 12px;
-  background: #ffffff;
-  border-bottom: 1px solid #dfe6ea;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .agente-sei-context-field span {
   display: block;
-  margin-bottom: 4px;
-  color: #5d6b75;
-  font-size: 11px;
-  font-weight: 800;
+  margin-bottom: 6px;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .agente-sei-context-field input,
 .agente-sei-composer textarea {
   width: 100%;
-  border: 1px solid #ccd8de;
-  border-radius: 6px;
-  color: #15202b;
-  background: #ffffff;
-  font-size: 13px;
-  outline: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #f1f5f9;
+  background: rgba(15, 23, 42, 0.4);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
 }
 
 .agente-sei-context-field input {
-  height: 34px;
-  padding: 7px 8px;
+  height: 38px;
+  padding: 0 12px;
 }
 
 .agente-sei-context-field input:focus,
 .agente-sei-composer textarea:focus {
-  border-color: #0782a0;
-  box-shadow: 0 0 0 3px rgba(7, 130, 160, .13);
+  border-color: #8b5cf6;
+  background: rgba(15, 23, 42, 0.6);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
 }
 
 .agente-sei-notice {
-  margin: 10px 12px 0;
-  padding: 9px 10px;
-  border: 1px solid #eadfb7;
-  border-radius: 6px;
-  background: #fff8df;
-  color: #684c00;
+  margin: 16px 20px 0;
+  padding: 12px 16px;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.05);
+  color: #fcd34d;
   font-size: 12px;
-  line-height: 1.35;
+  line-height: 1.5;
 }
 
 .agente-sei-statusbar {
-  padding: 8px 12px 0;
+  padding: 12px 20px 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+  gap: 8px;
 }
 
 .agente-sei-statusbar span {
-  min-height: 26px;
-  display: grid;
-  place-items: center;
-  border: 1px solid #d5e1e6;
-  border-radius: 6px;
-  background: #eef6f7;
-  color: #26535f;
-  font-size: 11px;
-  font-weight: 800;
+  padding: 6px 4px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #cbd5e1;
+  font-size: 10px;
+  font-weight: 600;
   text-align: center;
-  overflow-wrap: anywhere;
 }
 
 .agente-sei-messages {
-  min-height: 0;
-  padding: 12px;
-  overflow: auto;
+  padding: 20px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
+}
+
+.agente-sei-messages::-webkit-scrollbar {
+  width: 6px;
+}
+.agente-sei-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+.agente-sei-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
 }
 
 .agente-sei-message {
-  max-width: 88%;
-  padding: 10px 11px;
-  border-radius: 8px;
-  font-size: 13px;
-  line-height: 1.42;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .agente-sei-assistant {
   align-self: flex-start;
-  border: 1px solid #dbe4e9;
-  background: #ffffff;
-  color: #15202b;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom-left-radius: 4px;
+  color: #e2e8f0;
 }
 
 .agente-sei-user {
   align-self: flex-end;
-  background: #045f73;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-bottom-right-radius: 4px;
   color: #ffffff;
 }
 
 .agente-sei-message-error {
-  border-color: #efc5bd;
-  background: #fff0ed;
-  color: #8d1f11;
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
 }
 
 .agente-sei-quick {
-  padding: 8px 12px;
+  padding: 12px 20px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 7px;
-  border-top: 1px solid #dfe6ea;
-  background: #ffffff;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .agente-sei-chip,
 .agente-sei-secondary,
 .agente-sei-primary {
-  min-height: 34px;
-  border-radius: 6px;
+  min-height: 38px;
+  border-radius: 10px;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
 }
 
 .agente-sei-chip,
 .agente-sei-secondary {
-  border: 1px solid #ccd8de;
-  background: #ffffff;
-  color: #1d313b;
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .agente-sei-primary {
-  border: 0;
-  background: #047d67;
+  background: linear-gradient(135deg, #10b981, #059669);
   color: #ffffff;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
 .agente-sei-chip:hover,
 .agente-sei-secondary:hover {
-  background: #f0f5f7;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
 }
 
 .agente-sei-primary:hover {
-  background: #036b59;
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
 }
 
 .agente-sei-composer {
-  padding: 10px 12px 12px;
+  padding: 16px 20px 20px;
   display: grid;
-  gap: 8px;
-  border-top: 1px solid #dfe6ea;
-  background: #ffffff;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .agente-sei-composer textarea {
-  min-height: 54px;
-  max-height: 118px;
+  min-height: 60px;
+  max-height: 120px;
   resize: vertical;
-  padding: 9px 10px;
+  padding: 12px 14px;
 }
 
 .agente-sei-composer-actions {
   display: grid;
-  grid-template-columns: 92px minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: 12px;
 }
 
 .agente-sei-busy .agente-sei-primary,
 .agente-sei-busy .agente-sei-chip {
-  opacity: .62;
-  cursor: wait;
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 @media (max-width: 520px) {
