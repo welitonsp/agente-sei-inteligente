@@ -10,8 +10,12 @@ from __future__ import annotations
 import base64
 import json
 from http import HTTPStatus
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
+import uvicorn
+from fastapi import FastAPI, Request, Response
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pathlib import Path
 
 from app.agent.agent19 import AgentRequest, run_agent19
 from app.core.auth import AuthError, apply_auth_to_payload, authorize_dashboard_request
@@ -780,119 +784,94 @@ def create_agent19_response(payload: dict[str, Any]) -> dict[str, Any]:
     return run_agent19(request).to_contract()
 
 
-class DashboardHandler(BaseHTTPRequestHandler):
-    server_version = "AgenteSeiDashboard/0.1"
+fastapi_app = FastAPI(title="Agente SEI API", version="0.2.0")
 
-    def do_GET(self) -> None:  # noqa: N802 - API stdlib
-        if self.path in ("/", "/index.html"):
-            self._send_html(INDEX_HTML)
-            return
-        if self.path == "/shadow.html":
-            self._send_html(SHADOW_HTML)
-            return
-        if self.path == "/api/shadow-logs":
-            log_path = Path(".shadow_logs/shadow_trials.jsonl")
-            logs = []
-            if log_path.exists():
-                with open(log_path, "r", encoding="utf-8") as f:
-                    for line in f:
-                        if line.strip():
-                            try:
-                                logs.append(json.loads(line))
-                            except Exception:
-                                pass
-            self._send_json(logs)
-            return
-        if self.path == "/health":
-            self._send_json({"status": "ok"})
-            return
-        self.send_error(HTTPStatus.NOT_FOUND)
+fastapi_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    def do_POST(self) -> None:  # noqa: N802 - API stdlib
-        if self.path not in (
-            "/api/import-text",
-            "/api/import-pdf",
-            "/api/generate-draft",
-            "/api/triage-local",
-            "/api/mission-control",
-            "/api/agent19",
-        ):
-            self.send_error(HTTPStatus.NOT_FOUND)
-            return
+@fastapi_app.get("/", response_class=HTMLResponse)
+@fastapi_app.get("/index.html", response_class=HTMLResponse)
+async def get_index():
+    return INDEX_HTML
+
+@fastapi_app.get("/shadow.html", response_class=HTMLResponse)
+async def get_shadow():
+    return SHADOW_HTML
+
+@fastapi_app.get("/api/shadow-logs")
+async def get_shadow_logs():
+    log_path = Path(".shadow_logs/shadow_trials.jsonl")
+    logs = []
+    if log_path.exists():
+        with open(log_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    try:
+                        logs.append(json.loads(line))
+                    except Exception:
+                        pass
+    return logs
+
+@fastapi_app.get("/health")
+async def get_health():
+    return {"status": "ok"}
+
+@fastapi_app.post("/{path:path}")
+async def handle_post_routes(path: str, request: Request):
+    valid_paths = {
+        "api/import-text": create_import_text_response,
+        "api/import-pdf": create_import_pdf_response,
+        "api/generate-draft": create_draft_response,
+        "api/triage-local": create_triage_response,
+        "api/mission-control": create_mission_response,
+        "api/agent19": create_agent19_response,
+    }
+    
+    if path not in valid_paths:
+        return JSONResponse(status_code=404, content={"error": {"code": "NOT_FOUND", "message": "Endpoint não encontrado"}})
+
+    try:
         try:
-            payload = self._read_json()
-            auth = authorize_dashboard_request(self.path, self.headers, payload)
-            payload = apply_auth_to_payload(payload, auth)
-            if self.path == "/api/agent19":
-                result = create_agent19_response(payload)
-            elif self.path == "/api/mission-control":
-                result = create_mission_response(payload)
-            elif self.path == "/api/triage-local":
-                result = create_triage_response(payload)
-            elif self.path == "/api/generate-draft":
-                result = create_draft_response(payload)
-            elif self.path == "/api/import-pdf":
-                result = create_import_pdf_response(payload)
-            else:
-                result = create_import_text_response(payload)
-        except json.JSONDecodeError:
-            self._send_json(
-                {"error": {"code": "INVALID_JSON", "message": "JSON invalido."}},
-                status=HTTPStatus.BAD_REQUEST,
-            )
-            return
-        except ValueError as exc:
-            msg = str(exc)
-            code = "INVALID_FILE" if "PDF" in msg else "VALIDATION_ERROR"
-            self._send_json(
-                {"error": {"code": code, "message": msg}},
-                status=HTTPStatus.BAD_REQUEST,
-            )
-            return
-        except RuntimeError as exc:
-            self._send_json(
-                {"error": {"code": "RUNTIME_ERROR", "message": str(exc)}},
-                status=HTTPStatus.INTERNAL_SERVER_ERROR,
-            )
-            return
-        except AuthError as exc:
-            self._send_json(exc.to_error(), status=exc.status)
-            return
+            payload = await request.json()
         except Exception:
-            self._send_json(
-                {"error": {"code": "FAILED", "message": "Falha tecnica."}},
-                status=HTTPStatus.INTERNAL_SERVER_ERROR,
-            )
-            return
-        self._send_json(result)
+            payload = {}
 
-    def log_message(self, format: str, *args: Any) -> None:
-        return
+        # Simular auth e headers compatível com legado
+        headers_dict = dict(request.headers)
+        auth = authorize_dashboard_request("/" + path, headers_dict, payload)
+        payload = apply_auth_to_payload(payload, auth)
+        
+        handler = valid_paths[path]
+        result = handler(payload)
+        return result
 
-    def _read_json(self) -> dict[str, Any]:
-        length = int(self.headers.get("Content-Length", "0"))
-        raw = self.rfile.read(length)
-        if not raw:
-            return {}
-        parsed = json.loads(raw.decode("utf-8"))
-        return parsed if isinstance(parsed, dict) else {}
-
-    def _send_html(self, body: str) -> None:
-        data = body.encode("utf-8")
-        self.send_response(HTTPStatus.OK)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.send_header("Content-Length", str(len(data)))
-        self.end_headers()
-        self.wfile.write(data)
-
-    def _send_json(self, body: dict[str, Any], status: HTTPStatus = HTTPStatus.OK) -> None:
-        data = json.dumps(body, ensure_ascii=False).encode("utf-8")
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(data)))
-        self.end_headers()
-        self.wfile.write(data)
-
+    except ValueError as exc:
+        msg = str(exc)
+        code = "INVALID_FILE" if "PDF" in msg else "VALIDATION_ERROR"
+        return JSONResponse(
+            status_code=HTTPStatus.BAD_REQUEST,
+            content={"error": {"code": code, "message": msg}}
+        )
+    except RuntimeError as exc:
+        return JSONResponse(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+            content={"error": {"code": "RUNTIME_ERROR", "message": str(exc)}}
+        )
+    except AuthError as exc:
+        return JSONResponse(
+            status_code=exc.status,
+            content=exc.to_error()
+        )
+    except Exception:
+        return JSONResponse(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+            content={"error": {"code": "FAILED", "message": "Falha tecnica."}}
+        )
 
 def run(host: str | None = None, port: int | None = None) -> None:
     settings = get_settings()
@@ -902,15 +881,12 @@ def run(host: str | None = None, port: int | None = None) -> None:
 
     bind_host = host or settings.app_host
     bind_port = port or settings.app_port
-    httpd = ThreadingHTTPServer((bind_host, bind_port), DashboardHandler)
+    
     logger = get_logger("dashboard")
     log_event(
         logger,
         20,
-        "painel local iniciado",
+        "FastAPI (Uvicorn) iniciado",
         url=f"http://{bind_host}:{bind_port}",
     )
-    try:
-        httpd.serve_forever()
-    finally:
-        httpd.server_close()
+    uvicorn.run(fastapi_app, host=bind_host, port=bind_port, log_level="warning")
