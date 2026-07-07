@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;800&display=swap');
 
 #agente-sei-root {
   all: initial;
@@ -7,16 +7,22 @@
   bottom: 24px;
   z-index: 2147483647;
   color: #e2e8f0;
-  font-family: 'Outfit', "Segoe UI", sans-serif;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --gemini-gradient: linear-gradient(135deg, #1A73E8, #8AB4F8, #D93025);
+  --gemini-soft: linear-gradient(135deg, rgba(26,115,232,0.15), rgba(217,48,37,0.15));
+  --glass-bg: rgba(18, 18, 20, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
 }
 
 #agente-sei-root * {
   box-sizing: border-box !important;
-  font-family: 'Outfit', "Segoe UI", sans-serif !important;
-  letter-spacing: 0.3px !important;
+  font-family: inherit !important;
+  letter-spacing: 0.2px !important;
 }
 
-/* Launch Button - Pulsing Gradient */
+/* Launch Button - Big Tech Pulsing Gradient */
 .agente-sei-launch {
   width: 64px;
   height: 64px;
@@ -26,17 +32,24 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
+  background: linear-gradient(135deg, #1A73E8 0%, #a259ff 50%, #f24e1e 100%);
+  background-size: 200% 200%;
   color: #ffffff;
   cursor: pointer;
-  box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 10px 25px -5px rgba(162, 89, 255, 0.5);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
-  animation: float 4s ease-in-out infinite;
+  animation: float 4s ease-in-out infinite, gradient-shift 5s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .agente-sei-launch:hover {
   transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 15px 35px -5px rgba(139, 92, 246, 0.7);
+  box-shadow: 0 15px 35px -5px rgba(162, 89, 255, 0.7);
 }
 
 @keyframes float {
@@ -46,15 +59,15 @@
 }
 
 .agente-sei-launch-mark {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 800;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .agente-sei-launch-dot {
   width: 14px;
   height: 14px;
-  border: 2px solid #1e1e2f;
+  border: 2px solid #121214;
   border-radius: 50%;
   position: absolute;
   right: 2px;
@@ -70,27 +83,27 @@
   100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
-/* Chat Window - Premium Glassmorphism & Flexbox Layout */
+/* Chat Window - Premium Glassmorphism */
 .agente-sei-chat {
   width: min(540px, calc(100vw - 40px)) !important;
   height: min(840px, calc(100vh - 40px)) !important;
   display: none;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 20px !important;
-  background: rgba(15, 23, 42, 0.95) !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05) inset !important;
-  transform: translateY(20px);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 24px !important;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.05) inset !important;
+  transform: translateY(20px) scale(0.98);
   opacity: 0;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .agente-sei-open .agente-sei-chat {
   display: flex !important;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
   opacity: 1;
 }
 
@@ -98,15 +111,14 @@
   display: none !important;
 }
 
-/* 1. Cabeçalho */
+/* Cabeçalho Premium */
 .agente-sei-chat-head {
-  padding: 20px 24px !important;
+  padding: 24px 24px !important;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(217, 70, 239, 0.15)) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  margin-bottom: 8px !important;
+  background: var(--gemini-soft) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
 }
 
 .agente-sei-brand {
@@ -118,26 +130,36 @@
 .agente-sei-avatar {
   width: 48px !important;
   height: 48px !important;
-  border-radius: 12px !important;
+  border-radius: 14px !important;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  background: linear-gradient(135deg, #1A73E8, #a259ff) !important;
   font-weight: 800 !important;
   font-size: 18px !important;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+  box-shadow: 0 4px 16px rgba(162, 89, 255, 0.4) !important;
+  position: relative;
+}
+
+.agente-sei-avatar::after {
+  content: "✨";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 14px;
+  animation: float 3s ease-in-out infinite;
 }
 
 .agente-sei-title {
-  font-size: 18px !important;
+  font-size: 20px !important;
   font-weight: 600 !important;
-  color: #f8fafc !important;
+  color: var(--text-primary) !important;
   margin-bottom: 4px !important;
 }
 
 .agente-sei-subtitle {
   font-size: 13px !important;
-  color: #94a3b8 !important;
+  color: var(--text-secondary) !important;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -147,86 +169,36 @@
   width: 36px !important;
   height: 36px !important;
   border: none !important;
-  border-radius: 8px !important;
+  border-radius: 10px !important;
   background: rgba(255, 255, 255, 0.05) !important;
-  color: #94a3b8 !important;
+  color: var(--text-secondary) !important;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px !important;
+  font-size: 18px !important;
 }
 
 .agente-sei-close:hover {
-  background: rgba(239, 68, 68, 0.2) !important;
-  color: #fca5a5 !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-primary) !important;
   transform: scale(1.05);
-}
-
-
-
-
-
-
-
-.agente-sei-secondary,
-.agente-sei-primary {
-  min-height: 44px !important;
-  padding: 0 16px !important;
-  border-radius: 10px !important;
-  cursor: pointer !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  transition: all 0.2s ease !important;
-  border: 1px solid transparent !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 1 1 auto !important;
-}
-
-.agente-sei-secondary {
-  background: rgba(255, 255, 255, 0.05) !important;
-  color: #cbd5e1 !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-.agente-sei-chip-strong {
-  border-color: #047d67;
-  background: #e5f4ef;
-  color: #064c40;
-}
-
-.agente-sei-primary {
-  background: linear-gradient(135deg, #10b981, #059669) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
-}
-
-.agente-sei-secondary:hover {
-  background: rgba(255, 255, 255, 0.12) !important;
-  transform: translateY(-2px) !important;
-}
-
-.agente-sei-primary:hover {
-  filter: brightness(1.1) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3) !important;
 }
 
 /* Área de Mensagens */
 .agente-sei-messages {
   flex: 1 !important;
-  padding: 16px 24px !important;
+  padding: 24px !important;
   overflow-y: auto !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 20px !important;
+  gap: 24px !important;
+  scroll-behavior: smooth;
 }
 
 .agente-sei-messages::-webkit-scrollbar {
-  width: 8px !important;
+  width: 6px !important;
 }
 .agente-sei-messages::-webkit-scrollbar-track {
   background: transparent !important;
@@ -237,30 +209,37 @@
 }
 
 .agente-sei-message {
-  max-width: 95% !important;
-  padding: 20px 24px !important;
-  border-radius: 16px !important;
-  font-size: 16px !important;
-  line-height: 1.7 !important;
-  color: #ffffff !important;
+  max-width: 90% !important;
+  padding: 16px 20px !important;
+  border-radius: 18px !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: var(--text-primary) !important;
   white-space: pre-wrap !important;
   word-wrap: break-word !important;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+  animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .agente-sei-assistant {
   align-self: flex-start !important;
-  background: rgba(30, 41, 59, 0.9) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-bottom-left-radius: 4px !important;
-  color: #e2e8f0 !important;
+  color: var(--text-primary) !important;
 }
 
 .agente-sei-user {
   align-self: flex-end !important;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  background: linear-gradient(135deg, #1A73E8, #a259ff) !important;
   border-bottom-right-radius: 4px !important;
   color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3) !important;
 }
 
 .agente-sei-message-error {
@@ -269,61 +248,170 @@
   color: #fca5a5 !important;
 }
 
-/* 5. Área de Texto e Botões Inferiores */
+/* Área de Ações Rápidas (Chips) */
+.agente-sei-quick {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  padding: 16px 24px 0 !important;
+}
+
+.agente-sei-chip {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-secondary) !important;
+  padding: 8px 14px !important;
+  border-radius: 20px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.agente-sei-chip:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-primary) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-2px);
+}
+
+.agente-sei-chip-strong {
+  background: linear-gradient(135deg, rgba(26,115,232,0.1), rgba(162,89,255,0.1)) !important;
+  border-color: rgba(162,89,255,0.3) !important;
+  color: #c084fc !important;
+}
+
+/* Área de Texto Inferior */
 .agente-sei-composer {
-  padding: 20px 24px 24px !important;
+  padding: 16px 24px 24px !important;
   display: flex !important;
   flex-direction: column !important;
   gap: 16px !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
-  background: rgba(15, 23, 42, 0.95) !important;
+  background: transparent !important;
 }
 
 .agente-sei-composer textarea {
   width: 100% !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 10px !important;
-  color: #f1f5f9 !important;
-  background: rgba(15, 23, 42, 0.8) !important;
+  border-radius: 16px !important;
+  color: var(--text-primary) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
   outline: none !important;
   transition: all 0.3s ease !important;
-  min-height: 60px !important;
+  min-height: 56px !important;
   max-height: 150px !important;
   resize: vertical !important;
-  padding: 12px 16px !important;
+  padding: 16px !important;
   font-size: 15px !important;
   line-height: 1.5 !important;
 }
 
 .agente-sei-composer textarea:focus {
-  border-color: #8b5cf6 !important;
-  background: rgba(15, 23, 42, 0.95) !important;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25) !important;
+  border-color: #a259ff !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 0 0 4px rgba(162, 89, 255, 0.15) !important;
 }
 
 .agente-sei-composer-actions {
   display: flex !important;
   justify-content: flex-end !important;
-  gap: 16px !important;
+  gap: 12px !important;
 }
 
-.agente-sei-composer-actions button {
-  min-width: 120px !important;
+.agente-sei-secondary,
+.agente-sei-primary {
+  min-height: 44px !important;
+  padding: 0 20px !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.agente-sei-secondary {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-secondary) !important;
+}
+
+.agente-sei-secondary:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-primary) !important;
+}
+
+.agente-sei-primary {
+  background: var(--text-primary) !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1) !important;
+}
+
+.agente-sei-primary:hover {
+  background: #ffffff !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2) !important;
 }
 
 .agente-sei-busy .agente-sei-primary {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
   transform: none !important;
+  animation: pulse-busy 1.5s infinite;
 }
 
-@media (max-width: 520px) {
-  #agente-sei-root {
-    right: 10px !important;
-    bottom: 20px !important;
-  }
+@keyframes pulse-busy {
+  0% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.5; }
+}
 
-  .agente-sei-chat {
-    width: calc(100vw - 20px) !important;
-  }
+/* Toast e Botão Nativo SEI (Premium) */
+.agente-sei-toast {
+  position: fixed !important;
+  bottom: 100px !important;
+  right: 24px !important;
+  background: rgba(18, 18, 20, 0.9) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-left: 4px solid #a259ff !important;
+  padding: 16px 20px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+  z-index: 999998 !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 14px !important;
+  color: var(--text-primary) !important;
+  animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(50px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.agente-sei-btn-nativo {
+  margin-left: 12px !important;
+  background: linear-gradient(135deg, #1A73E8, #a259ff) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 6px 14px !important;
+  font-weight: 600 !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(162, 89, 255, 0.3) !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.agente-sei-btn-nativo:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(162, 89, 255, 0.4) !important;
+  filter: brightness(1.1) !important;
 }
