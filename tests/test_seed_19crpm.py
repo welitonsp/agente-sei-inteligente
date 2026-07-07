@@ -1,5 +1,3 @@
-import sys
-import os
 import pytest
 
 from app.storage.database import init_database

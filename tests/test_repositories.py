@@ -1,4 +1,3 @@
-import os
 import pytest
 from app.storage.database import init_database
 from app.storage.repositories import add_unidade_pmgo, list_unidades_pmgo

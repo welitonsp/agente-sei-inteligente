@@ -1,4 +1,3 @@
-import os
 import fitz
 import pytest
 from app.intake.pdf_pipeline import process_pdf_file

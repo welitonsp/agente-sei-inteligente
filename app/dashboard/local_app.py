@@ -26,7 +26,6 @@ from app.intelligence.llm_gemini import analyze_with_gemini as analyze_text
 from app.intake.pdf_upload import PdfUploadRequest, analyze_pdf
 from app.storage.db import init_db
 from app.dashboard.shadow_dashboard import SHADOW_HTML
-import os
 from pathlib import Path
 
 
@@ -800,7 +799,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
                         if line.strip():
                             try:
                                 logs.append(json.loads(line))
-                            except:
+                            except Exception:
                                 pass
             self._send_json(logs)
             return

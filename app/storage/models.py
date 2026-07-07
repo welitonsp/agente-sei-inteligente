@@ -9,6 +9,7 @@ estruturado, evitando texto integral de documento do SEI (docs/25).
 
 from __future__ import annotations
 
+import sqlite3
 from datetime import datetime, timezone
 
 from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text
@@ -141,7 +142,7 @@ class Setting(Base):
     updated_by: Mapped[str | None] = mapped_column(String(255))
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=_now, onupdate=_now)
 
-import sqlite3
+
 
 def create_tables(conn: sqlite3.Connection):
     cursor = conn.cursor()

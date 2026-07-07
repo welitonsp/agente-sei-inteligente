@@ -50,7 +50,7 @@ def _minuta_fake(payload: dict) -> dict:
 
 
 def test_chat_le_automaticamente_quando_leitor_ok():
-    leitor = lambda n: ReadResult(status="ok", texto="Despacho para analise no processo.", titulos=("Doc 1",))
+    def leitor(n): return ReadResult(status="ok", texto="Despacho para analise no processo.", titulos=("Doc 1",))
     ctrl = AgentChatController(analisar=_analise_fake, gerar_minuta=_minuta_fake, ler_processo=leitor)
     replies = ctrl.responder("202600000123456")
     texto = "\n".join(r.text for r in replies)
@@ -59,7 +59,7 @@ def test_chat_le_automaticamente_quando_leitor_ok():
 
 
 def test_chat_pede_colar_quando_leitor_desabilitado():
-    leitor = lambda n: ReadResult(status="desabilitado", motivo="flag off")
+    def leitor(n): return ReadResult(status="desabilitado", motivo="flag off")
     ctrl = AgentChatController(analisar=_analise_fake, gerar_minuta=_minuta_fake, ler_processo=leitor)
     replies = ctrl.responder("202600000123456")
     assert len(replies) == 1
@@ -68,7 +68,7 @@ def test_chat_pede_colar_quando_leitor_desabilitado():
 
 
 def test_chat_avisa_processo_divergente():
-    leitor = lambda n: ReadResult(status="processo_divergente", motivo="nao confere")
+    def leitor(n): return ReadResult(status="processo_divergente", motivo="nao confere")
     ctrl = AgentChatController(analisar=_analise_fake, gerar_minuta=_minuta_fake, ler_processo=leitor)
     replies = ctrl.responder("202600000123456")
     assert "não confere" in replies[0].text.lower() or "nao confere" in replies[0].text.lower()

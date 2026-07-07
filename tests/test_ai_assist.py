@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from app.core.config import Settings
 from app.intelligence.ai_assist import analise_completa, resumo_assistido
-from app.intelligence.ai_provider import AICompletion, AIRole, EchoProvider
+from app.intelligence.ai_provider import AICompletion, EchoProvider
 
 
 class _ProvedorRealFake:

@@ -10,7 +10,6 @@ from pathlib import Path
 
 from app.sei.fase5d_simulacao import simulate_phase5d_operation
 from app.sei.minuta_cadastro import MinutaCadastro
-from app.sei.selector_manifest import evaluate_selector_manifest
 
 SCRIPT_PATH = Path("scripts/simulate_phase5d_operation.py")
 TEMPLATE_PATH = Path("knowledge_base/sei_homologacao/fase5d_simulacao.report.template.md")

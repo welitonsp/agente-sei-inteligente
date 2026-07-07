@@ -1,0 +1,2 @@
+{"trace_id": "agt19-d16c30034a09447b", "processo_sei": "2026.000700", "intencao_detectada": "analisar_interesse_19crpm", "acao_proposta_ia": "executar_proximo_passo", "acao_real_humano": null, "confidence_score": 0.9, "match": null, "timestamp": "2026-07-07T14:33:45.698605+00:00"}
+{"trace_id": "agt19-teste-manual", "processo_sei": "2026.000702", "intencao_detectada": "analisar_interesse_19crpm", "acao_proposta_ia": "executar_proximo_passo", "acao_real_humano": null, "confidence_score": 0.87, "match": null, "timestamp": "2026-07-07T14:33:45.761874+00:00"}

@@ -1,4 +1,3 @@
-import os
 import pytest
 from app.storage.database import init_database
 from app.intelligence.learning_policy import register_approved_correction

@@ -11,6 +11,12 @@ import logging
 import hashlib
 from typing import Any
 
+from app.core.logging import get_logger, log_event
+from app.core.security_filter import sanitize
+from app.sei.sei_action_guard import GuardRequest, GuardResult
+from app.storage.db import session_scope
+from app.storage.models import AuditLog
+
 def get_hash(text: str) -> str:
     return hashlib.sha256(text.encode('utf-8')).hexdigest()
 
@@ -40,11 +46,6 @@ def log_audit_event(event_type: str, action: str, status: str, process_number: s
         "metadata": sanitized_metadata
     }
 
-from app.core.logging import get_logger, log_event
-from app.core.security_filter import sanitize
-from app.sei.sei_action_guard import GuardRequest, GuardResult
-from app.storage.db import session_scope
-from app.storage.models import AuditLog
 
 _logger = get_logger("audit")
 

@@ -1,6 +1,5 @@
 """Testes unitarios para o wrapper ReadOnlyPage."""
 
-import pytest
 from app.sei.read_only_page import ReadOnlyPage, ReadOnlyPageSnapshot
 
 class FakeElement:

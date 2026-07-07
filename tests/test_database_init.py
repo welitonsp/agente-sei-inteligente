@@ -1,6 +1,5 @@
 import os
 import sqlite3
-import pytest
 from app.storage.database import init_database
 
 def test_database_initialization(monkeypatch, tmp_path):

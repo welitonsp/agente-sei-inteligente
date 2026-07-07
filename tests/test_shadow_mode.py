@@ -1,6 +1,6 @@
 from pathlib import Path
 import json
-from app.evaluation.shadow_mode import ShadowModeLogger, ShadowTrial
+from app.evaluation.shadow_mode import ShadowModeLogger
 
 def test_shadow_mode_logger_records_proposal(tmp_path: Path):
     log_dir = tmp_path / ".shadow_logs"
