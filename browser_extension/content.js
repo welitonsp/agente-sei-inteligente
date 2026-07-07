@@ -113,6 +113,19 @@
     }
   });
 
+  // Gatilho de RPA (Leitura Autonoma) apos reload da pagina
+  if (sessionStorage.getItem("agente_sei_auto_read") === "true") {
+    sessionStorage.removeItem("agente_sei_auto_read");
+    root.classList.add("agente-sei-open");
+    addMessage("assistant", "Processo aberto! Lendo autonomamente TODOS os documentos do processo...");
+    setBusy(true);
+    scrapeEntireProcess().then(fullText => {
+      setBusy(false);
+      addMessage("assistant", "Leitura concluida. Analisando o contexto geral...");
+      runAnalysis("Faca um resumo geral consolidado deste processo", "resumo", fullText);
+    });
+  }
+
   function submitPrompt() {
     const prompt = promptInput.value.trim();
     if (!prompt) {
@@ -125,9 +138,10 @@
     if (justNumbers.length >= 10 && justNumbers.length <= 25 && justNumbers === prompt.trim()) {
       promptInput.value = "";
       addMessage("user", prompt);
-      addMessage("assistant", "Detectei um numero de processo. Iniciando busca automatica no SEI...");
+      addMessage("assistant", "Detectei um numero de processo. Iniciando busca automatica e leitura autonoma no SEI...");
       const searchInput = document.getElementById("txtPesquisaRapida") || document.querySelector("input[name='pesquisa_rapida']");
       if (searchInput) {
+        sessionStorage.setItem("agente_sei_auto_read", "true");
         searchInput.value = prompt;
         const searchForm = searchInput.closest("form");
         if (searchForm) {
@@ -135,6 +149,7 @@
           return;
         }
       }
+      sessionStorage.removeItem("agente_sei_auto_read");
       addMessage("assistant", "Nao consegui localizar a barra de pesquisa nesta tela para fazer a busca automatica.", true);
       return;
     }
@@ -143,13 +158,13 @@
     runAnalysis(prompt, detectIntent(prompt));
   }
 
-  function runAnalysis(prompt, intent) {
+  function runAnalysis(prompt, intent, customText = null) {
     if (state.busy) {
       addMessage("assistant", "Estou concluindo a analise anterior.");
       return;
     }
     hydrateContext(false);
-    const text = state.capturedText || getVisibleText();
+    const text = customText || state.capturedText || getVisibleText();
     if (!text.trim()) {
       addMessage("assistant", "Abra um processo/documento no SEI ou selecione um trecho antes de perguntar.");
       return;
@@ -268,6 +283,42 @@
     item.textContent = text;
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
+  }
+
+  async function scrapeEntireProcess() {
+    return new Promise((resolve) => {
+      let attempts = 0;
+      const checkInterval = setInterval(async () => {
+        attempts++;
+        const ifrArvore = document.getElementById("ifrArvore");
+        if (ifrArvore && ifrArvore.contentDocument && ifrArvore.contentDocument.querySelectorAll("a").length > 2) {
+          clearInterval(checkInterval);
+          
+          const treeDoc = ifrArvore.contentDocument;
+          const links = Array.from(treeDoc.querySelectorAll("a[href*='acao=documento_visualizar'], a.ancoraArvore[href*='controlador.php?acao=']"));
+          const uniqueUrls = [...new Set(links.map(l => l.href))].filter(href => !href.includes("acao=procedimento_trabalhar"));
+          
+          if (uniqueUrls.length === 0) {
+            resolve("Processo vazio ou estrutura nao reconhecida.");
+            return;
+          }
+          
+          let fullText = "";
+          for (let i = 0; i < Math.min(uniqueUrls.length, 15); i++) {
+            try {
+              const res = await fetch(uniqueUrls[i]);
+              const html = await res.text();
+              const doc = new DOMParser().parseFromString(html, "text/html");
+              fullText += "\\n\\n--- DOCUMENTO " + (i+1) + " ---\\n" + doc.body.innerText;
+            } catch(e) {}
+          }
+          resolve(fullText.trim().slice(0, MAX_TEXT_CHARS));
+        } else if (attempts > 30) {
+          clearInterval(checkInterval);
+          resolve("Tempo esgotado ao tentar carregar a arvore do processo.");
+        }
+      }, 500);
+    });
   }
 
   function setBusy(isBusy) {
