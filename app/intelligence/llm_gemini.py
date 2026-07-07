@@ -1,4 +1,5 @@
 import os
+from typing import Any
 import google.generativeai as genai
 from dotenv import load_dotenv
 from app.intake.manual_text import ManualTextRequest, ManualTextResult, ExtractedEvent, ExtractedDeadline

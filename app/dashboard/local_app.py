@@ -779,6 +779,7 @@ def create_mission_response(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "status": final_state.get("status", "pronto_para_revisao"),
         "revisao_humana_obrigatoria": final_state.get("revisao_humana_obrigatoria", True),
+        "acoes_bloqueadas": ["ASSINAR_DOCUMENTO", "TRAMITAR_PROCESSO"],
         "confianca": final_state.get("confianca", 0.95),
         "campos_pendentes": final_state.get("campos_pendentes", []),
         "resultado": {

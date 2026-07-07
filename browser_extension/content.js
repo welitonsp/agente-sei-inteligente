@@ -61,7 +61,9 @@
         <button data-intent="providencia" class="agente-sei-chip" type="button">Providencia</button>
         <button data-intent="minuta" class="agente-sei-chip" type="button">Minuta</button>
         <button data-intent="interesse_19crpm" class="agente-sei-chip agente-sei-chip-strong" type="button">19 CRPM</button>
+        <button id="agente-sei-upload-pdf" class="agente-sei-chip" type="button" title="Gere o processo em PDF no SEI e carregue aqui para leitura profunda">📎 Ler PDF do Processo</button>
       </div>
+      <input type="file" id="agente-sei-file-input" accept=".pdf" style="display:none" />
 
       <div class="agente-sei-composer">
         <textarea id="agente-sei-prompt" rows="2" placeholder="Pergunte sobre o processo aberto no SEI..."></textarea>
@@ -80,6 +82,8 @@
   const copyButton = root.querySelector("#agente-sei-copy");
   const promptInput = root.querySelector("#agente-sei-prompt");
   const messages = root.querySelector("#agente-sei-messages");
+  const uploadPdfBtn = root.querySelector("#agente-sei-upload-pdf");
+  const fileInput = root.querySelector("#agente-sei-file-input");
 
   launchButton.addEventListener("click", () => {
     root.classList.add("agente-sei-open");
@@ -124,6 +128,48 @@
     } else {
       addMessage("assistant", "Copie manualmente a ultima resposta exibida.");
     }
+  });
+
+  uploadPdfBtn.addEventListener("click", () => fileInput.click());
+
+  fileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    addMessage("user", `📎 PDF anexado: ${file.name}`);
+    setBusy(true);
+    
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const base64 = evt.target.result.split(",")[1];
+      
+      chrome.runtime.sendMessage(
+        {
+          type: "AGENTE_SEI_IMPORT_PDF",
+          payload: {
+            filename: file.name,
+            content_base64: base64,
+            titulo: document.title || "Processo SEI Completo",
+            processo_sei: guessProcessNumber() || "Desconhecido",
+            usuario_local: "extensao.sei",
+            origem: "extensao_sei_upload"
+          }
+        },
+        (response) => {
+          setBusy(false);
+          fileInput.value = "";
+          if (chrome.runtime.lastError) {
+            addMessage("assistant", `Erro no backend: ${chrome.runtime.lastError.message}`, true);
+            return;
+          }
+          if (!response || !response.ok) {
+            addMessage("assistant", response && response.error ? response.error : "Falha na leitura do PDF. O backend local esta rodando?", true);
+            return;
+          }
+          addMessage("assistant", formatResult(response.result, "interesse_19crpm"));
+        }
+      );
+    };
+    reader.readAsDataURL(file);
   });
 
   // Gatilho de RPA (Leitura Autonoma) apos reload da pagina
@@ -271,8 +317,20 @@
   }
 
   function getVisibleText() {
-    const selection = String(window.getSelection ? window.getSelection() : "").trim();
-    const source = selection || document.body.innerText || "";
+    let selection = String(window.getSelection ? window.getSelection() : "").trim();
+    
+    let iframeText = "";
+    try {
+      const iframe = document.getElementById("ifrVisualizacao");
+      if (iframe && iframe.contentDocument && iframe.contentDocument.body) {
+        iframeText = iframe.contentDocument.body.innerText;
+        selection = selection || String(iframe.contentWindow.getSelection ? iframe.contentWindow.getSelection() : "").trim();
+      }
+    } catch (e) {
+      console.warn("Aviso: Iframe de visualizacao bloqueado ou nao encontrado.");
+    }
+    
+    const source = selection || iframeText || document.body.innerText || "";
     return source.replace(/\s+\n/g, "\n").trim().slice(0, MAX_TEXT_CHARS);
   }
 

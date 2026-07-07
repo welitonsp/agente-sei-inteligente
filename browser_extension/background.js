@@ -1,12 +1,16 @@
 const LOCAL_TEXT_API = "http://127.0.0.1:8000/api/import-text";
 const LOCAL_AGENT_API = "http://127.0.0.1:8000/api/agent19";
+const LOCAL_PDF_API = "http://127.0.0.1:8000/api/import-pdf";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (!message || !["AGENTE_SEI_ANALYZE", "AGENTE_SEI_MISSION"].includes(message.type)) {
+  if (!message || !["AGENTE_SEI_ANALYZE", "AGENTE_SEI_MISSION", "AGENTE_SEI_IMPORT_PDF"].includes(message.type)) {
     return false;
   }
 
-  const endpoint = message.type === "AGENTE_SEI_MISSION" ? LOCAL_AGENT_API : LOCAL_TEXT_API;
+  let endpoint = LOCAL_TEXT_API;
+  if (message.type === "AGENTE_SEI_MISSION") endpoint = LOCAL_AGENT_API;
+  if (message.type === "AGENTE_SEI_IMPORT_PDF") endpoint = LOCAL_PDF_API;
+
   callLocalApi(endpoint, message.payload)
     .then((result) => sendResponse({ ok: true, result }))
     .catch((error) => sendResponse({
