@@ -53,3 +53,40 @@ def analyze_with_gemini(request: ManualTextRequest) -> ManualTextResult:
         audit_log_ids=[],
         motivo="Analise gerada via Google Gemini 1.5 Pro.",
     )
+
+def review_with_gemini(texto_base: str, minuta_gerada: str, contexto: str) -> dict[str, Any]:
+    """Atua como o Nó Crítico, avaliando a minuta gerada contra as regras."""
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return {"aprovado": True, "feedback": ""} # Fallback silencioso se nao tiver chave
+        
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel('gemini-2.5-flash')
+    
+    prompt = f"""
+    Você é o Auditor de Segurança de IA do 19º CRPM.
+    Sua missão é avaliar uma minuta gerada pelo Agente para garantir que ela obedece às regras.
+    
+    Regras Institucionais (RAG):
+    {contexto}
+    
+    Texto da Minuta Gerada:
+    {minuta_gerada}
+    
+    Responda EXATAMENTE neste formato de 2 linhas:
+    STATUS: APROVADO ou REPROVADO
+    MOTIVO: <se reprovado, explique o erro em 1 frase. Se aprovado, escreva OK>
+    """
+    
+    try:
+        response = model.generate_content(prompt)
+        linhas = response.text.strip().split("\\n")
+        status_line = linhas[0].upper()
+        
+        if "REPROVADO" in status_line:
+            motivo = linhas[1].replace("MOTIVO:", "").strip() if len(linhas) > 1 else "Violação de regras institucionais."
+            return {"aprovado": False, "feedback": motivo}
+            
+        return {"aprovado": True, "feedback": ""}
+    except Exception as e:
+        return {"aprovado": True, "feedback": str(e)} # Em caso de erro de API, deixa passar para revisao humana

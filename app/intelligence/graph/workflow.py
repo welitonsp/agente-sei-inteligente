@@ -1,7 +1,7 @@
 from langgraph.graph import StateGraph, END
 from app.intelligence.graph.state import MissionState
 from app.intelligence.graph.nodes import (
-    analyzer_node, triage_node, checklist_node, rag_node, draft_node, critic_node
+    analyzer_node, triage_node, checklist_node, rag_node, draft_node, critic_node, audit_node
 )
 
 def route_after_checklist(state: MissionState) -> str:
@@ -12,7 +12,7 @@ def route_after_checklist(state: MissionState) -> str:
 def route_after_critic(state: MissionState) -> str:
     if state.get("status") == "rejeitado_pelo_critico":
         return "draft"
-    return END
+    return "audit"
 
 def create_agent_graph():
     """Constroi a maquina de estados cognitivos."""
@@ -25,6 +25,7 @@ def create_agent_graph():
     workflow.add_node("rag", rag_node)
     workflow.add_node("draft", draft_node)
     workflow.add_node("critic", critic_node)
+    workflow.add_node("audit", audit_node)
 
     # 2. Definir o fluxo (Edges)
     workflow.set_entry_point("analyzer")
@@ -51,9 +52,12 @@ def create_agent_graph():
         route_after_critic,
         {
             "draft": "draft",
-            END: END
+            "audit": "audit"
         }
     )
+
+    # 6. Grava log e finaliza
+    workflow.add_edge("audit", END)
 
     return workflow.compile()
 

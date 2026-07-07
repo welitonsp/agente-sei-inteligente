@@ -1,6 +1,6 @@
 from typing import Any
 from app.intelligence.graph.state import MissionState
-from app.intelligence.llm_gemini import analyze_with_gemini
+from app.intelligence.llm_gemini import analyze_with_gemini, review_with_gemini
 from app.intake.manual_text import ManualTextRequest
 from app.intelligence.local_minutador import DraftRequest, generate_draft
 from app.intelligence.local_triage import TriageRequest, analyze_triage
@@ -73,15 +73,18 @@ def rag_node(state: MissionState) -> dict[str, Any]:
     contexto.append("DIRETRIZ DE SEGURANÇA: Nenhuma senha ou dado pessoal deve ser exposto na minuta.")
     contexto.append("LEI MILITAR: O tom deve ser formal, respeitoso e hierárquico (Padrão 19 CRPM).")
     
-    return {"contexto_institucional": "\\n\\n".join(contexto)}
     return {"contexto_institucional": "\n\n".join(contexto)}
 
 def draft_node(state: MissionState) -> dict[str, Any]:
     """Gera a minuta baseada no contexto."""
+    feedback_critico = ""
+    if state.get("alertas") and state.get("tentativas_critica", 0) > 0:
+        feedback_critico = "\n\nCORRIJA OS SEGUINTES ERROS APONTADOS PELO CRÍTICO:\n" + "\n".join(state["alertas"])
+
     request = DraftRequest(
         assunto=state["titulo"],
         resumo=state.get("resumo", ""),
-        texto_base=state.get("texto_original", "") + "\n" + state.get("contexto_institucional", ""),
+        texto_base=state.get("texto_original", "") + "\n" + state.get("contexto_institucional", "") + feedback_critico,
         processo_sei=state["processo_sei"],
         tipo_minuta=state["tipo_minuta"],
         unidade_destino=state["unidade_destino"],
@@ -101,11 +104,48 @@ def draft_node(state: MissionState) -> dict[str, Any]:
     }
 
 def critic_node(state: MissionState) -> dict[str, Any]:
-    """Critica a minuta gerada para garantir que nao ha alucinacoes (Stub)."""
-    # Exemplo: O critico verifica regras do GOIAS.
+    """Critica a minuta gerada para garantir que nao ha alucinacoes e violações de RAG."""
     tentativas = state.get("tentativas_critica", 0) + 1
     
-    if "ALUCINACAO" in state.get("minuta_texto", "") and tentativas < 3:
-        return {"status": "rejeitado_pelo_critico", "tentativas_critica": tentativas}
+    # Avaliacao via LLM Auditor
+    avaliacao = review_with_gemini(
+        texto_base=state.get("texto_original", ""),
+        minuta_gerada=state.get("minuta_texto", ""),
+        contexto=state.get("contexto_institucional", "")
+    )
+    
+    if not avaliacao["aprovado"] and tentativas < 3:
+        # Reprova e devolve para o draft_node
+        return {
+            "status": "rejeitado_pelo_critico", 
+            "tentativas_critica": tentativas,
+            "alertas": [f"TENTATIVA {tentativas}: {avaliacao['feedback']}"]
+        }
         
-    return {"status": "pronto_para_revisao", "tentativas_critica": tentativas, "revisao_humana_obrigatoria": True}
+    return {
+        "status": "pronto_para_revisao", 
+        "tentativas_critica": tentativas, 
+        "revisao_humana_obrigatoria": True,
+        "alertas": ["Auditoria de IA: Minuta Aprovada"] if avaliacao["aprovado"] else [f"AVISO: Aprovado com ressalvas após 3 tentativas. Erro: {avaliacao['feedback']}"]
+    }
+
+def audit_node(state: MissionState) -> dict[str, Any]:
+    """Salva o estado final para rastreabilidade e auditoria (Tracing)."""
+    import logging
+    import json
+    
+    logger = logging.getLogger("agente19.audit")
+    log_data = {
+        "timestamp": "now",
+        "processo_sei": state.get("processo_sei"),
+        "usuario_local": state.get("usuario_local"),
+        "unidade_destino": state.get("unidade_destino"),
+        "tipo_minuta": state.get("tipo_minuta"),
+        "status_final": state.get("status"),
+        "tentativas_critica": state.get("tentativas_critica"),
+        "revisao_humana_obrigatoria": state.get("revisao_humana_obrigatoria")
+    }
+    
+    print(f"\\n=== LOG DE AUDITORIA DO AGENTE 19 ===\\n{json.dumps(log_data, indent=2)}\\n======================================\\n")
+    
+    return {}
