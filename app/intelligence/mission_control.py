@@ -111,9 +111,18 @@ def execute_mission(
         usuario=request.usuario_local
     )
 
+    campos_pendentes = []
+    if not request.processo_sei.strip():
+        campos_pendentes.append("processo_sei")
+    if not request.unidade_destino.strip():
+        campos_pendentes.append("unidade_destino")
+
     prontidao = 0.90 if state.aprovado_pelo_critico else 0.50
-    status = "pronto_para_revisao" if state.aprovado_pelo_critico else "precisa_complemento"
-    etapa = "revisar_minuta_com_humano" if state.aprovado_pelo_critico else "completar_campos_e_revisar"
+    if campos_pendentes:
+        prontidao = max(0.0, prontidao - 0.20)
+        
+    status = "pronto_para_revisao" if state.aprovado_pelo_critico and not campos_pendentes else "precisa_complemento"
+    etapa = "revisar_minuta_com_humano" if status == "pronto_para_revisao" else ("definir_unidade_destino" if "unidade_destino" in campos_pendentes else "completar_campos_e_revisar")
     
     plan = [
         "Enxame concluiu a orquestração.",
@@ -131,7 +140,7 @@ def execute_mission(
         analise={"resumo_curto": state.resumo, "providencia_sugerida": state.providencia_sugerida, "tipo_provavel": state.intencao_detectada},
         triagem={"unidade_sugerida": "PM/19 CRPM", "interesse_19crpm": state.intencao_detectada},
         minuta={"texto": state.minuta_rascunho, "tipo_minuta": state.tipo_minuta},
-        campos_pendentes=[],
+        campos_pendentes=campos_pendentes,
         audit_log_ids=[],
         mission_trace_id=request.mission_trace_id,
     )
