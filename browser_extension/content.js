@@ -164,27 +164,7 @@
         // Injeta no começo da barra
         barra.insertBefore(btn, barra.firstChild);
       });
-    } else {
-      // Se não achou a barra, cria um banner flutuante sutil (Toast) ao lado do botão de lançamento
-      const toast = document.createElement("div");
-      toast.className = "agente-sei-toast";
-      toast.innerHTML = `
-        <div style="font-weight: 600; margin-bottom: 6px; color: #a259ff; display: flex; align-items: center; gap: 6px;">✨ Agente 19 Pronto</div>
-        <div style="margin-bottom: 12px;">Processo detectado. Quer ajuda?</div>
-        <button id="agente-sei-toast-btn" class="agente-sei-primary" style="width: 100%; min-height: 36px; font-size: 13px;">Analisar Agora</button>
-      `;
-      document.documentElement.appendChild(toast);
-      
-      const toastBtn = toast.querySelector("#agente-sei-toast-btn");
-      toastBtn.addEventListener("click", () => {
-        toast.remove();
-        root.classList.add("agente-sei-open");
-        runAnalysis("Analise o processo aberto e informe somente o que interessa ao 19 CRPM.", "interesse_19crpm");
-      });
-      
-      // Some depois de 10 segundos
-      setTimeout(() => toast.remove(), 10000);
-    }
+
   }
 
   root.querySelectorAll("[data-intent]").forEach((button) => {

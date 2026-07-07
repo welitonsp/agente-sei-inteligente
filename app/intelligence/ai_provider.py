@@ -209,6 +209,71 @@ class ClaudeProvider:
         )
 
 
+class GeminiProvider:
+    """Provedor real baseado no SDK oficial do Google Gemini."""
+
+    is_real = True
+
+    def __init__(
+        self,
+        *,
+        api_key: str = "",
+        role_configs: dict[AIRole, RoleConfig] | None = None,
+    ) -> None:
+        self._api_key = api_key
+        self._configs = role_configs or DEFAULT_ROLE_CONFIGS
+
+    def _init_gemini(self) -> None:
+        api_key = self._api_key or os.environ.get("GEMINI_API_KEY", "")
+        if not api_key:
+            raise RuntimeError(
+                "Credencial da IA ausente. Defina GEMINI_API_KEY no .env "
+                "local, ou use AI_PROVIDER=echo para operar offline."
+            )
+        try:
+            import google.generativeai as genai # type: ignore[import-not-found]
+            genai.configure(api_key=api_key)
+        except ImportError as exc:
+            raise RuntimeError(
+                "Provedor Gemini requer o pacote 'google-generativeai'. "
+                "Instale-o via pip."
+            ) from exc
+
+    def complete(
+        self, role: AIRole, prompt: str, *, system: str | None = None
+    ) -> AICompletion:
+        config = self._configs[role]
+        _assert_role_allowed(role, config)
+        self._init_gemini()
+        
+        import google.generativeai as genai
+        
+        # Override modelo default caso Gemini, por exemplo gemini-1.5-pro
+        model_name = config.model
+        if "claude" in model_name:
+            model_name = "gemini-1.5-pro-latest"
+
+        model = genai.GenerativeModel(
+            model_name=model_name,
+            system_instruction=system
+        )
+        
+        generation_config = genai.types.GenerationConfig(
+            max_output_tokens=config.max_tokens,
+            temperature=0.3
+        )
+        
+        response = model.generate_content(str(prompt), generation_config=generation_config)
+        
+        return AICompletion(
+            text=response.text.strip(),
+            role=role,
+            model=model_name,
+            stop_reason="stop",
+            usage={}
+        )
+
+
 def _extract_text(response: Any) -> str:
     partes = []
     for block in getattr(response, "content", []) or []:
@@ -251,6 +316,11 @@ def get_ai_provider(settings: Settings | None = None) -> AIProvider:
         return EchoProvider(role_configs=configs)
     if nome in {"claude", "anthropic"}:
         return ClaudeProvider(api_key=cfg.anthropic_api_key, role_configs=configs)
+    if nome in {"gemini", "google"}:
+        # Precisamos ler a GEMINI_API_KEY do env diretamente caso não esteja no Settings
+        api_key = os.environ.get("GEMINI_API_KEY", "")
+        return GeminiProvider(api_key=api_key, role_configs=configs)
+        
     raise ValueError(
-        f"AI_PROVIDER invalido: '{cfg.ai_provider}'. Use 'claude' ou 'echo'."
+        f"AI_PROVIDER invalido: '{cfg.ai_provider}'. Use 'claude', 'gemini' ou 'echo'."
     )
