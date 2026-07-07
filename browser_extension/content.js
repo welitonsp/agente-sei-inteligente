@@ -119,6 +119,26 @@
       addMessage("assistant", "Digite uma pergunta ou use uma acao rapida.");
       return;
     }
+    
+    // Se o usuario digitou apenas um numero de processo (ex: 202600002080361)
+    const justNumbers = prompt.replace(/\D/g, "");
+    if (justNumbers.length >= 10 && justNumbers.length <= 25 && justNumbers === prompt.trim()) {
+      promptInput.value = "";
+      addMessage("user", prompt);
+      addMessage("assistant", "Detectei um numero de processo. Iniciando busca automatica no SEI...");
+      const searchInput = document.getElementById("txtPesquisaRapida") || document.querySelector("input[name='pesquisa_rapida']");
+      if (searchInput) {
+        searchInput.value = prompt;
+        const searchForm = searchInput.closest("form");
+        if (searchForm) {
+          setTimeout(() => searchForm.submit(), 800);
+          return;
+        }
+      }
+      addMessage("assistant", "Nao consegui localizar a barra de pesquisa nesta tela para fazer a busca automatica.", true);
+      return;
+    }
+
     promptInput.value = "";
     runAnalysis(prompt, detectIntent(prompt));
   }
