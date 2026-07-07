@@ -17,6 +17,8 @@ from app.intelligence.mission_control import (
     MissionRequest,
     execute_mission,
 )
+from app.intelligence.ai_provider import AIRole, get_ai_provider
+from app.evaluation.shadow_mode import ShadowModeLogger
 
 
 AGENT_NAME = "Agente 19"
@@ -137,6 +139,22 @@ def run_agent19(request: AgentRequest) -> AgentResult:
     )
     trace = trace.add("montar_resposta", "ok", "Resposta final preparada para revisao humana.")
 
+    # Shadow Mode: gravar a proposta de acao que seria tomada
+    try:
+        logger = ShadowModeLogger()
+        raw_conf = str(mission.get("confianca", "0.0") or "0.0")
+        confidence = float(raw_conf.replace("%", ""))
+        acao_proposta = "analisar_e_alertar" if "precisa_revisao" in mission.get("status", "") else "executar_proximo_passo"
+        logger.record_proposal(
+            trace_id=trace.trace_id,
+            processo=request.processo_sei,
+            intencao=intencao,
+            acao_proposta=acao_proposta,
+            confidence=confidence,
+        )
+    except Exception as e:
+        trace = trace.add("shadow_mode_error", "erro_interno", str(e))
+
     return AgentResult(
         status=mission.get("status", "precisa_revisao"),
         intencao=intencao,
@@ -157,14 +175,39 @@ def run_agent19(request: AgentRequest) -> AgentResult:
 
 
 def _detect_intent(message: str) -> str:
-    text = " ".join(message.lower().split())
-    if "19" in text or "interesse" in text or "crpm" in text:
-        return "analisar_interesse_19crpm"
-    if "minuta" in text or "despacho" in text or "oficio" in text:
-        return "preparar_minuta"
-    if "prazo" in text:
-        return "identificar_prazo"
-    return "analisar_processo"
+    # Fallback heuristico seguro em caso de falha de rede/quota/offline
+    fallback = "analisar_processo"
+    text_lower = " ".join(message.lower().split())
+    if "19" in text_lower or "interesse" in text_lower or "crpm" in text_lower:
+        fallback = "analisar_interesse_19crpm"
+    elif "minuta" in text_lower or "despacho" in text_lower or "oficio" in text_lower:
+        fallback = "preparar_minuta"
+    elif "prazo" in text_lower:
+        fallback = "identificar_prazo"
+
+    provider = get_ai_provider()
+    if not provider.is_real:
+        return fallback
+
+    prompt = (
+        f"Classifique a intenção do usuário em UMA das opções exatas: "
+        f"[analisar_interesse_19crpm, preparar_minuta, identificar_prazo, analisar_processo].\n"
+        f"Mensagem original: '{message}'\n"
+        f"Apenas responda com a opção escolhida, sem pontuação ou texto adicional."
+    )
+    
+    try:
+        completion = provider.complete(AIRole.CLASSIFICACAO, prompt)
+        text = completion.text.strip().lower()
+        if "19crpm" in text or "interesse" in text:
+            return "analisar_interesse_19crpm"
+        if "minuta" in text:
+            return "preparar_minuta"
+        if "prazo" in text:
+            return "identificar_prazo"
+        return "analisar_processo"
+    except Exception:
+        return fallback
 
 
 def _plan_for_intent(intent: str) -> list[str]:
