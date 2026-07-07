@@ -42,3 +42,6 @@ jobs:
 
       - name: Run tests
         run: python -m pytest
+
+      - name: Run agent readiness evaluations
+        run: python scripts/run_agent_evals.py

@@ -2,6 +2,163 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.4.15-knowledge-base-inicial-19crpm] - 2026-06-29
+
+### Adicionado
+
+1. Regras iniciais em `knowledge_base/fluxos_19crpm/` para mencao direta ao
+   19 CRPM, apoio operacional e demandas de conhecimento.
+2. Evidencias de regra no contrato da triagem local.
+3. Resposta do Agente 19 com unidade sugerida, regra aplicada e evidencias.
+4. Documento `docs/63-knowledge-base-inicial-19crpm.md`.
+
+### Alterado
+
+1. Normalizacao da triagem para acentos, ordinal `19º` e pontuacao.
+2. Testes da knowledge base para validar regra conservadora padrao do 19 CRPM.
+
+### Seguranca
+
+1. Regra sem unidade cadastrada continua sem destino sugerido.
+2. Texto sem regra continua exigindo complemento/revisao.
+3. Atos oficiais continuam bloqueados e revisao humana permanece obrigatoria.
+
+## [0.4.14-tracing-ferramentas-agente19] - 2026-06-29
+
+### Adicionado
+
+1. `app/agent/tools.py` com registro de ferramentas seguras do agente.
+2. `app/agent/tracing.py` com trace operacional sanitizado.
+3. `trace.trace_id` no contrato do Agente 19.
+4. `mission_trace_id` no contrato do orquestrador de missao.
+5. Correlacao entre agente e missao.
+6. Documento `docs/62-tracing-ferramentas-agente19.md`.
+
+### Seguranca
+
+1. O trace nao guarda texto integral.
+2. Ferramenta `mission_control` e marcada como read-only.
+3. Ferramenta desconhecida e negada.
+4. Revisao humana obrigatoria permanece no contrato.
+
+## [0.4.13-nucleo-agente-ia-agente19] - 2026-06-29
+
+### Adicionado
+
+1. `app/agent/agent19.py` como nucleo explicito do Agente 19.
+2. Endpoint local `POST /api/agent19`.
+3. Contrato com identidade do agente, intencao, plano, ferramentas usadas,
+   resposta e resultado.
+4. Extensao read-only passa a chamar `/api/agent19` para a acao `19 CRPM`.
+5. Documento `docs/61-nucleo-agente-ia-agente19.md`.
+6. Testes automatizados do nucleo do agente.
+
+### Seguranca
+
+1. O agente usa ferramenta permitida `mission_control`.
+2. Revisao humana continua obrigatoria.
+3. Atos oficiais continuam bloqueados.
+4. O agente nao ganha permissao para abrir links, exportar PDF, clicar no SEI
+   ou usar senha/cookie/token/sessao.
+
+## [0.4.12-agente-visual-sei-interesse-19crpm] - 2026-06-29
+
+### Adicionado
+
+1. Botao `19 CRPM` no chat da extensao read-only.
+2. Chamada `AGENTE_SEI_MISSION` para o endpoint local `/api/mission-control`.
+3. Resposta focada em interesse do 19 CRPM: resumo, prazo, providencia,
+   unidade, minuta externa, riscos e pendencias.
+4. Preview local com simulacao de missao do 19 CRPM.
+5. Documento `docs/60-agente-visual-sei-interesse-19crpm.md`.
+
+### Alterado
+
+1. `browser_extension/manifest.json` atualizado para `0.2.2`.
+2. Bloqueio de atos oficiais passa a avaliar o pedido do usuario, evitando falso
+   bloqueio quando a propria pagina do SEI contem termos como assinatura.
+
+### Seguranca
+
+1. A extensao continua read-only.
+2. Nao abre link do processo automaticamente.
+3. Nao exporta PDF automaticamente.
+4. Nao usa senha, cookie, token, hash ou sessao do SEI.
+5. Nao clica em botoes do SEI.
+
+## [0.4.11-autenticacao-local-perfis] - 2026-06-29
+
+### Adicionado
+
+1. `app/core/auth.py` com autorizacao local por usuario e perfil.
+2. Headers locais `X-Agente19-User` e `X-Agente19-Role` nos endpoints do painel.
+3. Campo `Perfil local` no painel MVP.
+4. Protecao dos endpoints `import-text`, `import-pdf`, `generate-draft`,
+   `triage-local` e `mission-control`.
+5. Identificacao local da extensao read-only como `extensao.sei`.
+6. Documento `docs/59-autenticacao-local-perfis.md`.
+7. Testes automatizados de autorizacao local e bloqueio de credenciais.
+
+### Seguranca
+
+1. Usuario local e perfil passam a ser obrigatorios nos endpoints protegidos.
+2. Perfil invalido ou sem permissao e bloqueado.
+3. Headers/payloads com senha, cookie, token ou authorization sao bloqueados.
+4. Senha do SEI continua proibida.
+
+## [0.4.10-pesquisa-github-ecossistema-sei] - 2026-06-29
+
+### Adicionado
+
+1. Pesquisa atualizada de repositorios GitHub do ecossistema SEI/SUPER.
+2. Matriz de repositorios em `docs/52-referencias-github-sei.md`.
+3. Analise de `mod-wssei`, `sei-docker`, `sei-ia`, `mod-sei-ia`, modulos PEN,
+   Protocolo Integrado, Peticionamento, FalaBR e MCP SEI Pro.
+4. Decisoes sobre o que pode ser aprendido e o que nao deve ser copiado.
+
+### Seguranca
+
+1. Mantida decisao de nao usar API real sem endpoint autorizado.
+2. Mantida proibicao de credenciais SEI em MCP ou ferramenta de LLM.
+3. Mantido bloqueio de assinatura, tramitacao, envio, conclusao e ciencia.
+
+## [0.4.9-revisao-mercado-evals-agente] - 2026-06-29
+
+### Adicionado
+
+1. Revisao de mercado do projeto como Agente de IA em `docs/58-revisao-mercado-agente-ia.md`.
+2. Suite de avaliacoes de prontidao em `app/evaluation/agent_readiness.py`.
+3. Script `scripts/run_agent_evals.py` para executar avaliacoes de comportamento.
+4. Testes em `tests/test_agent_readiness_evals.py`.
+5. CI passa a executar avaliacoes de agente apos a suite de testes.
+6. Plano de testes atualizado com a camada de avaliacao de comportamento.
+
+### Seguranca
+
+1. As avaliacoes validam revisao humana obrigatoria.
+2. As avaliacoes validam bloqueio de assinatura, envio, tramitacao, conclusao
+   e ciencia automatica.
+3. Pedido textual de ato oficial nao libera acao oficial no contrato.
+
+## [0.4.8-orquestrador-missao-agente19] - 2026-06-29
+
+### Adicionado
+
+1. `app/intelligence/mission_control.py` com orquestrador supervisionado do Agente 19.
+2. Endpoint local `POST /api/mission-control`.
+3. Botao `Missao Agente 19` no painel local.
+4. Contrato unico com analise, triagem, minuta, riscos, campos pendentes,
+   prontidao operacional e plano de acao humano.
+5. Documento `docs/57-orquestrador-missao-agente19.md`.
+6. Testes automatizados do orquestrador e do endpoint do painel.
+
+### Seguranca
+
+1. A missao nao acessa o SEI real.
+2. A missao nao assina, envia, tramita, conclui, da ciencia ou altera sigilo.
+3. Revisao humana permanece obrigatoria mesmo quando a prontidao operacional e alta.
+4. Acoes oficiais continuam bloqueadas no contrato.
+
 ## [0.4.7-ux-chat-v2-minuta-externa] - 2026-06-23
 
 ### Adicionado

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -42,6 +43,7 @@ class TriageResult:
     justificativa: str
     regra_aplicada: str
     alternativas: list[str]
+    evidencias: list[str]
     campos_pendentes: list[str]
     revisao_humana_obrigatoria: bool
     confianca: float
@@ -59,6 +61,7 @@ class TriageResult:
                 "justificativa": self.justificativa,
                 "regra_aplicada": self.regra_aplicada,
                 "alternativas": self.alternativas,
+                "evidencias": self.evidencias,
             },
             "confianca": self.confianca,
             "fontes": ["knowledge_base_local"] if self.regra_aplicada else [],
@@ -113,7 +116,7 @@ def analyze_triage(request: TriageRequest) -> TriageResult:
 
     matched_rule = _match_routing_rule(text, kb)
     if matched_rule:
-        return _from_routing_rule(request, kb, matched_rule, audit_ids)
+        return _from_routing_rule(request, kb, matched_rule, audit_ids, text)
 
     interest, keyword_confidence = _interest_from_keywords(text, kb)
     audit_ids.append(
@@ -142,6 +145,7 @@ def analyze_triage(request: TriageRequest) -> TriageResult:
         justificativa="Ha indicios por palavra-chave, mas nenhuma regra valida definiu unidade.",
         regra_aplicada="",
         alternativas=[],
+        evidencias=[],
         campos_pendentes=["regra_direcionamento", "unidade_destino"],
         revisao_humana_obrigatoria=True,
         confianca=keyword_confidence,
@@ -154,6 +158,7 @@ def _from_routing_rule(
     kb: LocalKnowledgeBase,
     rule: RoutingRule,
     audit_ids: list[int],
+    text: str,
 ) -> TriageResult:
     pending = []
     unidade = rule.unidade_destino
@@ -164,6 +169,7 @@ def _from_routing_rule(
         pending.append("unidade_destino")
 
     confidence = min(max(rule.confianca or 0.55, 0.2), 0.85)
+    evidencias = _matched_terms(text, rule)
     status = "precisa_revisao"
     audit_ids.append(
         audit.record(
@@ -181,6 +187,7 @@ def _from_routing_rule(
                 "tipo_minuta": rule.tipo_minuta,
                 "confianca": confidence,
                 "campos_pendentes": pending,
+                "evidencias": evidencias,
             },
         )
     )
@@ -195,6 +202,7 @@ def _from_routing_rule(
         justificativa=f"Regra local '{rule.id or 'sem_id'}' aplicada por termo configurado.",
         regra_aplicada=rule.id,
         alternativas=[],
+        evidencias=evidencias,
         campos_pendentes=pending,
         revisao_humana_obrigatoria=True,
         confianca=confidence if not pending else min(confidence, 0.45),
@@ -208,6 +216,10 @@ def _match_routing_rule(text: str, kb: LocalKnowledgeBase) -> RoutingRule | None
         if any(term and term in text for term in terms):
             return rule
     return None
+
+
+def _matched_terms(text: str, rule: RoutingRule) -> list[str]:
+    return [term for term in rule.termos if _normalize(term) in text]
 
 
 def _interest_from_keywords(text: str, kb: LocalKnowledgeBase) -> tuple[str, float]:
@@ -254,6 +266,7 @@ def _indefinido(
         justificativa=reason,
         regra_aplicada="",
         alternativas=[],
+        evidencias=[],
         campos_pendentes=pending,
         revisao_humana_obrigatoria=True,
         confianca=0.0,
@@ -262,4 +275,11 @@ def _indefinido(
 
 
 def _normalize(value: str) -> str:
-    return _SPACE.sub(" ", value.strip().lower())
+    ascii_value = "".join(
+        char
+        for char in unicodedata.normalize("NFKD", value)
+        if not unicodedata.combining(char)
+    )
+    ascii_value = ascii_value.replace("º", " ").replace("°", " ")
+    ascii_value = re.sub(r"[^\w/]+", " ", ascii_value, flags=re.ASCII)
+    return _SPACE.sub(" ", ascii_value.strip().lower())

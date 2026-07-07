@@ -1,89 +1,186 @@
-# Referências GitHub do SEI — Estudo e Aprendizados Aplicáveis
+# Referencias GitHub do SEI - Estudo e aprendizados aplicaveis
 
-Estudo de repositórios públicos do **SEI (Sistema Eletrônico de Informações** —
-núcleo PHP do TRF4, usado por órgãos como a PMGO) para extrair padrões aplicáveis
-ao Agente 19. Foco em arquitetura, abstração de LLM e organização de testes.
+Data da revisao: 2026-06-29
 
-> **Importante sobre licenças:** os projetos oficiais abaixo são em sua maioria
-> **GPL-3.0/LGPL**. Aprendemos com os *padrões de arquitetura*, **não** copiamos
-> código para dentro deste repositório sem análise de compatibilidade de licença.
+## Objetivo
 
-## Ecossistema oficial — organização `anatelgovbr`
+Mapear repositorios publicos do GitHub desenvolvidos para o SEI/SUPER/Tramita
+GOV.BR, identificar padroes tecnicos reutilizaveis e decidir o que pode ou nao
+ser aproveitado no Agente 19.
 
-A ANATEL mantém os módulos oficiais do SEI em código aberto. Principais:
+Esta pesquisa nao autoriza instalacao de modulo no SEI da PMGO, automacao de
+login, uso de credenciais, webservices reais ou copia de codigo de terceiros.
+O objetivo e aprendizado arquitetural.
 
-| Repositório | Linguagem | O que é |
-|---|---|---|
-| [anatelgovbr/sei-ia](https://github.com/anatelgovbr/sei-ia) | Python (GPL-3.0) | Servidor de Soluções de IA do Módulo SEI IA (desacoplado) |
-| [anatelgovbr/mod-sei-ia](https://github.com/anatelgovbr/mod-sei-ia) | PHP (GPL-3.0) | Módulo de IA que integra ao core do SEI (SEI + SIP) |
-| [anatelgovbr/ocr-server](https://github.com/anatelgovbr/ocr-server) | Perl (LGPL-2.1) | Servidor de OCR oficial |
-| [anatelgovbr/mod-sei-pesquisa](https://github.com/anatelgovbr/mod-sei-pesquisa) | PHP | Pesquisa Pública do SEI (originalmente do CADE) |
-| [anatelgovbr/mod-sei-peticionamento](https://github.com/anatelgovbr/mod-sei-peticionamento) | PHP | Peticionamento e Intimação Eletrônica |
+## Matriz de repositorios relevantes
 
-### Arquitetura observada (sei-ia + mod-sei-ia)
-- **Servidor de IA desacoplado** (Python, Docker) consumido por um **módulo PHP**
-  instalado dentro do SEI. A IA nunca vive dentro do core do SEI.
-- Dois submódulos de IA:
-  - **SIMILARIDADE** — recomendação de processos e documentos similares (embeddings).
-  - **ASSISTENTE** — IA generativa para executar *prompts* e interagir com documentos.
-- Infra pesada (Docker, Airflow, requisito sugerido de 16 cores / 128 GB RAM,
-  SEI v4.1.5+). É um produto institucional de grande porte — **não** é o nosso alvo.
+| Repositorio | Organizacao | Tipo | Utilidade para o Agente 19 | Decisao |
+| --- | --- | --- | --- | --- |
+| [pengovbr/mod-wssei](https://github.com/pengovbr/mod-wssei) | PEN/Gov.br | Modulo REST WSSEI | Referencia principal de API REST oficial para SEI/SUPER | Estudar contratos e Swagger; nao usar sem endpoint autorizado |
+| [pengovbr/sei-docker](https://github.com/pengovbr/sei-docker) | PEN/Gov.br | Infraestrutura Docker | Ambiente de desenvolvimento, teste e homologacao local do SEI | Usar como referencia para laboratorio, nao para producao |
+| [pengovbr/mod-sei-pen](https://github.com/pengovbr/mod-sei-pen) | PEN/Gov.br | Modulo Tramita.GOV.BR | Padrao de modulo oficial, compatibilidade, testes e releases | Aprender governanca de modulo |
+| [pengovbr/mod-sei-protocolo-integrado](https://github.com/pengovbr/mod-sei-protocolo-integrado) | PEN/Gov.br | Modulo Protocolo Integrado | Exemplo de webservice externo, credenciais e parametros administrativos | Aprender checklist de instalacao e compatibilidade |
+| [anatelgovbr/sei-ia](https://github.com/anatelgovbr/sei-ia) | Anatel | Servidor de IA | Referencia oficial de arquitetura IA desacoplada do SEI | Aprender separacao modulo/servidor IA, Docker e papeis |
+| [anatelgovbr/mod-sei-ia](https://github.com/anatelgovbr/mod-sei-ia) | Anatel | Modulo SEI IA | Referencia oficial de modulo IA integrado ao SEI/SIP | Aprender permissoes, recursos e parametrizacao |
+| [anatelgovbr/mod-sei-peticionamento](https://github.com/anatelgovbr/mod-sei-peticionamento) | Anatel | Modulo Peticionamento | Exemplo maduro de instalacao, scripts SIP/SEI e recursos | Aprender padrao de modulo e riscos de banco |
+| [cgugovbr/mod-sei-eouv](https://github.com/cgugovbr/mod-sei-eouv) | CGU | Modulo FalaBR | Exemplo de integracao SEI com sistema externo | Aprender fluxo de instalacao e parametrizacao |
+| [SEI-Pro/mcp-seipro](https://github.com/SEI-Pro/mcp-seipro) | Comunidade | MCP + API REST + scraper | Estudo de superficie de ferramentas e riscos de agencia excessiva | Nao copiar modelo de credenciais/assinatura; aproveitar como alerta |
 
-## Aprendizados aplicáveis ao Agente 19
+## Principais achados
 
-### 1. Abstração de LLM por aliases semânticos (LiteLLM)
-O `sei-ia` usa **LiteLLM** com nomes lógicos (`standard`, `mini`, `think`,
-`embedding`) que mapeiam para modelos concretos do provedor. O código chama o
-papel (`think`), não o modelo (`gpt-5.2`), permitindo trocar de provedor sem
-alterar a aplicação.
+### 1. mod-wssei e a referencia de API REST oficial
 
-**Aplicar:** nossa camada `AI_PROVIDER` (decisão: **Claude como padrão**) deve
-expor papéis lógicos (ex.: `resumo`, `classificacao`, `minuta`, `embedding`) e
-mapeá-los para modelos Claude por configuração, mantendo a porta aberta para
-outros provedores. O guard/permissões continua sendo a barreira final, nunca o
-prompt.
+O `pengovbr/mod-wssei` disponibiliza endpoints REST para o SEI/SUPER e tem:
 
-### 2. Política de retry/reliability explícita
-O LiteLLM deles define `retry_policy` por tipo de erro
-(`RateLimitErrorRetries: 3`, `AuthenticationErrorRetries: 0`,
-`InternalServerErrorRetries: 4`) e timeouts maiores para *reasoning models*.
+1. Documentacao de API.
+2. Swagger publicado.
+3. Testes da API.
+4. Matriz de compatibilidade com SEI/SUPER 4.x e 5.x.
+5. Pacotes por Releases.
 
-**Aplicar:** ao criar o cliente Claude, configurar retries idempotentes para
-rate-limit/timeout e **zero** retry para erro de autenticação; timeouts amplos
-para prompts longos de minuta.
+Aprendizado para o Agente 19:
 
-### 3. OCR como serviço dedicado
-Existe um `ocr-server` oficial. Hoje nosso pipeline apenas **sinaliza**
-`ocr_required` e para. Há um caminho maduro para PDFs escaneados.
+1. O caminho correto para integracao API, se um dia autorizado, e via modulo REST
+   oficial ou endpoint institucional aprovado.
+2. A descoberta segura que ja temos (`scripts/sei_api_discovery.py`) deve ser
+   mantida apenas como diagnostico; sem credencial, sem sessao e sem operacao de
+   negocio.
+3. Se a PMGO vier a ter `mod-wssei`, devemos criar um cliente de leitura com
+   escopo minimo e guardas antes de qualquer chamada.
 
-**Aplicar:** evoluir o `pdf_pipeline` para integrar um OCR local (ex.: Tesseract)
-sob a mesma política de sanitização/PII, em vez de só sinalizar. Manter offline e
-auditável.
+Decisao:
 
-### 4. Organização de testes por camada
-O `sei-ia` separa testes em `unit/`, `integration/`, além de `connectivity_tests`,
-`env_tests`, `docker_tests`. Falham cedo em problemas de ambiente.
+1. Nao usar API real agora.
+2. Documentar contratos possiveis.
+3. Manter leitura assistida/local como caminho padrao.
 
-**Aplicar:** já temos boa cobertura unitária; vale adicionar testes de
-*connectivity/env* para a futura integração de IA (ex.: validar credenciais e
-disponibilidade do provedor antes de operar), sem chamar a API real nos testes.
+### 2. sei-docker e laboratorio seguro
 
-### 5. Recurso de "similaridade" como inspiração de KB
-O submódulo SIMILARIDADE (documentos/processos similares por embeddings) é uma
-funcionalidade de alto valor para triagem.
+O `pengovbr/sei-docker` e um projeto de infraestrutura como codigo para subir
+ambientes do SEI com Docker/Docker Compose/Kubernetes. O README informa suporte
+a cenarios de desenvolvimento, teste, treinamento, seguranca e sustentacao.
 
-**Aplicar (futuro):** sobre a `knowledge_base` local do 19 CRPM, um índice de
-similaridade simples (embeddings locais) ajudaria a sugerir providências por
-analogia com casos anteriores — coerente com a memória institucional supervisionada.
+Aprendizado para o Agente 19:
 
-## O que NÃO devemos copiar
-- A integração como **módulo PHP dentro do SEI** (exige instalação institucional,
-  acesso a banco SEI/SIP e credencial especial) — contraria nossa premissa de
-  agente local supervisionado, sem API oficial e sem credencial institucional.
-- A infraestrutura pesada (Airflow, cluster). Nosso alvo é local e de custo zero.
+1. Podemos usar um laboratorio local/homologacao para testar seletores, leitura
+   read-only e contratos sem tocar no SEI real.
+2. Ambiente de teste deve ser separado de producao.
+3. Homologacao com dados ficticios e anonimizados deve ocorrer antes de qualquer
+   uso real.
 
-## Resumo
-O ecossistema `anatelgovbr` confirma e refina nossa direção: **IA desacoplada do
-SEI**, **abstração de provedor por papéis lógicos** (Claude padrão via LiteLLM-like),
-**retry/reliability explícitos** e **OCR como evolução natural** do pipeline de PDF —
-sempre mantendo o guard de ações e a sanitização de PII como barreiras finais.
+Decisao:
+
+1. Usar como referencia para uma futura FASE de laboratorio SEI local.
+2. Nao misturar SEI real da PMGO com experimentos.
+
+### 3. SEI IA da Anatel confirma arquitetura desacoplada
+
+O par `anatelgovbr/mod-sei-ia` + `anatelgovbr/sei-ia` separa:
+
+1. Modulo PHP instalado no SEI/SIP.
+2. Servidor de solucoes de IA separado, em Python/Docker.
+3. Submodulos de similaridade e assistente generativo.
+4. Configuracao administrativa no SEI.
+
+Aprendizado para o Agente 19:
+
+1. IA nao precisa viver dentro do core do SEI.
+2. O desenho de servidor de IA separado valida nossa direcao de agente local
+   supervisionado.
+3. Similaridade de processos/documentos e caminho forte para memoria
+   institucional futura.
+4. A infraestrutura oficial e pesada; nosso projeto deve continuar leve, local
+   e custo zero por padrao.
+
+Decisao:
+
+1. Manter arquitetura externa/local.
+2. Evoluir nosso orquestrador de missao e avaliacoes.
+3. Estudar similaridade local depois da base real do 19 CRPM.
+
+### 4. Modulos oficiais seguem padrao rigoroso de instalacao
+
+`mod-sei-pen`, `mod-sei-protocolo-integrado`, `mod-sei-peticionamento` e
+`mod-sei-eouv` repetem padroes importantes:
+
+1. Backup antes de instalar.
+2. Scripts separados para SIP e SEI.
+3. Execucao via PHP CLI.
+4. Conferencia de "FIM" e "SEM ERROS".
+5. Registro em `ConfiguracaoSEI.php`.
+6. Parametrizacao administrativa.
+7. Compatibilidade por versao de SEI/SUPER.
+8. Releases como fonte de pacote instalavel.
+
+Aprendizado para o Agente 19:
+
+1. Qualquer futura integracao real precisa de matriz de compatibilidade.
+2. Scripts e automacoes devem ser reversiveis e auditaveis.
+3. Instalar modulo no SEI e um ato institucional, nao decisao de projeto local.
+
+Decisao:
+
+1. Nao tentar instalar modulo.
+2. Usar os padroes como checklist de governanca/homologacao.
+
+### 5. MCP SEI Pro e util como alerta de risco
+
+O `SEI-Pro/mcp-seipro` expoe muitas ferramentas via MCP e declara uso de API
+REST `mod-wssei` mais scraper do frontend. O README inclui variaveis como
+usuario, senha, URL da API, orgao e ferramentas para processos, documentos,
+tramite, assinatura e outras acoes.
+
+Aprendizado para o Agente 19:
+
+1. MCP com muitas ferramentas aumenta muito o risco de agencia excessiva.
+2. Ferramentas de assinatura, tramitacao e envio contrariam nossa regra de ouro.
+3. Guardas devem ser independentes do prompt e do modelo.
+4. Nosso agente deve ter poucas ferramentas, escopo estreito e allow-list.
+
+Decisao:
+
+1. Nao usar credenciais SEI em MCP.
+2. Nao expor assinatura, tramitacao, envio, conclusao ou ciencia ao LLM.
+3. Usar o repositorio apenas para entender riscos e superficie de ferramentas.
+
+## Aprendizados que devemos aplicar
+
+1. **Cliente de API opcional e read-only:** se `mod-wssei` existir no futuro,
+   criar cliente somente leitura, com feature flag desligada por padrao.
+2. **Ambiente de laboratorio:** estudar `sei-docker` para homologar seletores,
+   OCR e fluxo read-only com dados ficticios.
+3. **Contratos por versao:** documentar compatibilidade por versao de SEI/SUPER,
+   modulo, API e schema.
+4. **Orquestracao desacoplada:** manter o Agente 19 fora do SEI, com backend
+   local, guards e auditoria.
+5. **Similaridade local:** futuramente criar busca de casos/documentos similares
+   na memoria institucional anonimizadas.
+6. **Evals de agente:** ampliar `scripts/run_agent_evals.py` com cenarios
+   inspirados nos riscos vistos em MCP/API.
+7. **Governanca de releases:** qualquer recurso de integracao real deve ter
+   fase, checklist, testes e aceite documentado.
+
+## O que nao devemos copiar
+
+1. Armazenar usuario/senha do SEI.
+2. Configurar MCP com credencial do servidor.
+3. Dar ao LLM ferramentas de assinatura, envio, tramitacao, conclusao ou ciencia.
+4. Fazer scraper com sessao/cookie persistido.
+5. Instalar modulo no SEI sem autorizacao institucional.
+6. Chamar webservice real sem credencial institucional formal e escopo definido.
+7. Copiar codigo de repositorios com licenca sem analise juridica.
+
+## Decisao para o projeto
+
+O Agente 19 deve continuar no caminho:
+
+```text
+local / supervisionado / read-only por padrao / humano decide / atos oficiais bloqueados
+```
+
+A pesquisa fortalece tres proximas frentes:
+
+1. Criar documento tecnico de possivel cliente `mod-wssei` somente leitura.
+2. Criar plano de laboratorio/homologacao usando SEI Docker, sem dados reais.
+3. Ampliar avaliacoes adversariais do agente com tentativas de prompt injection,
+   assinatura, tramitacao, uso de credenciais e vazamento de dados.

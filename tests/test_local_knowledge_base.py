@@ -105,6 +105,7 @@ def test_triage_com_regra_ficticia_sugere_unidade_e_minuta(db_env, tmp_path):
     assert result.unidade_sugerida == "PM/19 CRPM"
     assert result.tipo_minuta_sugerido == "despacho"
     assert result.regra_aplicada == "r1"
+    assert result.evidencias == ["apoio administrativo", "atividade institucional"]
     assert result.confianca == 0.74
 
 
@@ -123,3 +124,26 @@ def test_triage_com_unidade_nao_cadastrada_nao_sugere_unidade(db_env, tmp_path):
     assert result.unidade_sugerida == ""
     assert "unidade_destino_nao_cadastrada" in result.campos_pendentes
     assert result.confianca <= 0.45
+
+
+def test_triage_default_kb_aplica_regra_conservadora_19crpm(db_env):
+    result = analyze_triage(
+        TriageRequest(
+            assunto="Apoio operacional ao 19º CRPM",
+            texto=(
+                "Processo solicita apoio operacional ao 19º CRPM para "
+                "policiamento em evento institucional."
+            ),
+            processo_sei="2026.000402",
+            usuario_local="operador.local",
+        )
+    )
+
+    assert result.status == "precisa_revisao"
+    assert result.interesse_19crpm == "direto"
+    assert result.unidade_sugerida == "PM/19 CRPM"
+    assert result.tipo_minuta_sugerido == "despacho"
+    assert result.regra_aplicada == "r19_mencao_direta"
+    assert "19º crpm" in result.evidencias
+    assert result.confianca == 0.82
+    assert result.revisao_humana_obrigatoria is True

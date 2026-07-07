@@ -34,14 +34,17 @@ def test_index_tem_campos_minimos_do_checklist():
     assert 'name="processo_sei"' in html
     assert 'name="texto"' in html
     assert 'name="pdf"' in html
+    assert 'name="perfil_local"' in html
     assert "Analisar para o 19 CRPM" in html
     assert "Revisao humana" in html
     assert "Campos pendentes" in html
     assert "/api/import-pdf" in html
     assert "/api/generate-draft" in html
     assert "/api/triage-local" in html
+    assert "/api/mission-control" in html
     assert "Gerar minuta local" in html
     assert "Triagem local" in html
+    assert "Missao Agente 19" in html
 
 
 def test_create_import_text_response_retorna_resultado_estruturado(db_env):
@@ -121,3 +124,39 @@ def test_create_triage_response_sem_regras_nao_inventa_unidade(db_env):
     assert response["resultado"]["unidade_sugerida"] == ""
     assert response["revisao_humana_obrigatoria"] is True
     assert "DECIDIR_UNIDADE_SEM_REGRA" in response["acoes_bloqueadas"]
+
+
+def test_create_mission_response_orquestra_fluxo_supervisionado(db_env):
+    response = local_app.create_mission_response(
+        {
+            "titulo": "Oficio de apoio",
+            "texto": "Oficio solicitando apoio do 19 CRPM no prazo de 10 dias uteis.",
+            "processo_sei": "2026.000400",
+            "unidade_destino": "PM/19 CRPM",
+            "usuario_local": "operador.local",
+        }
+    )
+
+    assert response["status"] == "pronto_para_revisao"
+    assert response["revisao_humana_obrigatoria"] is True
+    assert response["resultado"]["plano_operacional"]
+    assert response["resultado"]["minuta"]["texto"]
+    assert "ASSINAR_DOCUMENTO" in response["acoes_bloqueadas"]
+
+
+def test_create_agent19_response_expoe_nucleo_de_agente(db_env):
+    response = local_app.create_agent19_response(
+        {
+            "mensagem": "Analise o processo para o 19 CRPM.",
+            "titulo": "Oficio de apoio",
+            "texto": "Oficio solicitando apoio do 19 CRPM no prazo de 10 dias uteis.",
+            "processo_sei": "2026.000800",
+            "usuario_local": "operador.local",
+            "perfil_local": "operador",
+        }
+    )
+
+    assert response["agente"]["nome"] == "Agente 19"
+    assert response["agente"]["tipo"] == "servidor_digital_ia_supervisionado"
+    assert response["ferramentas_usadas"][0]["ferramenta"] == "mission_control"
+    assert response["revisao_humana_obrigatoria"] is True

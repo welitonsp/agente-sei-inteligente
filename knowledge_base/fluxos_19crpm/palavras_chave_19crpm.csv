@@ -1,1 +1,12 @@
 termo,categoria,peso,interesse,ativo,observacao
+19 crpm,mencao_direta,10,direto,true,Mencao textual explicita ao 19 CRPM.
+19º crpm,mencao_direta,10,direto,true,Mencao textual explicita com ordinal.
+pm/19 crpm,mencao_direta,10,direto,true,Mencao textual explicita a unidade.
+decimo nono crpm,mencao_direta,10,direto,true,Mencao textual por extenso sem acento.
+apoio operacional,operacional,8,direto,true,Apoio operacional para avaliacao do 19 CRPM.
+apoio em evento,operacional,7,direto,true,Demanda de evento com possivel emprego operacional.
+policiamento,operacional,7,direto,true,Assunto de policiamento ostensivo ou preventivo.
+ordem de servico,operacional,6,direto,true,Documento operacional que pode exigir conhecimento regional.
+efetivo,operacional,6,direto,true,Termo operacional recorrente em demandas de apoio.
+viatura,operacional,5,direto,true,Termo operacional recorrente em demandas de apoio.
+conhecimento e providencias,administrativo,4,indireto,true,Demanda administrativa que pode exigir triagem manual.

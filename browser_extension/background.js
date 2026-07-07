@@ -1,11 +1,13 @@
-const LOCAL_API = "http://127.0.0.1:8000/api/import-text";
+const LOCAL_TEXT_API = "http://127.0.0.1:8000/api/import-text";
+const LOCAL_AGENT_API = "http://127.0.0.1:8000/api/agent19";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (!message || message.type !== "AGENTE_SEI_ANALYZE") {
+  if (!message || !["AGENTE_SEI_ANALYZE", "AGENTE_SEI_MISSION"].includes(message.type)) {
     return false;
   }
 
-  analyze(message.payload)
+  const endpoint = message.type === "AGENTE_SEI_MISSION" ? LOCAL_AGENT_API : LOCAL_TEXT_API;
+  callLocalApi(endpoint, message.payload)
     .then((result) => sendResponse({ ok: true, result }))
     .catch((error) => sendResponse({
       ok: false,
@@ -15,10 +17,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true;
 });
 
-async function analyze(payload) {
-  const response = await fetch(LOCAL_API, {
+async function callLocalApi(endpoint, payload) {
+  const response = await fetch(endpoint, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Agente19-User": "extensao.sei",
+      "X-Agente19-Role": "operador"
+    },
     body: JSON.stringify(payload || {})
   });
   const data = await response.json();

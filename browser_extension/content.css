@@ -192,6 +192,12 @@
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
+.agente-sei-chip-strong {
+  border-color: #047d67;
+  background: #e5f4ef;
+  color: #064c40;
+}
+
 .agente-sei-primary {
   background: linear-gradient(135deg, #10b981, #059669) !important;
   color: #ffffff !important;

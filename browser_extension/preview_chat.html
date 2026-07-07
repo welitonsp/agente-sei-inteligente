@@ -210,6 +210,46 @@
       runtime: {
         lastError: null,
         sendMessage(message, callback) {
+          if (message && message.type === "AGENTE_SEI_MISSION") {
+            const missionPayload = {
+              ok: true,
+              result: {
+                status: "pronto_para_revisao",
+                agente: {
+                  nome: "Agente 19",
+                  tipo: "servidor_digital_ia_supervisionado",
+                  intencao: "analisar_interesse_19crpm"
+                },
+                resposta: "Processo: 202600000123456\nInteresse 19 CRPM: parcial\nTipo/assunto: oficio\nResumo: Processo simulado com pedido de manifestacao e prazo ate 30/07/2026.\nProvidencia: Verificar se a demanda exige manifestacao do 19 CRPM e preparar resposta.\nLimite: eu preparo e oriento; o humano revisa e pratica qualquer ato oficial.",
+                ferramentas_usadas: [{ferramenta: "mission_control", status: "executada"}],
+                revisao_humana_obrigatoria: true,
+                confianca: 0.88,
+                campos_pendentes: ["confirmar unidade responsavel"],
+                resultado: {
+                  prontidao_operacional: 0.88,
+                  riscos: ["atos_oficiais_bloqueados", "triagem_exige_revisao"],
+                  analise: {
+                    tipo_provavel: "oficio",
+                    resumo_curto: "Processo simulado com pedido de manifestacao e prazo ate 30/07/2026.",
+                    prazo_detectado: true,
+                    prazos: [{descricao: "30/07/2026", data_limite: "30/07/2026"}],
+                    providencia_sugerida: "Verificar se a demanda exige manifestacao do 19 CRPM e preparar resposta."
+                  },
+                  triagem: {
+                    interesse_19crpm: "parcial",
+                    unidade_sugerida: "PM/19 CRPM",
+                    providencia_sugerida: "Revisar documentos e confirmar atribuicao da unidade."
+                  },
+                  minuta: {
+                    tipo_minuta: "despacho",
+                    texto: "Rascunho externo ficticio para revisao humana."
+                  }
+                }
+              }
+            };
+            window.setTimeout(() => callback(missionPayload), 250);
+            return;
+          }
           const payload = {
             ok: true,
             result: {

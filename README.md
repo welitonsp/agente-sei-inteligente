@@ -2,7 +2,7 @@
 
 Documentacao-base do projeto do Agente 19, o Funcionário Digital de IA criado para apoiar a rotina do 19º CRPM com e-mail institucional, PDF, Google Agenda, alertas em celular, minutas administrativas e uso assistido do SEI.
 
-Versao documental: 0.4.7
+Versao documental: 0.4.15
 Data: 2026-06-23
 Status: arquitetura particular/local supervisionada, UI chat V2 do Agente 19 definida com preview local e minuta externa supervisionada, PATCH 4 aplicado, FASE 5B-homologacao preparada, diagnostico real de API SEI/WSSEI executado e escrita real no SEI ainda nao habilitada.
 
@@ -288,6 +288,13 @@ Agente 19 Desktop:
 | [docs/54-guia-rapido-operacao.md](docs/54-guia-rapido-operacao.md) | Guia rápido: como usar o Agente 19 com o SEI (passo a passo) |
 | [docs/55-icone-flutuante-chat.md](docs/55-icone-flutuante-chat.md) | Ícone flutuante + chat do Agente 19 (FASE 38 — Frente 1) |
 | [docs/56-fase5c-homologacao-leitura.md](docs/56-fase5c-homologacao-leitura.md) | Homologação da leitura automática do SEI (FASE 5C — Frente 2) |
+| [docs/57-orquestrador-missao-agente19.md](docs/57-orquestrador-missao-agente19.md) | Orquestrador de missao supervisionada do Agente 19 |
+| [docs/58-revisao-mercado-agente-ia.md](docs/58-revisao-mercado-agente-ia.md) | Revisao de mercado e maturidade do Agente de IA |
+| [docs/59-autenticacao-local-perfis.md](docs/59-autenticacao-local-perfis.md) | Autenticacao local e perfis do painel |
+| [docs/60-agente-visual-sei-interesse-19crpm.md](docs/60-agente-visual-sei-interesse-19crpm.md) | Agente visual no SEI com analise de interesse do 19 CRPM |
+| [docs/61-nucleo-agente-ia-agente19.md](docs/61-nucleo-agente-ia-agente19.md) | Nucleo explicito de Agente de IA do Agente 19 |
+| [docs/62-tracing-ferramentas-agente19.md](docs/62-tracing-ferramentas-agente19.md) | Tracing operacional e ferramentas seguras do Agente 19 |
+| [docs/63-knowledge-base-inicial-19crpm.md](docs/63-knowledge-base-inicial-19crpm.md) | Knowledge base inicial e evidencias de regra do Agente 19 |
 
 ## Estrutura-alvo
 

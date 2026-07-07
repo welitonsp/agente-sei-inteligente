@@ -13,9 +13,12 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
+from app.agent.agent19 import AgentRequest, run_agent19
+from app.core.auth import AuthError, apply_auth_to_payload, authorize_dashboard_request
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger, log_event
 from app.core.safety import assert_safe_environment
+from app.intelligence.mission_control import MissionRequest, execute_mission
 from app.intelligence.local_minutador import DraftRequest, generate_draft
 from app.intelligence.local_triage import TriageRequest, analyze_triage
 from app.intake.manual_text import ManualTextRequest
@@ -282,6 +285,14 @@ INDEX_HTML = """<!doctype html>
           </div>
         </div>
         <div class="field">
+          <label for="perfil">Perfil local</label>
+          <select id="perfil" name="perfil_local">
+            <option value="operador">Operador</option>
+            <option value="revisor">Revisor</option>
+            <option value="gestor">Gestor</option>
+          </select>
+        </div>
+        <div class="field">
           <label for="titulo">Titulo</label>
           <input id="titulo" name="titulo" autocomplete="off" required>
         </div>
@@ -343,7 +354,12 @@ INDEX_HTML = """<!doctype html>
           </div>
           <button id="draft-button" type="button" disabled>Gerar minuta local</button>
           <button id="triage-button" type="button" disabled>Triagem local</button>
+          <button id="mission-button" type="button" disabled>Missao Agente 19</button>
           <button id="copy-draft" type="button" disabled>Copiar minuta</button>
+          <div class="field">
+            <label>Missao Agente 19</label>
+            <pre id="mission"></pre>
+          </div>
           <div class="field">
             <label>Triagem e roteamento</label>
             <pre id="triage"></pre>
@@ -366,9 +382,11 @@ INDEX_HTML = """<!doctype html>
     const errorBox = document.getElementById("error");
     const draftButton = document.getElementById("draft-button");
     const triageButton = document.getElementById("triage-button");
+    const missionButton = document.getElementById("mission-button");
     const copyDraft = document.getElementById("copy-draft");
     const draftBox = document.getElementById("draft");
     const triageBox = document.getElementById("triage");
+    const missionBox = document.getElementById("mission");
     let lastAnalysis = null;
 
     function setText(id, value) {
@@ -380,6 +398,14 @@ INDEX_HTML = """<!doctype html>
       errorBox.hidden = false;
       badge.textContent = "Erro";
       badge.className = "status";
+    }
+
+    function requestHeaders() {
+      return {
+        "Content-Type": "application/json",
+        "X-Agente19-User": document.getElementById("usuario").value,
+        "X-Agente19-Role": document.getElementById("perfil").value
+      };
     }
 
     function render(payload) {
@@ -394,6 +420,7 @@ INDEX_HTML = """<!doctype html>
       lastAnalysis = payload;
       draftButton.disabled = false;
       triageButton.disabled = false;
+      missionButton.disabled = false;
       setText("status", payload.status);
       setText("review", payload.revisao_humana_obrigatoria ? "Obrigatoria" : "Nao");
       setText("confidence", String(payload.confianca ?? ""));
@@ -406,6 +433,7 @@ INDEX_HTML = """<!doctype html>
       setText("pending", (payload.campos_pendentes || []).join("\\n") || "Nenhum");
       setText("draft", "");
       setText("triage", "");
+      setText("mission", "");
       copyDraft.disabled = true;
     }
 
@@ -427,7 +455,7 @@ INDEX_HTML = """<!doctype html>
         }
         const response = await fetch(endpoint, {
           method: "POST",
-          headers: {"Content-Type": "application/json"},
+          headers: requestHeaders(),
           body: JSON.stringify(body)
         });
         const payload = await response.json();
@@ -464,7 +492,7 @@ INDEX_HTML = """<!doctype html>
       try {
         const response = await fetch("/api/generate-draft", {
           method: "POST",
-          headers: {"Content-Type": "application/json"},
+          headers: requestHeaders(),
           body: JSON.stringify(payload)
         });
         const draftPayload = await response.json();
@@ -497,7 +525,7 @@ INDEX_HTML = """<!doctype html>
       try {
         const response = await fetch("/api/triage-local", {
           method: "POST",
-          headers: {"Content-Type": "application/json"},
+          headers: requestHeaders(),
           body: JSON.stringify(payload)
         });
         const triagePayload = await response.json();
@@ -519,6 +547,58 @@ INDEX_HTML = """<!doctype html>
         showError("Falha de comunicacao na triagem.");
       } finally {
         triageButton.disabled = false;
+      }
+    });
+
+    missionButton.addEventListener("click", async () => {
+      if (!lastAnalysis) return;
+      missionButton.disabled = true;
+      badge.textContent = "Orquestrando missao";
+      const data = lastAnalysis.resultado || {};
+      const payload = {
+        processo_sei: document.getElementById("processo").value,
+        usuario_local: document.getElementById("usuario").value,
+        titulo: document.getElementById("titulo").value,
+        texto: document.getElementById("texto").value || data.resumo_executivo || "",
+        unidade_destino: document.getElementById("unidade").value,
+        tipo_minuta: document.getElementById("tipo-minuta").value
+      };
+      try {
+        const response = await fetch("/api/mission-control", {
+          method: "POST",
+          headers: requestHeaders(),
+          body: JSON.stringify(payload)
+        });
+        const missionPayload = await response.json();
+        if (!response.ok) {
+          showError(missionPayload.error?.message || "Falha na missao.");
+          return;
+        }
+        missionBox.textContent = formatMission(missionPayload);
+        const result = missionPayload.resultado || {};
+        const triage = result.triagem || {};
+        const draft = result.minuta || {};
+        if (triage.unidade_sugerida) {
+          document.getElementById("unidade").value = triage.unidade_sugerida;
+        }
+        if (draft.tipo_minuta) {
+          document.getElementById("tipo-minuta").value = draft.tipo_minuta;
+        }
+        if (draft.texto) {
+          draftBox.textContent = formatDraft({
+            resultado: draft,
+            confianca: missionPayload.confianca,
+            revisao_humana_obrigatoria: true,
+            campos_pendentes: missionPayload.campos_pendentes || []
+          });
+          copyDraft.disabled = false;
+        }
+        badge.textContent = "Missao pronta";
+        badge.className = "status ok";
+      } catch (err) {
+        showError("Falha de comunicacao na missao.");
+      } finally {
+        missionButton.disabled = false;
       }
     });
 
@@ -573,6 +653,26 @@ INDEX_HTML = """<!doctype html>
         `Campos pendentes: ${(payload.campos_pendentes || []).join(", ") || "nenhum"}`,
         "",
         data.justificativa || ""
+      ];
+      return lines.join("\\n");
+    }
+
+    function formatMission(payload) {
+      const data = payload.resultado || {};
+      const triage = data.triagem || {};
+      const draft = data.minuta || {};
+      const lines = [
+        `Status: ${payload.status || ""}`,
+        `Prontidao operacional: ${data.prontidao_operacional ?? ""}`,
+        `Etapa recomendada: ${data.etapa_recomendada || ""}`,
+        `Revisao humana: ${payload.revisao_humana_obrigatoria ? "obrigatoria" : "nao informada"}`,
+        `Unidade sugerida: ${triage.unidade_sugerida || "indefinida"}`,
+        `Tipo de minuta: ${draft.tipo_minuta || "indefinido"}`,
+        `Campos pendentes: ${(payload.campos_pendentes || []).join(", ") || "nenhum"}`,
+        `Riscos: ${(data.riscos || []).join(", ") || "nenhum"}`,
+        "",
+        "Plano operacional:",
+        ...((data.plano_operacional || []).map((item, idx) => `${idx + 1}. ${item}`))
       ];
       return lines.join("\\n");
     }
@@ -644,6 +744,37 @@ def create_triage_response(payload: dict[str, Any]) -> dict[str, Any]:
     return analyze_triage(request).to_contract()
 
 
+def create_mission_response(payload: dict[str, Any]) -> dict[str, Any]:
+    """Executa a missao supervisionada: analise + triagem + minuta."""
+    request = MissionRequest(
+        titulo=str(payload.get("titulo") or payload.get("assunto") or ""),
+        texto=str(payload.get("texto", "")),
+        processo_sei=str(payload.get("processo_sei", "")),
+        usuario_local=str(payload.get("usuario_local", "")),
+        estacao=str(payload.get("estacao", "")),
+        unidade_destino=str(payload.get("unidade_destino", "")),
+        tipo_minuta=str(payload.get("tipo_minuta", "")),
+        origem=str(payload.get("origem") or "dashboard_local"),
+    )
+    return execute_mission(request).to_contract()
+
+
+def create_agent19_response(payload: dict[str, Any]) -> dict[str, Any]:
+    """Executa o Agente 19 como agente de IA supervisionado."""
+    request = AgentRequest(
+        mensagem=str(payload.get("mensagem") or payload.get("prompt") or ""),
+        titulo=str(payload.get("titulo") or payload.get("assunto") or ""),
+        texto=str(payload.get("texto", "")),
+        processo_sei=str(payload.get("processo_sei", "")),
+        usuario_local=str(payload.get("usuario_local", "")),
+        perfil_local=str(payload.get("perfil_local", "")),
+        unidade_destino=str(payload.get("unidade_destino") or "PM/19 CRPM"),
+        origem=str(payload.get("origem") or "dashboard_local"),
+        trace_id=str(payload.get("trace_id", "")),
+    )
+    return run_agent19(request).to_contract()
+
+
 class DashboardHandler(BaseHTTPRequestHandler):
     server_version = "AgenteSeiDashboard/0.1"
 
@@ -662,12 +793,20 @@ class DashboardHandler(BaseHTTPRequestHandler):
             "/api/import-pdf",
             "/api/generate-draft",
             "/api/triage-local",
+            "/api/mission-control",
+            "/api/agent19",
         ):
             self.send_error(HTTPStatus.NOT_FOUND)
             return
         try:
             payload = self._read_json()
-            if self.path == "/api/triage-local":
+            auth = authorize_dashboard_request(self.path, self.headers, payload)
+            payload = apply_auth_to_payload(payload, auth)
+            if self.path == "/api/agent19":
+                result = create_agent19_response(payload)
+            elif self.path == "/api/mission-control":
+                result = create_mission_response(payload)
+            elif self.path == "/api/triage-local":
                 result = create_triage_response(payload)
             elif self.path == "/api/generate-draft":
                 result = create_draft_response(payload)
@@ -686,6 +825,9 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 {"error": {"code": "INVALID_FILE", "message": "Arquivo PDF invalido."}},
                 status=HTTPStatus.BAD_REQUEST,
             )
+            return
+        except AuthError as exc:
+            self._send_json(exc.to_error(), status=exc.status)
             return
         except Exception:
             self._send_json(

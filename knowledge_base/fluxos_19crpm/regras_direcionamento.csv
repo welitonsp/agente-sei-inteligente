@@ -1,1 +1,4 @@
 id,termos,unidade_destino,tipo_minuta,providencia,interesse,prioridade,confianca,ativo,observacao
+r19_mencao_direta,19 crpm;19º crpm;pm/19 crpm;decimo nono crpm,PM/19 CRPM,despacho,Revisar o teor e preparar despacho para conhecimento ou providencias do 19 CRPM,direto,100,0.82,true,Regra conservadora para mencao direta ao 19 CRPM.
+r19_apoio_operacional,apoio operacional;apoio em evento;policiamento;efetivo;viatura,PM/19 CRPM,despacho,Verificar pertinencia operacional e submeter minuta a revisao humana,direto,80,0.72,true,Regra inicial para demandas operacionais evidentes.
+r19_conhecimento,conhecimento e providencias;para conhecimento;providencias cabiveis,PM/19 CRPM,despacho,Preparar resumo para revisao e confirmar se ha providencia do 19 CRPM,indireto,50,0.62,true,Regra administrativa de baixa confianca para revisao.

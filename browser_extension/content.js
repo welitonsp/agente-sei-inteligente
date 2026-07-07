@@ -54,7 +54,14 @@
 
       <div id="agente-sei-messages" class="agente-sei-messages" role="log" aria-live="polite"></div>
 
-
+      <div class="agente-sei-quick">
+        <button id="agente-sei-capturar" class="agente-sei-chip" type="button">Capturar</button>
+        <button data-intent="resumo" class="agente-sei-chip" type="button">Resumo</button>
+        <button data-intent="prazo" class="agente-sei-chip" type="button">Prazos</button>
+        <button data-intent="providencia" class="agente-sei-chip" type="button">Providencia</button>
+        <button data-intent="minuta" class="agente-sei-chip" type="button">Minuta</button>
+        <button data-intent="interesse_19crpm" class="agente-sei-chip agente-sei-chip-strong" type="button">19 CRPM</button>
+      </div>
 
       <div class="agente-sei-composer">
         <textarea id="agente-sei-prompt" rows="2" placeholder="Pergunte sobre o processo aberto no SEI..."></textarea>
@@ -77,6 +84,12 @@
   launchButton.addEventListener("click", () => {
     root.classList.add("agente-sei-open");
     hydrateContext(false);
+    if (!messages.children.length) {
+      addMessage(
+        "assistant",
+        "Estou pronto. Posso resumir, apontar prazo, identificar assunto, sugerir providencia e filtrar o que interessa ao 19 CRPM com base no texto visivel ou selecionado."
+      );
+    }
   });
 
   closeButton.addEventListener("click", () => {
@@ -126,6 +139,20 @@
     });
   }
 
+  root.querySelectorAll("[data-intent]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const intent = button.getAttribute("data-intent") || "analise";
+      const label = button.textContent || "Analise";
+      if (intent === "minuta") {
+        runAnalysis("Gere um rascunho de minuta fora do SEI, indicando se parece despacho ou oficio e deixando claro que preciso revisar antes de usar.", intent);
+      } else if (intent === "interesse_19crpm") {
+        runAnalysis("Analise o processo aberto e informe somente o que interessa ao 19 CRPM.", intent);
+      } else {
+        runAnalysis(`Preciso de ${label.toLowerCase()} do processo.`, intent);
+      }
+    });
+  });
+
   function submitPrompt() {
     const prompt = promptInput.value.trim();
     if (!prompt) {
@@ -169,22 +196,26 @@
       addMessage("assistant", "Abra um processo/documento no SEI ou selecione um trecho antes de perguntar.");
       return;
     }
-    if (containsForbiddenIntent(prompt) || containsForbiddenIntent(text)) {
+    if (containsForbiddenIntent(prompt)) {
       addMessage("assistant", "Pedido bloqueado: nao executo assinatura, tramitacao, envio, conclusao ou outro ato oficial.");
       return;
     }
 
     addMessage("user", prompt);
     setBusy(true);
+    const isMission = intent === "interesse_19crpm";
     chrome.runtime.sendMessage(
       {
-        type: "AGENTE_SEI_ANALYZE",
+        type: isMission ? "AGENTE_SEI_MISSION" : "AGENTE_SEI_ANALYZE",
         payload: {
           titulo: document.title || "Pagina SEI",
+          mensagem: prompt,
           texto: text,
           processo_sei: guessProcessNumber(),
+          unidade_destino: isMission ? "PM/19 CRPM" : "",
           origem: "extensao_sei_chat_readonly",
-          usuario_local: "",
+          usuario_local: "extensao.sei",
+          perfil_local: "operador",
           intent: intent
         }
       },
@@ -228,6 +259,7 @@
     if (lower.includes("prazo")) return "prazo";
     if (lower.includes("provid")) return "providencia";
     if (lower.includes("resum")) return "resumo";
+    if (lower.includes("19") || lower.includes("interesse")) return "interesse_19crpm";
     if (lower.includes("minuta") || lower.includes("despacho") || lower.includes("oficio")) return "minuta";
     return "analise";
   }
@@ -244,6 +276,9 @@
     const summary = result.resumo_executivo || "Resumo nao gerado.";
     const lines = [];
 
+    if (intent === "interesse_19crpm") {
+      return formatMissionResult(payload);
+    }
     if (intent === "prazo") {
       lines.push(`Prazo: ${deadline.ha_prazo ? `${deadline.data_limite || ""} ${deadline.hora_limite || ""} ${deadline.risco || ""}` : "nao confirmado"}`);
     } else if (intent === "providencia") {
@@ -260,6 +295,48 @@
     lines.push(`Pendencias: ${(payload.campos_pendentes || []).join(", ") || "nenhuma"}`);
     lines.push("Limite: nao assino, nao tramito e nao altero o SEI.");
     return lines.join("\n");
+  }
+
+  function formatMissionResult(payload) {
+    if (payload.agente && payload.resposta) {
+      return [
+        `${payload.agente.nome} (${payload.agente.tipo})`,
+        payload.resposta,
+        `Ferramentas: ${(payload.ferramentas_usadas || []).map((tool) => tool.ferramenta).join(", ") || "nenhuma"}`,
+        "Limite: nao abro link sozinho, nao exporto PDF automaticamente, nao assino, nao tramito e nao altero o SEI."
+      ].join("\n");
+    }
+    const result = payload.resultado || {};
+    const analysis = result.analise || {};
+    const triage = result.triagem || {};
+    const draft = result.minuta || {};
+    const interest = triage.interesse_19crpm && triage.interesse_19crpm !== "indefinido"
+      ? triage.interesse_19crpm
+      : "interesse a confirmar pelo 19 CRPM";
+    const lines = [
+      `Processo: ${processInput.value || guessProcessNumber() || "nao identificado"}`,
+      `Interesse 19 CRPM: ${interest}`,
+      `Assunto/tipo: ${analysis.tipo_provavel || "nao classificado"}`,
+      `Resumo: ${analysis.resumo_curto || "resumo nao gerado"}`,
+      `Prazo: ${formatMissionDeadline(analysis)}`,
+      `Providencia sugerida: ${analysis.providencia_sugerida || triage.providencia_sugerida || "revisar manualmente"}`,
+      `Unidade sugerida: ${triage.unidade_sugerida || "PM/19 CRPM, se confirmado pelo humano"}`,
+      `Minuta: ${draft.tipo_minuta || "a confirmar"} disponivel como rascunho externo.`,
+      `Prontidao: ${result.prontidao_operacional ?? payload.confianca ?? "nao informada"}`,
+      `Riscos: ${(result.riscos || []).join(", ") || "nenhum"}`,
+      `Pendencias: ${(payload.campos_pendentes || []).join(", ") || "nenhuma"}`,
+      "Limite: nao abro link sozinho, nao exporto PDF automaticamente, nao assino, nao tramito e nao altero o SEI."
+    ];
+    return lines.join("\n");
+  }
+
+  function formatMissionDeadline(analysis) {
+    const prazos = analysis.prazos || [];
+    if (prazos.length) {
+      const prazo = prazos[0] || {};
+      return prazo.data_limite || prazo.descricao || "prazo detectado, revisar";
+    }
+    return analysis.prazo_detectado ? "prazo detectado, revisar" : "nao identificado";
   }
 
   function formatDraftSuggestion(payload, summary) {

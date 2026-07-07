@@ -65,6 +65,8 @@ def test_content_script_tem_ui_chat_profissional_readonly():
     assert "data-intent=\"prazo\"" in content
     assert "data-intent=\"providencia\"" in content
     assert "data-intent=\"minuta\"" in content
+    assert "data-intent=\"interesse_19crpm\"" in content
+    assert "19 CRPM" in content
     assert "Login, senha, cookie e atos oficiais ficam fora" in content
     assert "Somente leitura" in content
     assert "Backend local" in content
@@ -107,6 +109,12 @@ def test_background_usa_backend_local():
     background = (EXT / "background.js").read_text(encoding="utf-8")
 
     assert "http://127.0.0.1:8000/api/import-text" in background
+    assert "http://127.0.0.1:8000/api/agent19" in background
+    assert "AGENTE_SEI_MISSION" in background
+    assert "X-Agente19-User" in background
+    assert "X-Agente19-Role" in background
+    assert "extensao.sei" in background
+    assert "operador" in background
     assert "https://" not in background.replace("http://127.0.0.1:8000/api/import-text", "")
 
 
@@ -122,6 +130,10 @@ def test_preview_chat_local_usa_apenas_dados_ficticios():
     assert "window.chrome" in preview
     assert "sendMessage" in preview
     assert "minuta_sugerida" in preview
+    assert "AGENTE_SEI_MISSION" in preview
+    assert "servidor_digital_ia_supervisionado" in preview
+    assert "mission_control" in preview
+    assert "interesse_19crpm" in preview.lower()
     assert "Despacho, a confirmar" in preview
     assert "https://sei.go.gov.br" not in preview
     assert "http://127.0.0.1" not in preview

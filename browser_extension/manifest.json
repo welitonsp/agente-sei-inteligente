@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Agente SEI 19 CRPM",
-  "version": "0.2.1",
-  "description": "Chat read-only do Agente 19 dentro da tela do SEI, com rascunho externo supervisionado.",
+  "version": "0.2.2",
+  "description": "Chat read-only do Agente 19 dentro da tela do SEI, com analise de interesse do 19 CRPM.",
   "permissions": [
     "activeTab",
     "scripting"
