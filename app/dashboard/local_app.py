@@ -25,6 +25,9 @@ from app.intake.manual_text import ManualTextRequest
 from app.intelligence.llm_gemini import analyze_with_gemini as analyze_text
 from app.intake.pdf_upload import PdfUploadRequest, analyze_pdf
 from app.storage.db import init_db
+from app.dashboard.shadow_dashboard import SHADOW_HTML
+import os
+from pathlib import Path
 
 
 INDEX_HTML = """<!doctype html>
@@ -265,7 +268,10 @@ INDEX_HTML = """<!doctype html>
   <header>
     <div class="topbar">
       <h1>Agente SEI Inteligente - 19 CRPM</h1>
-      <div class="mode">MVP local</div>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <a href="/shadow.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Analytics Sombra &rarr;</a>
+        <div class="mode">MVP local</div>
+      </div>
     </div>
   </header>
   <main>
@@ -781,6 +787,22 @@ class DashboardHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802 - API stdlib
         if self.path in ("/", "/index.html"):
             self._send_html(INDEX_HTML)
+            return
+        if self.path == "/shadow.html":
+            self._send_html(SHADOW_HTML)
+            return
+        if self.path == "/api/shadow-logs":
+            log_path = Path(".shadow_logs/shadow_trials.jsonl")
+            logs = []
+            if log_path.exists():
+                with open(log_path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        if line.strip():
+                            try:
+                                logs.append(json.loads(line))
+                            except:
+                                pass
+            self._send_json(logs)
             return
         if self.path == "/health":
             self._send_json({"status": "ok"})
