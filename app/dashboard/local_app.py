@@ -18,7 +18,8 @@ from app.core.logging import configure_logging, get_logger, log_event
 from app.core.safety import assert_safe_environment
 from app.intelligence.local_minutador import DraftRequest, generate_draft
 from app.intelligence.local_triage import TriageRequest, analyze_triage
-from app.intake.manual_text import ManualTextRequest, analyze_text
+from app.intake.manual_text import ManualTextRequest
+from app.intelligence.llm_gemini import analyze_with_gemini as analyze_text
 from app.intake.pdf_upload import PdfUploadRequest, analyze_pdf
 from app.storage.db import init_db
 
