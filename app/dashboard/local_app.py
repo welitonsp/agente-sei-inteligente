@@ -841,10 +841,18 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 status=HTTPStatus.BAD_REQUEST,
             )
             return
-        except ValueError:
+        except ValueError as exc:
+            msg = str(exc)
+            code = "INVALID_FILE" if "PDF" in msg else "VALIDATION_ERROR"
             self._send_json(
-                {"error": {"code": "INVALID_FILE", "message": "Arquivo PDF invalido."}},
+                {"error": {"code": code, "message": msg}},
                 status=HTTPStatus.BAD_REQUEST,
+            )
+            return
+        except RuntimeError as exc:
+            self._send_json(
+                {"error": {"code": "RUNTIME_ERROR", "message": str(exc)}},
+                status=HTTPStatus.INTERNAL_SERVER_ERROR,
             )
             return
         except AuthError as exc:
