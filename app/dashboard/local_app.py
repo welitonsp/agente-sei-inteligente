@@ -754,18 +754,52 @@ def create_triage_response(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def create_mission_response(payload: dict[str, Any]) -> dict[str, Any]:
-    """Executa a missao supervisionada: analise + triagem + minuta."""
-    request = MissionRequest(
-        titulo=str(payload.get("titulo") or payload.get("assunto") or ""),
-        texto=str(payload.get("texto", "")),
-        processo_sei=str(payload.get("processo_sei", "")),
-        usuario_local=str(payload.get("usuario_local", "")),
-        estacao=str(payload.get("estacao", "")),
-        unidade_destino=str(payload.get("unidade_destino", "")),
-        tipo_minuta=str(payload.get("tipo_minuta", "")),
-        origem=str(payload.get("origem") or "dashboard_local"),
-    )
-    return execute_mission(request).to_contract()
+    """Executa a missao supervisionada via Orquestrador LangGraph."""
+    from app.intelligence.graph.workflow import agent_app
+    
+    initial_state = {
+        "processo_sei": str(payload.get("processo_sei", "")),
+        "titulo": str(payload.get("titulo") or payload.get("assunto") or ""),
+        "texto_original": str(payload.get("texto", "")),
+        "usuario_local": str(payload.get("usuario_local", "")),
+        "unidade_destino": str(payload.get("unidade_destino", "")),
+        "tipo_minuta": str(payload.get("tipo_minuta", "")),
+        "resumo": "",
+        "campos_pendentes": [],
+        "minuta_texto": "",
+        "alertas": [],
+        "confianca": 0.95,
+        "revisao_humana_obrigatoria": True,
+        "status": "iniciado",
+        "tentativas_critica": 0,
+    }
+    
+    final_state = agent_app.invoke(initial_state)
+    
+    return {
+        "status": final_state.get("status", "pronto_para_revisao"),
+        "revisao_humana_obrigatoria": final_state.get("revisao_humana_obrigatoria", True),
+        "confianca": final_state.get("confianca", 0.95),
+        "campos_pendentes": final_state.get("campos_pendentes", []),
+        "resultado": {
+            "prontidao_operacional": "alta",
+            "etapa_recomendada": "revisao_minuta",
+            "riscos": final_state.get("alertas", []),
+            "plano_operacional": [
+                "1. Analise de contexto pelo nó Analyzer",
+                "2. Validacao de campos pelo nó Checklist",
+                "3. Extracao de minutador via nó Draft",
+                "4. Loop cognitivo de Auto-Reflexao via LangGraph"
+            ],
+            "triagem": {
+                "unidade_sugerida": final_state.get("unidade_destino", "")
+            },
+            "minuta": {
+                "tipo_minuta": final_state.get("tipo_minuta", ""),
+                "texto": final_state.get("minuta_texto", "")
+            }
+        }
+    }
 
 
 def create_agent19_response(payload: dict[str, Any]) -> dict[str, Any]:
