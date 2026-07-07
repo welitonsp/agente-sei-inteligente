@@ -10,9 +10,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from app.intelligence.ai_assist import analise_completa
-from app.intelligence.local_minutador import DraftRequest, generate_draft
-from app.intelligence.local_triage import TriageRequest, analyze_triage
+from app.intelligence.local_minutador import DraftRequest
+from app.intelligence.local_triage import TriageRequest
+from app.intelligence.swarm import SwarmCoordinator
 
 
 OFFICIAL_ACTIONS_BLOCKED = [
@@ -88,6 +88,7 @@ TriageFn = Callable[[TriageRequest], Any]
 DraftFn = Callable[[DraftRequest], Any]
 
 
+
 def execute_mission(
     request: MissionRequest,
     *,
@@ -95,85 +96,43 @@ def execute_mission(
     triar: TriageFn | None = None,
     minutador: DraftFn | None = None,
 ) -> MissionResult:
-    """Executa a missao supervisionada do Agente 19.
-
-    A saida e deliberadamente conservadora: mesmo com boa prontidao, o status
-    final segue voltado a revisao humana.
-    """
+    """Executa a missao supervisionada usando o Enxame (Swarm Multi-Agente)."""
     texto = request.texto.strip()
     titulo = request.titulo.strip()
     if not (texto or titulo):
         return _empty_result(["titulo", "texto"], request.mission_trace_id)
 
-    analyze_fn = analisar or analise_completa
-    triage_fn = triar or analyze_triage
-    draft_fn = minutador or generate_draft
-
-    analise = analyze_fn(texto or titulo)
-    triagem = _as_contract(
-        triage_fn(
-            TriageRequest(
-                assunto=titulo or str(analise.get("tipo_provavel", "")),
-                texto=texto or str(analise.get("resumo_curto", "")),
-                processo_sei=request.processo_sei,
-                usuario_local=request.usuario_local,
-                estacao=request.estacao,
-                origem=request.origem,
-            )
-        )
+    # Iniciar Enxame
+    coordinator = SwarmCoordinator()
+    state = coordinator.run(
+        processo_sei=request.processo_sei,
+        titulo=titulo,
+        texto=texto,
+        usuario=request.usuario_local
     )
 
-    triagem_resultado = triagem.get("resultado", {})
-    prazo = _first_deadline(analise)
-    unidade = request.unidade_destino.strip() or str(
-        triagem_resultado.get("unidade_sugerida", "")
-    ).strip()
-    tipo_minuta = (
-        request.tipo_minuta.strip()
-        or str(triagem_resultado.get("tipo_minuta_sugerido", "")).strip()
-        or _draft_type_from_analysis(analise)
-    )
-
-    minuta = _as_contract(
-        draft_fn(
-            DraftRequest(
-                assunto=titulo or str(analise.get("tipo_provavel", "")),
-                resumo=str(analise.get("resumo_curto", "")),
-                texto_base=texto,
-                processo_sei=request.processo_sei,
-                tipo_minuta=tipo_minuta,
-                unidade_destino=unidade,
-                destinatario=unidade,
-                providencia=str(analise.get("providencia_sugerida", "")),
-                prazo=prazo,
-                usuario_local=request.usuario_local,
-                estacao=request.estacao,
-                origem=request.origem,
-            )
-        )
-    )
-
-    campos_pendentes = _pending_fields(request, triagem, minuta)
-    riscos = _risk_markers(analise, triagem, minuta, campos_pendentes)
-    prontidao = _readiness_score(request, analise, triagem, minuta, campos_pendentes)
-    etapa = _recommended_step(campos_pendentes, minuta, prontidao)
-    status = (
-        "pronto_para_revisao"
-        if prontidao >= 0.7 and not campos_pendentes
-        else "precisa_complemento"
-    )
+    prontidao = 0.90 if state.aprovado_pelo_critico else 0.50
+    status = "pronto_para_revisao" if state.aprovado_pelo_critico else "precisa_complemento"
+    etapa = "revisar_minuta_com_humano" if state.aprovado_pelo_critico else "completar_campos_e_revisar"
+    
+    plan = [
+        "Enxame concluiu a orquestração.",
+        f"Iterações do redator: {state.tentativas_redacao}"
+    ]
+    if not state.aprovado_pelo_critico:
+        plan.append("O Agente Crítico rejeitou a minuta. Revisão humana estrita é necessária.")
 
     return MissionResult(
         status=status,
         prontidao_operacional=prontidao,
         etapa_recomendada=etapa,
-        plano_operacional=_mission_plan(etapa, bool(unidade), bool(prazo)),
-        riscos=riscos,
-        analise=analise,
-        triagem=triagem_resultado,
-        minuta=minuta.get("resultado", {}),
-        campos_pendentes=campos_pendentes,
-        audit_log_ids=_log_ids(triagem, minuta),
+        plano_operacional=plan,
+        riscos=["revisao_critica_reprovou"] if not state.aprovado_pelo_critico else [],
+        analise={"resumo_curto": state.resumo, "providencia_sugerida": state.providencia_sugerida, "tipo_provavel": state.intencao_detectada},
+        triagem={"unidade_sugerida": "PM/19 CRPM", "interesse_19crpm": state.intencao_detectada},
+        minuta={"texto": state.minuta_rascunho, "tipo_minuta": state.tipo_minuta},
+        campos_pendentes=[],
+        audit_log_ids=[],
         mission_trace_id=request.mission_trace_id,
     )
 

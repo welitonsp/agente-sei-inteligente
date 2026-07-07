@@ -39,6 +39,7 @@ class AIRole(str, Enum):
     CLASSIFICACAO = "classificacao"
     MINUTA = "minuta"
     TRIAGEM = "triagem"
+    REVISAO = "revisao"
 
 
 @dataclass(frozen=True)
@@ -71,6 +72,10 @@ DEFAULT_ROLE_CONFIGS: dict[AIRole, RoleConfig] = {
     AIRole.MINUTA: RoleConfig(
         model=DEFAULT_CLAUDE_MODEL, max_tokens=4096,
         sei_action=Action.GERAR_MINUTA, effort="high", adaptive_thinking=True,
+    ),
+    AIRole.REVISAO: RoleConfig(
+        model=DEFAULT_CLAUDE_MODEL, max_tokens=2048,
+        sei_action=Action.CLASSIFICAR, effort="high", adaptive_thinking=True,
     ),
 }
 

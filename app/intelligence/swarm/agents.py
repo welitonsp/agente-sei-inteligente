@@ -63,7 +63,7 @@ class DraftAgent:
             prompt += f"\n\nATENÇÃO! A versão anterior foi rejeitada pelo Revisor com a seguinte crítica:\n{state.revisao_critica}\nCorrija esses pontos na nova minuta."
             
         try:
-            minuta = provider.complete(AIRole.MINUTADOR, prompt)
+            minuta = provider.complete(AIRole.MINUTA, prompt)
             state.minuta_rascunho = minuta.strip()
             state.tipo_minuta = "oficio" if "ofício" in state.minuta_rascunho.lower() else "despacho"
             state.log("DraftAgent", "Redação de minuta concluída.")
@@ -105,7 +105,7 @@ class CriticAgent:
         """
         
         try:
-            response = provider.complete(AIRole.CONSELHO, prompt)
+            response = provider.complete(AIRole.REVISAO, prompt)
             data = json.loads(response.strip().removeprefix("```json").removesuffix("```").strip())
             
             state.aprovado_pelo_critico = data.get("aprovado", False)
