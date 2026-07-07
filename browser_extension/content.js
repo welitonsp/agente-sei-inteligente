@@ -164,7 +164,7 @@
         // Injeta no começo da barra
         barra.insertBefore(btn, barra.firstChild);
       });
-
+    }
   }
 
   root.querySelectorAll("[data-intent]").forEach((button) => {
