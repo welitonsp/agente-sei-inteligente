@@ -137,6 +137,56 @@
       addMessage("assistant", "Leitura concluida. Analisando o contexto geral...");
       runAnalysis("Faca um resumo geral consolidado deste processo", "resumo", fullText);
     });
+  } else {
+    // Inject Smart Button in SEI Toolbar if available
+    injectSeiToolbarButton();
+  }
+
+  function injectSeiToolbarButton() {
+    // Procura as barras de comando padrão do SEI
+    const barrasComando = document.querySelectorAll(".infraBarraComandos");
+    if (barrasComando.length > 0) {
+      barrasComando.forEach(barra => {
+        // Evita duplicatas
+        if (barra.querySelector(".agente-sei-btn-nativo")) return;
+        
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "agente-sei-btn-nativo";
+        btn.style.cssText = "margin-left: 8px; background: #1f6f5b; color: white; border: none; border-radius: 4px; padding: 4px 10px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);";
+        btn.innerHTML = "✨ Analisar com Agente 19";
+        btn.title = "Acionar a Inteligência Artificial para este processo";
+        
+        btn.addEventListener("click", () => {
+          root.classList.add("agente-sei-open");
+          runAnalysis("Analise o processo aberto e informe somente o que interessa ao 19 CRPM.", "interesse_19crpm");
+        });
+        
+        // Injeta no começo da barra
+        barra.insertBefore(btn, barra.firstChild);
+      });
+    } else {
+      // Se não achou a barra, cria um banner flutuante sutil (Toast) ao lado do botão de lançamento
+      const toast = document.createElement("div");
+      toast.className = "agente-sei-toast";
+      toast.style.cssText = "position: fixed; bottom: 80px; right: 24px; background: white; border-left: 4px solid #1f6f5b; padding: 12px 16px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 999998; font-family: sans-serif; font-size: 13px; color: #333; animation: slideIn 0.5s ease-out;";
+      toast.innerHTML = `
+        <div style="font-weight: bold; margin-bottom: 4px; color: #1f6f5b;">Agente 19 Pronto</div>
+        <div>Processo detectado. Quer ajuda?</div>
+        <button id="agente-sei-toast-btn" style="margin-top: 8px; background: #f0f0f0; border: 1px solid #ccc; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Analisar Agora</button>
+      `;
+      document.documentElement.appendChild(toast);
+      
+      const toastBtn = toast.querySelector("#agente-sei-toast-btn");
+      toastBtn.addEventListener("click", () => {
+        toast.remove();
+        root.classList.add("agente-sei-open");
+        runAnalysis("Analise o processo aberto e informe somente o que interessa ao 19 CRPM.", "interesse_19crpm");
+      });
+      
+      // Some depois de 10 segundos
+      setTimeout(() => toast.remove(), 10000);
+    }
   }
 
   root.querySelectorAll("[data-intent]").forEach((button) => {
