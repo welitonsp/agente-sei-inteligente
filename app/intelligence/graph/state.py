@@ -13,6 +13,9 @@ class MissionState(TypedDict):
     unidade_destino: str
     tipo_minuta: str
     
+    # RAG Institucional
+    contexto_institucional: str
+    
     # Gerados pelo Cérebro
     resumo: str
     campos_pendentes: Annotated[list[str], operator.add]

@@ -1,13 +1,13 @@
 from langgraph.graph import StateGraph, END
 from app.intelligence.graph.state import MissionState
 from app.intelligence.graph.nodes import (
-    analyzer_node, triage_node, checklist_node, draft_node, critic_node
+    analyzer_node, triage_node, checklist_node, rag_node, draft_node, critic_node
 )
 
 def route_after_checklist(state: MissionState) -> str:
     if state.get("status") == "precisa_complemento":
         return END
-    return "draft"
+    return "rag"
 
 def route_after_critic(state: MissionState) -> str:
     if state.get("status") == "rejeitado_pelo_critico":
@@ -22,6 +22,7 @@ def create_agent_graph():
     workflow.add_node("analyzer", analyzer_node)
     workflow.add_node("triage", triage_node)
     workflow.add_node("checklist", checklist_node)
+    workflow.add_node("rag", rag_node)
     workflow.add_node("draft", draft_node)
     workflow.add_node("critic", critic_node)
 
@@ -35,12 +36,13 @@ def create_agent_graph():
         "checklist",
         route_after_checklist,
         {
-            "draft": "draft",
+            "rag": "rag",
             END: END
         }
     )
 
-    # 4. Do minutador vai para o critico
+    # 4. RAG alimenta o minutador, que vai para o critico
+    workflow.add_edge("rag", "draft")
     workflow.add_edge("draft", "critic")
 
     # 5. Loop de Auto-Correcao

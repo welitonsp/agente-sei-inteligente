@@ -53,15 +53,35 @@ def checklist_node(state: MissionState) -> dict[str, Any]:
     if not state.get("tipo_minuta"): pendentes.append("tipo_minuta")
     if not state.get("texto_original") and not state.get("resumo"): pendentes.append("texto")
     
-    status = "precisa_complemento" if pendentes else "pronto_para_minuta"
+    status = "precisa_complemento" if pendentes else "pronto_para_rag"
     return {"campos_pendentes": pendentes, "status": status}
+
+def rag_node(state: MissionState) -> dict[str, Any]:
+    """Busca contexto institucional (RAG) antes de gerar a minuta."""
+    from pathlib import Path
+    
+    tipo = state.get("tipo_minuta", "").lower()
+    contexto = []
+    
+    # Busca template
+    template_path = Path(f"knowledge_base/templates_minutas/{tipo}.md")
+    if template_path.exists():
+        with open(template_path, "r", encoding="utf-8") as f:
+            contexto.append(f"TEMPLATE INSTITUCIONAL ({tipo.upper()}):\n" + f.read())
+            
+    # Regras adicionais mockadas para Nível 3/4
+    contexto.append("DIRETRIZ DE SEGURANÇA: Nenhuma senha ou dado pessoal deve ser exposto na minuta.")
+    contexto.append("LEI MILITAR: O tom deve ser formal, respeitoso e hierárquico (Padrão 19 CRPM).")
+    
+    return {"contexto_institucional": "\\n\\n".join(contexto)}
+    return {"contexto_institucional": "\n\n".join(contexto)}
 
 def draft_node(state: MissionState) -> dict[str, Any]:
     """Gera a minuta baseada no contexto."""
     request = DraftRequest(
         assunto=state["titulo"],
         resumo=state.get("resumo", ""),
-        texto_base=state["texto_original"],
+        texto_base=state.get("texto_original", "") + "\n" + state.get("contexto_institucional", ""),
         processo_sei=state["processo_sei"],
         tipo_minuta=state["tipo_minuta"],
         unidade_destino=state["unidade_destino"],
