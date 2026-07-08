@@ -28,3 +28,6 @@ packages = ["app"]
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-q"
+
+[tool.ruff.lint.per-file-ignores]
+"app/dashboard/local_app.py" = ["F401", "F811"]

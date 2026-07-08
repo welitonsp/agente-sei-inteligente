@@ -1,65 +1,58 @@
-from langgraph.graph import StateGraph, END
+"""Workflow deterministico de missao supervisionada.
+
+Mantem a interface `agent_app.invoke(state)` usada pelo painel local, sem exigir
+`langgraph` no ambiente de testes. A execucao delega ao Mission Control seguro,
+que gera rascunho local, pacote de revisao humana e bloqueios de atos oficiais.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
 from app.intelligence.graph.state import MissionState
-from app.intelligence.graph.nodes import (
-    analyzer_node, triage_node, checklist_node, rag_node, draft_node, critic_node, audit_node
-)
+from app.intelligence.mission_control import MissionRequest, execute_mission
 
-def route_after_checklist(state: MissionState) -> str:
-    if state.get("status") == "precisa_complemento":
-        return END
-    return "rag"
 
-def route_after_critic(state: MissionState) -> str:
-    if state.get("status") == "rejeitado_pelo_critico":
-        return "draft"
-    return "audit"
+class DeterministicMissionApp:
+    """Adaptador simples compativel com o contrato antigo do painel."""
 
-def create_agent_graph():
-    """Constroi a maquina de estados cognitivos."""
-    workflow = StateGraph(MissionState)
-
-    # 1. Definir os nós (nossos agentes especialistas)
-    workflow.add_node("analyzer", analyzer_node)
-    workflow.add_node("triage", triage_node)
-    workflow.add_node("checklist", checklist_node)
-    workflow.add_node("rag", rag_node)
-    workflow.add_node("draft", draft_node)
-    workflow.add_node("critic", critic_node)
-    workflow.add_node("audit", audit_node)
-
-    # 2. Definir o fluxo (Edges)
-    workflow.set_entry_point("analyzer")
-    workflow.add_edge("analyzer", "triage")
-    workflow.add_edge("triage", "checklist")
-
-    # 3. Ramificacao Condicional (Se faltar campo, para. Se tiver, minutador).
-    workflow.add_conditional_edges(
-        "checklist",
-        route_after_checklist,
-        {
-            "rag": "rag",
-            END: END
+    def invoke(self, state: MissionState) -> dict[str, Any]:
+        result = execute_mission(
+            MissionRequest(
+                titulo=state.get("titulo", ""),
+                texto=state.get("texto_original", ""),
+                processo_sei=state.get("processo_sei", ""),
+                usuario_local=state.get("usuario_local", ""),
+                unidade_destino=state.get("unidade_destino", ""),
+                tipo_minuta=state.get("tipo_minuta", ""),
+                origem="graph_workflow_deterministico",
+            )
+        ).to_contract()
+        resultado = result.get("resultado", {})
+        minuta = resultado.get("minuta", {})
+        triagem = resultado.get("triagem", {})
+        return {
+            **state,
+            "status": result.get("status", "precisa_revisao"),
+            "campos_pendentes": result.get("campos_pendentes", []),
+            "confianca": result.get("confianca", 0.0),
+            "revisao_humana_obrigatoria": result.get(
+                "revisao_humana_obrigatoria", True
+            ),
+            "unidade_destino": triagem.get(
+                "unidade_sugerida", state.get("unidade_destino", "")
+            ),
+            "tipo_minuta": minuta.get("tipo_minuta", state.get("tipo_minuta", "")),
+            "minuta_texto": minuta.get("texto", ""),
+            "alertas": resultado.get("riscos", []),
+            "plano_operacional": resultado.get("plano_operacional", []),
+            "etapa_recomendada": resultado.get("etapa_recomendada", ""),
         }
-    )
 
-    # 4. RAG alimenta o minutador, que vai para o critico
-    workflow.add_edge("rag", "draft")
-    workflow.add_edge("draft", "critic")
 
-    # 5. Loop de Auto-Correcao
-    workflow.add_conditional_edges(
-        "critic",
-        route_after_critic,
-        {
-            "draft": "draft",
-            "audit": "audit"
-        }
-    )
+def create_agent_graph() -> DeterministicMissionApp:
+    """Retorna o workflow compilado no formato esperado pelo painel."""
+    return DeterministicMissionApp()
 
-    # 6. Grava log e finaliza
-    workflow.add_edge("audit", END)
 
-    return workflow.compile()
-
-# Instancia global compilada
 agent_app = create_agent_graph()

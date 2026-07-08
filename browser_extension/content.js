@@ -18,7 +18,6 @@
     return;
   }
 
-  // Evita injetar o robozinho em frames pequenos (como o menu lateral ou barra superior do SEI)
   if (window.innerWidth < 450 || window.innerHeight < 400) {
     return;
   }
@@ -48,10 +47,7 @@
         <button class="agente-sei-close" type="button" aria-label="Fechar">x</button>
       </header>
 
-
-
-
-
+      <div class="agente-sei-safety">Login, senha, cookie e atos oficiais ficam fora do Agente 19.</div>
       <div id="agente-sei-messages" class="agente-sei-messages" role="log" aria-live="polite"></div>
 
       <div class="agente-sei-quick">
@@ -61,7 +57,7 @@
         <button data-intent="providencia" class="agente-sei-chip" type="button">Providencia</button>
         <button data-intent="minuta" class="agente-sei-chip" type="button">Minuta</button>
         <button data-intent="interesse_19crpm" class="agente-sei-chip agente-sei-chip-strong" type="button">19 CRPM</button>
-        <button id="agente-sei-upload-pdf" class="agente-sei-chip" type="button" title="Gere o processo em PDF no SEI e carregue aqui para leitura profunda">📎 Ler PDF do Processo</button>
+        <label id="agente-sei-upload-pdf" class="agente-sei-chip" for="agente-sei-file-input" role="button" title="Gere o processo em PDF no SEI e carregue aqui para leitura profunda">📎 Ler PDF do Processo</label>
       </div>
       <input type="file" id="agente-sei-file-input" accept=".pdf" style="display:none" />
 
@@ -82,7 +78,6 @@
   const copyButton = root.querySelector("#agente-sei-copy");
   const promptInput = root.querySelector("#agente-sei-prompt");
   const messages = root.querySelector("#agente-sei-messages");
-  const uploadPdfBtn = root.querySelector("#agente-sei-upload-pdf");
   const fileInput = root.querySelector("#agente-sei-file-input");
 
   launchButton.addEventListener("click", () => {
@@ -130,18 +125,16 @@
     }
   });
 
-  uploadPdfBtn.addEventListener("click", () => fileInput.click());
-
-  fileInput.addEventListener("change", (e) => {
-    const file = e.target.files[0];
+  fileInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
     if (!file) return;
     addMessage("user", `📎 PDF anexado: ${file.name}`);
     setBusy(true);
-    
+
     const reader = new FileReader();
-    reader.onload = function(evt) {
-      const base64 = evt.target.result.split(",")[1];
-      
+    reader.onload = function (readerEvent) {
+      const base64 = readerEvent.target.result.split(",")[1];
+
       chrome.runtime.sendMessage(
         {
           type: "AGENTE_SEI_IMPORT_PDF",
@@ -172,47 +165,6 @@
     reader.readAsDataURL(file);
   });
 
-  // Gatilho de RPA (Leitura Autonoma) apos reload da pagina
-  if (sessionStorage.getItem("agente_sei_auto_read") === "true") {
-    sessionStorage.removeItem("agente_sei_auto_read");
-    root.classList.add("agente-sei-open");
-    addMessage("assistant", "Processo aberto! Lendo autonomamente TODOS os documentos do processo...");
-    setBusy(true);
-    scrapeEntireProcess().then(fullText => {
-      setBusy(false);
-      addMessage("assistant", "Leitura concluida. Analisando o contexto geral...");
-      runAnalysis("Faca um resumo geral consolidado deste processo", "resumo", fullText);
-    });
-  } else {
-    // Inject Smart Button in SEI Toolbar if available
-    injectSeiToolbarButton();
-  }
-
-  function injectSeiToolbarButton() {
-    // Procura as barras de comando padrão do SEI
-    const barrasComando = document.querySelectorAll(".infraBarraComandos");
-    if (barrasComando.length > 0) {
-      barrasComando.forEach(barra => {
-        // Evita duplicatas
-        if (barra.querySelector(".agente-sei-btn-nativo")) return;
-        
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "agente-sei-btn-nativo";
-        btn.innerHTML = "✨ Analisar com Agente 19";
-        btn.title = "Acionar a Inteligência Artificial para este processo";
-        
-        btn.addEventListener("click", () => {
-          root.classList.add("agente-sei-open");
-          runAnalysis("Analise o processo aberto e informe somente o que interessa ao 19 CRPM.", "interesse_19crpm");
-        });
-        
-        // Injeta no começo da barra
-        barra.insertBefore(btn, barra.firstChild);
-      });
-    }
-  }
-
   root.querySelectorAll("[data-intent]").forEach((button) => {
     button.addEventListener("click", () => {
       const intent = button.getAttribute("data-intent") || "analise";
@@ -227,31 +179,30 @@
     });
   });
 
+  const captureButton = root.querySelector("#agente-sei-capturar");
+  captureButton.addEventListener("click", () => {
+    hydrateContext(true);
+    if (!state.capturedText) {
+      addMessage("assistant", "Nao encontrei texto visivel suficiente nesta tela.", true);
+      return;
+    }
+    addMessage("assistant", `Texto capturado para analise local: ${state.capturedText.length} caracteres.`);
+  });
+
   function submitPrompt() {
     const prompt = promptInput.value.trim();
     if (!prompt) {
       addMessage("assistant", "Digite uma pergunta ou use uma acao rapida.");
       return;
     }
-    
-    // Se o usuario digitou apenas um numero de processo (ex: 202600002080361)
+
     const justNumbers = prompt.replace(/\D/g, "");
     if (justNumbers.length >= 10 && justNumbers.length <= 25 && justNumbers === prompt.trim()) {
+      addMessage(
+        "assistant",
+        "Detectei um numero de processo. Abra o processo manualmente no SEI ou carregue o PDF exportado; nao faço busca ou abertura automatica."
+      );
       promptInput.value = "";
-      addMessage("user", prompt);
-      addMessage("assistant", "Detectei um numero de processo. Iniciando busca automatica e leitura autonoma no SEI...");
-      const searchInput = document.getElementById("txtPesquisaRapida") || document.querySelector("input[name='pesquisa_rapida']");
-      if (searchInput) {
-        sessionStorage.setItem("agente_sei_auto_read", "true");
-        searchInput.value = prompt;
-        const searchForm = searchInput.closest("form");
-        if (searchForm) {
-          setTimeout(() => searchForm.submit(), 800);
-          return;
-        }
-      }
-      sessionStorage.removeItem("agente_sei_auto_read");
-      addMessage("assistant", "Nao consegui localizar a barra de pesquisa nesta tela para fazer a busca automatica.", true);
       return;
     }
 
@@ -318,7 +269,7 @@
 
   function getVisibleText() {
     let selection = String(window.getSelection ? window.getSelection() : "").trim();
-    
+
     let iframeText = "";
     try {
       const iframe = document.getElementById("ifrVisualizacao");
@@ -326,10 +277,10 @@
         iframeText = iframe.contentDocument.body.innerText;
         selection = selection || String(iframe.contentWindow.getSelection ? iframe.contentWindow.getSelection() : "").trim();
       }
-    } catch (e) {
-      console.warn("Aviso: Iframe de visualizacao bloqueado ou nao encontrado.");
+    } catch (error) {
+      console.warn("Aviso: iframe de visualizacao bloqueado ou nao encontrado.", error);
     }
-    
+
     const source = selection || iframeText || document.body.innerText || "";
     return source.replace(/\s+\n/g, "\n").trim().slice(0, MAX_TEXT_CHARS);
   }
@@ -400,7 +351,7 @@
       ? triage.interesse_19crpm
       : "interesse a confirmar pelo 19 CRPM";
     const lines = [
-      `Processo: ${processInput.value || guessProcessNumber() || "nao identificado"}`,
+      `Processo: ${guessProcessNumber() || "nao identificado"}`,
       `Interesse 19 CRPM: ${interest}`,
       `Assunto/tipo: ${analysis.tipo_provavel || "nao classificado"}`,
       `Resumo: ${analysis.resumo_curto || "resumo nao gerado"}`,
@@ -446,42 +397,6 @@
     item.textContent = text;
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
-  }
-
-  async function scrapeEntireProcess() {
-    return new Promise((resolve) => {
-      let attempts = 0;
-      const checkInterval = setInterval(async () => {
-        attempts++;
-        const ifrArvore = document.getElementById("ifrArvore");
-        if (ifrArvore && ifrArvore.contentDocument && ifrArvore.contentDocument.querySelectorAll("a").length > 2) {
-          clearInterval(checkInterval);
-          
-          const treeDoc = ifrArvore.contentDocument;
-          const links = Array.from(treeDoc.querySelectorAll("a[href*='acao=documento_visualizar'], a.ancoraArvore[href*='controlador.php?acao=']"));
-          const uniqueUrls = [...new Set(links.map(l => l.href))].filter(href => !href.includes("acao=procedimento_trabalhar"));
-          
-          if (uniqueUrls.length === 0) {
-            resolve("Processo vazio ou estrutura nao reconhecida.");
-            return;
-          }
-          
-          let fullText = "";
-          for (let i = 0; i < Math.min(uniqueUrls.length, 15); i++) {
-            try {
-              const res = await fetch(uniqueUrls[i]);
-              const html = await res.text();
-              const doc = new DOMParser().parseFromString(html, "text/html");
-              fullText += "\\n\\n--- DOCUMENTO " + (i+1) + " ---\\n" + doc.body.innerText;
-            } catch(e) {}
-          }
-          resolve(fullText.trim().slice(0, MAX_TEXT_CHARS));
-        } else if (attempts > 30) {
-          clearInterval(checkInterval);
-          resolve("Tempo esgotado ao tentar carregar a arvore do processo.");
-        }
-      }, 500);
-    });
   }
 
   function setBusy(isBusy) {

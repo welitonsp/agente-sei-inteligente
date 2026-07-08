@@ -1,22 +1,24 @@
-from typing import TypedDict, Annotated, List, Optional
 import operator
+from typing import Annotated, TypedDict
+
 
 class MissionState(TypedDict):
     """
     Memoria de Curto Prazo do Agente.
     Mantem o estado do fluxo de trabalho e contexto do SEI.
     """
+
     processo_sei: str
     titulo: str
     texto_original: str
     usuario_local: str
     unidade_destino: str
     tipo_minuta: str
-    
+
     # RAG Institucional
     contexto_institucional: str
-    
-    # Gerados pelo Cérebro
+
+    # Gerados pelo Cerebro
     resumo: str
     campos_pendentes: Annotated[list[str], operator.add]
     minuta_texto: str

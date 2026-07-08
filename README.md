@@ -1,10 +1,10 @@
 # Agente SEI Inteligente Particular (Agente 19) — Funcionário Digital de IA do 19º CRPM
 
-Documentacao-base do projeto do Agente 19, o Funcionário Digital de IA criado para apoiar a rotina do 19º CRPM com e-mail institucional, PDF, Google Agenda, alertas em celular, minutas administrativas e uso assistido do SEI.
+Documentacao-base do projeto do Agente 19, o Funcionario Digital de IA criado para apoiar a rotina do 19º CRPM com e-mail institucional, PDF, Google Agenda, alertas em celular, minutas administrativas e uso assistido do SEI.
 
-Versao documental: 0.4.15
-Data: 2026-06-23
-Status: arquitetura particular/local supervisionada, UI chat V2 do Agente 19 definida com preview local e minuta externa supervisionada, PATCH 4 aplicado, FASE 5B-homologacao preparada, diagnostico real de API SEI/WSSEI executado e escrita real no SEI ainda nao habilitada.
+Versao documental: 0.5.0
+Data: 2026-07-08
+Status: arquitetura particular/local supervisionada, com Control Plane de Missoes Supervisionadas, Tool Registry, ActionProposal, guard central, aprovacao humana e auditoria sanitizada. Escrita real no SEI continua nao habilitada.
 
 ## Enquadramento
 
@@ -12,26 +12,94 @@ O Agente SEI Inteligente Particular, tambem chamado Agente 19, e uma solucao loc
 
 Nao ha autorizacao de API oficial, WSSEI, modulo oficial SEI IA ou acesso de TI. Por isso, o projeto nao deve se apresentar como integracao institucional oficial. O usuario faz login manualmente no SEI, diretamente na pagina oficial, e o agente apenas apoia leitura, classificacao, resumo, providencias e minutas sob supervisao humana.
 
-O agente prepara, organiza e sugere. Ele nao substitui o usuario logado, nao pratica ato oficial e nao assume responsabilidade administrativa.
+**Regra-mae**: O Agente 19 prepara, sugere, organiza, cria minuta e aprende. O humano revisa, assina e pratica o ato oficial.
 
-**Regra-mãe**: O Agente 19 prepara, sugere, organiza, cria minuta e aprende. O humano revisa, assina e pratica o ato oficial.
+O sistema nao substitui a autoridade humana.
 
-O sistema não substitui a autoridade humana.
+**Limites obrigatorios**: O Agente 19 NAO pode:
 
-**Limites obrigatórios**: O Agente 19 NÃO pode:
 - pedir senha do SEI;
 - armazenar senha;
 - armazenar cookie;
-- armazenar sessão;
+- armazenar sessao;
 - capturar token;
 - assinar documento;
 - tramitar processo;
 - concluir processo;
 - excluir documento;
 - cancelar documento;
-- dar ciência automática;
+- dar ciencia automatica;
 - enviar processo automaticamente;
+- liberar acesso externo;
 - praticar ato oficial final.
+
+## Control Plane de Missoes Supervisionadas
+
+A evolucao arquitetural passa a tratar cada demanda como uma **missao supervisionada**. O LLM nao decide e executa livremente: ele gera propostas estruturadas, e o Control Plane valida tudo antes de qualquer ferramenta.
+
+Fluxo padrao:
+
+```text
+Usuario
+  -> Agente 19
+  -> Mission Control
+  -> Agentes especializados
+  -> ActionProposal
+  -> Guard Central
+  -> ApprovalRequest quando necessario
+  -> pacote de revisao humana
+```
+
+Modelos centrais implementados em `app/agent/control_plane.py`:
+
+- `Mission`;
+- `MissionStep`;
+- `AgentRun`;
+- `ToolCall`;
+- `ActionProposal`;
+- `ApprovalRequest`;
+- `AuditEvent`;
+- `DecisionRecord`.
+
+Status canonicos de missao:
+
+```text
+draft
+running
+needs_human_input
+ready_for_review
+approved
+executed
+blocked
+failed
+cancelled
+```
+
+O contrato de missao agora pode carregar `mission_id`, pacote do `control_plane`, propostas de acao, decisoes do guard, pedidos de aprovacao humana e eventos de auditoria sanitizada.
+
+## Tool Registry
+
+Ferramentas permitidas sao declaradas com escopo, risco e efeito externo.
+
+Exemplo de campos do registro:
+
+```text
+name
+risk_level
+read_only
+requires_human_approval
+writes_external_system
+writes_sei
+allowed_actions
+```
+
+Regras:
+
+1. ferramenta desconhecida e negada por padrao;
+2. acao fora do escopo da ferramenta e bloqueada;
+3. ato oficial do SEI e bloqueio duro;
+4. efeito externo, como agenda ou alerta, exige aprovacao humana explicita;
+5. nenhuma ferramenta registrada pode escrever no SEI.
 
 ## Modelo de sessao SEI
 
@@ -57,8 +125,9 @@ Conforme o enquadramento arquitetural aprovado:
 6. FASE 5A - Minuta Controlada simulada implementada (`app/sei/minuta_writer.py`, `app/sei/minuta_token.py`, `app/sei/minuta_cadastro.py`).
 7. `ENABLE_MINUTA_CREATION=false` por padrao.
 8. Escrita real no SEI ainda NAO habilitada.
+9. Control Plane de Missoes Supervisionadas implementado para ActionProposal, ApprovalRequest, DecisionRecord e auditoria sanitizada.
 
-PATCH 4 aplicado: o startup valida ambiente seguro, a escrita real permanece bloqueada e a suite possui teste arquitetural atuando como barreira de engenharia contra o uso direto de metodos do Playwright (`.click()`, `.fill()`, `.goto()`, `.press()`, `.type()`, `.evaluate()`) fora dos arquivos permitidos.
+PATCH 4 permanece valido: o startup valida ambiente seguro, a escrita real permanece bloqueada e a suite possui teste arquitetural atuando como barreira de engenharia contra o uso direto de metodos do Playwright (`.click()`, `.fill()`, `.goto()`, `.press()`, `.type()`, `.evaluate()`) fora dos arquivos permitidos.
 
 ## O que o agente pode fazer
 
@@ -72,7 +141,8 @@ PATCH 4 aplicado: o startup valida ambiente seguro, a escrita real permanece blo
 8. Detectar prazos.
 9. Sugerir providencia.
 10. Gerar minuta fora do SEI.
-11. Preparar criacao controlada de minuta no SEI, ainda simulada na FASE 5A.
+11. Preparar pacote de revisao humana com Control Plane.
+12. Propor evento de agenda ou alerta apenas como `ActionProposal`, com aprovacao humana quando houver efeito externo.
 
 ## O que o agente nunca deve fazer
 
@@ -93,46 +163,6 @@ PATCH 4 aplicado: o startup valida ambiente seguro, a escrita real permanece blo
 
 Terminologia correta: quando a escrita real for homologada, o objetivo sera **criar uma minuta usando um tipo de documento ja existente no SEI**, nunca criar tipo de documento administrativo.
 
-## FASE 5 - Minuta controlada
-
-### FASE 5A - arquitetura segura simulada
-
-Objetivo: provar a arquitetura de escrita controlada sem escrever de fato no SEI.
-
-Status aprovado:
-
-1. `MinutaWriter` criado para centralizar qualquer tentativa de minuta.
-2. Token de confirmacao amarrado a processo + tipo de documento + hash do texto.
-3. Verificacao de processo correto antes de qualquer escrita.
-4. Allow-list separada para escrita controlada.
-5. Stubs com `NotImplementedError` para a UI real.
-6. Nenhuma escrita real no SEI.
-7. `ENABLE_MINUTA_CREATION=false` por padrao.
-
-A FASE 5A serve para testar seguranca, rastreabilidade e bloqueios. Ela nao libera uso operacional de escrita no SEI.
-
-### FASE 5B - futura
-
-Somente depois de homologacao com seletores reais e autorizacao expressa, a FASE 5B podera criar uma minuta no SEI. O fluxo permitido sera:
-
-1. Criar minuta real no SEI.
-2. Selecionar tipo de documento ja existente.
-3. Preencher cadastro.
-4. Inserir texto no editor.
-5. Salvar minuta.
-6. Parar.
-
-Mesmo na FASE 5B, continua proibido:
-
-1. Assinar.
-2. Tramitar.
-3. Enviar.
-4. Concluir.
-5. Dar ciencia.
-6. Cancelar.
-7. Excluir.
-8. Liberar acesso externo.
-
 ## Seguranca
 
 Controles obrigatorios:
@@ -148,6 +178,9 @@ Controles obrigatorios:
 9. Auditoria sem texto integral.
 10. Sessao efemera do navegador.
 11. Bloqueio permanente de credenciais, cookies, sessoes e atos oficiais.
+12. `ActionProposal` obrigatorio antes de qualquer acao externa.
+13. `ApprovalRequest` obrigatorio para efeitos externos.
+14. `DecisionRecord` obrigatorio para rastrear permitidos, bloqueios e revisoes.
 
 ## Variaveis de ambiente
 
@@ -175,36 +208,19 @@ Em producao/homologacao real, `MINUTA_TOKEN_SECRET` deve ser trocado por segredo
 | FASE 5B | Futura | Escrita real de minuta, com seletores homologados, parando antes de qualquer ato oficial. |
 | FASE 6 | Futura | Integracao com agenda e notificacoes dentro dos limites gratuitos/autorizados. |
 | FASE 7 | Futura | Hardening, auditoria final, testes arquiteturais e revisao de seguranca. |
-
-## PATCH 4 - hardening final
-
-Status: executado.
-
-1. `MINUTA_TOKEN_SECRET` padrao bloqueado em `APP_ENV=prod`.
-2. `ENABLE_MINUTA_CREATION=true` bloqueado em producao enquanto FASE 5B nao estiver homologada.
-3. Auditoria da FASE 5A registra `text_hash`, nunca texto integral.
-4. Teste arquitetural criado contra uso direto de Playwright fora dos arquivos permitidos. Essa e uma barreira de engenharia rigida para garantir que nenhum desenvolvedor insira `.click()`, `.fill()`, `.type()`, `.press()` ou `.evaluate()` acidentalmente no fluxo de leitura e analise, garantindo a natureza read-only e o agente sempre supervisionado.
-5. Escrita real mantida como `NotImplementedError`.
-
-## Proximo passo imediato
-
-Como o diagnostico real nao encontrou `mod-wssei` publico nos caminhos padrao, manter o desenvolvimento no caminho local supervisionado: leitura assistida, minuta local/controlada e homologacao da FASE 5B sem escrita real.
+| FASE 58 | Planejada | Mission Queue persistente para missoes pendentes, em analise, prontas e bloqueadas. |
+| FASE 59 | Implementada parcialmente | ActionProposal Engine e Tool Registry com guard central. |
+| FASE 60 | Planejada | Approval Center para revisao humana antes de efeito externo. |
+| FASE 61 | Planejada | Agent Memory sanitizada por missao, sem texto integral. |
+| FASE 62 | Implementada parcialmente | Observability local e tracing operacional sanitizado. |
+| FASE 63 | Planejada | Evaluation Harness com casos anonimizados. |
+| FASE 64 | Em implementacao | Multi-task UX e painel de missoes supervisionadas. |
 
 ## UI do Agente 19
 
-O formato aprovado para o Agente 19 na tela do SEI e um **chat lateral
-flutuante**, acionado por botao compacto dentro da pagina do SEI.
+O formato aprovado para o Agente 19 na tela do SEI e um **chat lateral flutuante**, acionado por botao compacto dentro da pagina do SEI.
 
-O chat permite perguntar sobre o processo aberto, capturar texto visivel ou
-selecionado, pedir resumo, prazos e providencia sugerida. Ele continua read-only:
-nao faz login, nao captura credenciais, nao clica no SEI e nao pratica ato
-oficial.
-
-Previa local da interface:
-
-```text
-C:\ADM PMGO\browser_extension\preview_chat.html
-```
+O chat permite perguntar sobre o processo aberto, capturar texto visivel ou selecionado, pedir resumo, prazos e providencia sugerida. Ele continua read-only: nao faz login, nao captura credenciais, nao clica no SEI e nao pratica ato oficial.
 
 UI chat V2:
 
@@ -221,8 +237,8 @@ Status: preparada, sem escrita real.
 1. Cadastro da minuta (`app/sei/minuta_cadastro.py`) exige `tipo_documento`, `nivel_acesso` e `text_hash`.
 2. Acesso restrito/sigiloso exige `hipotese_legal`.
 3. Campos `descricao`, `interessado` e `destinatario` podem ser exigidos por tipo documental.
-4. Manifesto de seletores exige todos os seletores minimos homologados. Avaliador de prontidao em `app/sei/fase5b_homologacao.py` (modulo apenas de homologacao futura, nao de producao).
-5. Seletores relacionados a assinar, tramitar, enviar, concluir, ciencia, cancelar, excluir ou liberar acesso externo sao bloqueados. Ferramentas de apoio como `app/sei/api_discovery.py` sao restritas a diagnostico local/nao-destrutivo.
+4. Manifesto de seletores exige todos os seletores minimos homologados. Avaliador de prontidao em `app/sei/fase5b_homologacao.py` e modulo apenas de homologacao futura, nao de producao.
+5. Seletores relacionados a assinar, tramitar, enviar, concluir, ciencia, cancelar, excluir ou liberar acesso externo sao bloqueados.
 6. Mesmo quando tudo estiver pronto para homologacao, `real_write_allowed=false`.
 
 ## Como executar localmente
@@ -260,38 +276,8 @@ Agente 19 Desktop:
 | [docs/06-integracao-sei.md](docs/06-integracao-sei.md) | Integracao assistida com SEI e limites de automacao |
 | [docs/07-modelos-de-minutas.md](docs/07-modelos-de-minutas.md) | Modelos iniciais de minutas administrativas |
 | [docs/08-roadmap.md](docs/08-roadmap.md) | Etapas de evolucao do projeto |
-| [docs/27-checklist-processos-desenvolvimento.md](docs/27-checklist-processos-desenvolvimento.md) | Checklist de processos para desenvolvimento |
-| [docs/28-regras-git-ia.md](docs/28-regras-git-ia.md) | Regras de commit, push, PR e merge com uso de IA |
-| [docs/29-regra-documentacao-continua.md](docs/29-regra-documentacao-continua.md) | Regra para documentar processos, decisoes e mudancas continuamente |
-| [docs/30-registro-decisoes.md](docs/30-registro-decisoes.md) | Registro historico de decisoes arquiteturais e operacionais |
-| [docs/31-registro-processos.md](docs/31-registro-processos.md) | Registro de mapeamentos de processos da unidade |
-| [docs/32-registro-testes-homologacao.md](docs/32-registro-testes-homologacao.md) | Logs e resultados das sessoes de homologacao do Agente 19 |
-| [docs/33-changelog.md](docs/33-changelog.md) | Changelog das entregas |
-| [docs/34-prompt-claude-code.md](docs/34-prompt-claude-code.md) | Prompt mestre para executar o projeto |
-| [docs/36-relatorio-status-projeto.md](docs/36-relatorio-status-projeto.md) | Relatorio consolidado do que foi feito e do que falta |
-| [docs/fase-5-minuta-controlada.md](docs/fase-5-minuta-controlada.md) | FASE 5A/5B de minuta controlada |
-| [docs/37-fase-desktop-navegador-seguro.md](docs/37-fase-desktop-navegador-seguro.md) | Agente 19 Desktop com navegador seguro |
-| [docs/38-estrategia-zero-custo-sei.md](docs/38-estrategia-zero-custo-sei.md) | Estrategia zero custo |
-| [docs/39-fase-minutador-local-zero-custo.md](docs/39-fase-minutador-local-zero-custo.md) | Minutador local zero custo |
-| [docs/40-fase-knowledge-base-local-19crpm.md](docs/40-fase-knowledge-base-local-19crpm.md) | Knowledge base local do 19 CRPM |
-| [docs/41-diagnostico-api-sei-wssei.md](docs/41-diagnostico-api-sei-wssei.md) | Diagnostico seguro de API SEI/WSSEI |
-| [docs/42-resultado-diagnostico-real-api-sei.md](docs/42-resultado-diagnostico-real-api-sei.md) | Resultado real do diagnostico API SEI/WSSEI |
-| [docs/43-ui-chat-agente19-sei.md](docs/43-ui-chat-agente19-sei.md) | UI chat do Agente 19 na tela do SEI |
-| [docs/44-preview-local-ui-chat-agente19.md](docs/44-preview-local-ui-chat-agente19.md) | Preview local da UI chat |
-| [docs/45-ux-chat-v2-minuta-externa.md](docs/45-ux-chat-v2-minuta-externa.md) | UX Chat V2 e minuta externa supervisionada |
-| [docs/46-fase5b-homologacao-seletores.md](docs/46-fase5b-homologacao-seletores.md) | FASE 5B-H: Homologação de Seletores |
-| [docs/47-seletores-descobertos-referencia.md](docs/47-seletores-descobertos-referencia.md) | Mapeamento Padrão Descoberto de Seletores |
-| [docs/48-fase5c-validacao-supervisionada-seletores.md](docs/48-fase5c-validacao-supervisionada-seletores.md) | FASE 5C-H: Coleta Manual de Seletores |
-| [docs/51-fase5d-simulacao-operacional.md](docs/51-fase5d-simulacao-operacional.md) | FASE 5D-S: Simulação Operacional Ponta a Ponta |
-| [docs/52-referencias-github-sei.md](docs/52-referencias-github-sei.md) | Estudo de repositórios GitHub do SEI e aprendizados aplicáveis |
-| [docs/53-camada-ia-claude.md](docs/53-camada-ia-claude.md) | Camada de IA com Claude (papéis lógicos, guard como barreira) |
-| [docs/54-guia-rapido-operacao.md](docs/54-guia-rapido-operacao.md) | Guia rápido: como usar o Agente 19 com o SEI (passo a passo) |
-| [docs/55-icone-flutuante-chat.md](docs/55-icone-flutuante-chat.md) | Ícone flutuante + chat do Agente 19 (FASE 38 — Frente 1) |
-| [docs/56-fase5c-homologacao-leitura.md](docs/56-fase5c-homologacao-leitura.md) | Homologação da leitura automática do SEI (FASE 5C — Frente 2) |
 | [docs/57-orquestrador-missao-agente19.md](docs/57-orquestrador-missao-agente19.md) | Orquestrador de missao supervisionada do Agente 19 |
-| [docs/58-revisao-mercado-agente-ia.md](docs/58-revisao-mercado-agente-ia.md) | Revisao de mercado e maturidade do Agente de IA |
-| [docs/59-autenticacao-local-perfis.md](docs/59-autenticacao-local-perfis.md) | Autenticacao local e perfis do painel |
-| [docs/60-agente-visual-sei-interesse-19crpm.md](docs/60-agente-visual-sei-interesse-19crpm.md) | Agente visual no SEI com analise de interesse do 19 CRPM |
+| [docs/58-mission-queue-control-plane.md](docs/58-mission-queue-control-plane.md) | Control Plane, Mission Queue, Approval Center e Evaluation Harness |
 | [docs/61-nucleo-agente-ia-agente19.md](docs/61-nucleo-agente-ia-agente19.md) | Nucleo explicito de Agente de IA do Agente 19 |
 | [docs/62-tracing-ferramentas-agente19.md](docs/62-tracing-ferramentas-agente19.md) | Tracing operacional e ferramentas seguras do Agente 19 |
 | [docs/63-knowledge-base-inicial-19crpm.md](docs/63-knowledge-base-inicial-19crpm.md) | Knowledge base inicial e evidencias de regra do Agente 19 |
@@ -304,6 +290,7 @@ agente-sei-inteligente/
 ├── .env.example
 ├── docs/
 ├── app/
+│   ├── agent/
 │   ├── core/
 │   ├── intake/
 │   ├── intelligence/
@@ -335,4 +322,4 @@ agente-sei-inteligente/
 
 ## Regra de ouro
 
-O usuario humano continua no controle. O agente pode ler, resumir, classificar, sugerir providencia e gerar minuta. Atos oficiais no SEI permanecem manuais: assinatura, envio, tramitacao, conclusao, ciencia, cancelamento, exclusao e liberacao de acesso externo ficam fora do agente.
+O usuario humano continua no controle. O agente pode ler, resumir, classificar, sugerir providencia, gerar minuta e preparar missoes supervisionadas. Atos oficiais no SEI permanecem manuais: assinatura, envio, tramitacao, conclusao, ciencia, cancelamento, exclusao e liberacao de acesso externo ficam fora do agente.

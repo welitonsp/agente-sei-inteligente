@@ -1,14 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Agente SEI 19 CRPM",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Chat read-only do Agente 19 dentro da tela do SEI, com analise de interesse do 19 CRPM.",
   "permissions": [
     "activeTab",
     "scripting"
   ],
   "host_permissions": [
-    "<all_urls>",
+    "https://sei.go.gov.br/sei/*",
     "http://127.0.0.1:8000/*"
   ],
   "background": {
@@ -17,7 +17,7 @@
   "content_scripts": [
     {
       "matches": [
-        "<all_urls>"
+        "https://sei.go.gov.br/sei/*"
       ],
       "js": [
         "content.js"
