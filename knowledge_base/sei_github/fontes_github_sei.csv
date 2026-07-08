@@ -1,0 +1,33 @@
+prioridade;repositorio;url;tipo;fonte;uso_agente;risco;observacoes
+P0;pengovbr/pen-docs;https://github.com/pengovbr/pen-docs;manuais online;oficial;rag operacional e administrativo;baixo;portal informado: https://manuais.processoeletronico.gov.br/
+P0;pengovbr/wiki-processoeletronico;https://github.com/pengovbr/wiki-processoeletronico;wiki PEN;oficial;rag institucional e glossario;baixo;usar para contexto PEN e documentacao de apoio
+P1;pengovbr/mod-wssei;https://github.com/pengovbr/mod-wssei;modulo REST WSSEI;oficial tecnica;contrato de API futura read-only;alto;swagger em https://pengovbr.github.io/mod-wssei/
+P1;pengovbr/sei-docker;https://github.com/pengovbr/sei-docker;infra Docker;oficial tecnica;laboratorio e homologacao com dados ficticios;medio;docs com arquitetura containers variaveis e testes
+P1;pengovbr/sei-vagrant;https://github.com/pengovbr/sei-vagrant;ambiente dev;oficial tecnica;referencia historica de ambiente dev;medio;menos prioritario que sei-docker
+P1;pengovbr/sei-helm;https://github.com/pengovbr/sei-helm;kubernetes helm;oficial tecnica;entender deploy e parametros;medio;nao usar em producao sem equipe de infra
+P1;pengovbr/sei5-alpine;https://github.com/pengovbr/sei5-alpine;imagem Docker SEI 5;oficial tecnica;referencia de laboratorio SEI 5;medio;licenca MIT indicada no GitHub
+P1;pengovbr/sei4-alpine;https://github.com/pengovbr/sei4-alpine;imagem Docker SEI 4;oficial tecnica;referencia de laboratorio SEI 4;medio;licenca GPL-3.0 indicada no GitHub
+P1;pengovbr/sei-db-ref-executivo;https://github.com/pengovbr/sei-db-ref-executivo;base referencia;oficial tecnica;entender base executiva e versoes;medio;usar apenas como referencia
+P1;pengovbr/mod-sei-pen;https://github.com/pengovbr/mod-sei-pen;modulo Tramita GOV.BR;oficial tecnica;governanca de modulo SEI/SIP;alto;instalacao exige backup configuracao e homologacao
+P1;pengovbr/mod-sei-protocolo-integrado;https://github.com/pengovbr/mod-sei-protocolo-integrado;modulo protocolo integrado;oficial tecnica;padrao de integracao externa;alto;referencia de configuracao e migracao
+P1;pengovbr/mod-sei-estatisticas;https://github.com/pengovbr/mod-sei-estatisticas;modulo estatisticas;oficial tecnica;padrao de modulo e verificacao;alto;nao instalar sem governanca
+P1;pengovbr/mod-sei-resposta;https://github.com/pengovbr/mod-sei-resposta;modulo resposta;oficial tecnica;padrao de modulo e release;alto;nao instalar sem governanca
+P1;pengovbr/macros-SEI-SIP;https://github.com/pengovbr/macros-SEI-SIP;macros UI.Vision;oficial tecnica;estudo de risco em automacao de cadastro;alto;nao executar contra SEI real
+P1;anatelgovbr/mod-sei-ia;https://github.com/anatelgovbr/mod-sei-ia;modulo SEI IA;oficial tecnica;arquitetura IA integrada e permissoes SIP;alto;requer SEI minimo 4.1.5 segundo README
+P1;anatelgovbr/sei-ia;https://github.com/anatelgovbr/sei-ia;servidor IA;oficial tecnica;arquitetura desacoplada modulo servidor;medio;inclui similaridade e assistente generativo
+P1;anatelgovbr/mod-sei-peticionamento;https://github.com/anatelgovbr/mod-sei-peticionamento;modulo peticionamento;oficial tecnica;padrao de instalacao scripts e recursos;alto;requer SEI 5.0.4 segundo README
+P1;anatelgovbr/mod-sei-pesquisa;https://github.com/anatelgovbr/mod-sei-pesquisa;modulo pesquisa publica;oficial tecnica;padrao de modulo publico;alto;desenvolvido originalmente pelo CADE segundo descricao
+P1;anatelgovbr/ocr-server;https://github.com/anatelgovbr/ocr-server;OCR server;oficial tecnica;referencia futura de OCR;medio;nao necessario para MVP
+P1;anatelgovbr/mod-sei-stack-ia-apoio-dev;https://github.com/anatelgovbr/mod-sei-stack-ia-apoio-dev;stack IA dev;oficial tecnica;apoio a desenvolvimento de modulos;medio;avaliar antes de usar
+P1;cgugovbr/mod-sei-eouv;https://github.com/cgugovbr/mod-sei-eouv;modulo e-Ouv FalaBR;oficial tecnica;exemplo de integracao externa;alto;nao instalar sem governanca
+P2;SEI-Pro/sei-pro;https://github.com/SEI-Pro/sei-pro;extensao navegador;comunidade;estudo de UX seletores e riscos;alto;AGPL-3.0 indicada no GitHub
+P2;SEI-Pro/mcp-seipro;https://github.com/SEI-Pro/mcp-seipro;MCP SEI;comunidade;avaliacao adversarial de ferramentas e credenciais;critico;README declara 116 tools e variaveis de usuario/senha
+P2;jonatasrs/sei;https://github.com/jonatasrs/sei;extensao SEI++;comunidade;estudo de produtividade e UX;alto;GPL-3.0 indicada no GitHub
+P2;luiscrjunior/sei-trello;https://github.com/luiscrjunior/sei-trello;extensao Trello;comunidade;estudo de integracao frontend;alto;nao copiar sem analise de licenca
+P2;franklinbaldo/sei-mcp;https://github.com/franklinbaldo/sei-mcp;MCP SEI;comunidade;avaliacao adversarial de IA no SEI;critico;nao conectar a SEI real
+P2;NicholasJacob1990/SEI-MCP;https://github.com/NicholasJacob1990/SEI-MCP;MCP e extensao;comunidade;avaliacao adversarial de automacao;critico;achado em busca por readme
+P2;benmatos/sei-module-builder;https://github.com/benmatos/sei-module-builder;gerador de modulo;comunidade;entender esqueleto de modulo;alto;nao usar para criar modulo real sem autorizacao
+P2;zeolenon/sei-cli;https://github.com/zeolenon/sei-cli;CLI Python;comunidade;risco de automacao sem browser;critico;release 0.7.0 observada em 2026-06-05
+P2;rafpyprog/pySEI;https://github.com/rafpyprog/pySEI;wrapper Python;comunidade;referencia historica;alto;repositorio arquivado
+HISTORICO;spbgovbr/sei-doc-usuario;https://github.com/spbgovbr/sei-doc-usuario;manual legado;oficial historica;consulta complementar;baixo;usar pen-docs como fonte principal
+HISTORICO;spbgovbr/sei-doc-admin;https://github.com/spbgovbr/sei-doc-admin;manual legado;oficial historica;consulta complementar;baixo;usar pen-docs como fonte principal

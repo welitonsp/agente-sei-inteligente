@@ -98,6 +98,8 @@ Minha recomendacao tecnica:
 3. Separar base de conhecimento em colecoes:
    - `manual-sei-operacional`
    - `sei-webservices-tecnico`
+   - `sei-github-oficial`
+   - `sei-github-riscos-automacao`
    - `modelos-pmgo`
    - `fluxos-19crpm`
 4. Marcar documentos de WebServices como `tecnico_restrito`.
@@ -196,6 +198,7 @@ Organizar documentos em:
 ```text
 knowledge_base/manual_sei/
 knowledge_base/sei_webservices/
+knowledge_base/sei_github/
 knowledge_base/modelos_pmgo/
 knowledge_base/fluxos_19crpm/
 ```
