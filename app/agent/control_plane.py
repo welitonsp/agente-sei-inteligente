@@ -15,7 +15,12 @@ from typing import Any
 from uuid import uuid4
 
 from app.core import permissions
-from app.sei.sei_action_guard import GuardRequest, GuardResult, evaluate
+from app.sei.sei_action_guard import (
+    GuardDecision,
+    GuardRequest,
+    GuardResult,
+    evaluate,
+)
 
 
 class MissionStatus(str, Enum):
@@ -50,6 +55,27 @@ _SENSITIVE_KEYS = (
     "sessao",
     "authorization",
 )
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _sanitize(value: Any) -> Any:
+    if isinstance(value, dict):
+        sanitized: dict[str, Any] = {}
+        for key, item in value.items():
+            key_text = str(key).lower()
+            if any(marker in key_text for marker in _SENSITIVE_KEYS):
+                sanitized[str(key)] = "[REDACTED]"
+            else:
+                sanitized[str(key)] = _sanitize(item)
+        return sanitized
+    if isinstance(value, list):
+        return [_sanitize(item) for item in value]
+    if isinstance(value, tuple):
+        return [_sanitize(item) for item in value]
+    return value
 
 
 @dataclass(frozen=True)
@@ -93,26 +119,6 @@ class MissionStep:
 
 
 @dataclass(frozen=True)
-class AgentRun:
-    agent_name: str
-    mission_id: str
-    status: MissionStatus
-    started_at: str = field(default_factory=_now_iso)
-    finished_at: str = ""
-    tool_calls: list["ToolCall"] = field(default_factory=list)
-
-    def to_contract(self) -> dict[str, Any]:
-        return {
-            "agent_name": self.agent_name,
-            "mission_id": self.mission_id,
-            "status": self.status.value,
-            "started_at": self.started_at,
-            "finished_at": self.finished_at,
-            "tool_calls": [call.to_contract() for call in self.tool_calls],
-        }
-
-
-@dataclass(frozen=True)
 class ToolCall:
     tool_name: str
     action: str
@@ -131,6 +137,26 @@ class ToolCall:
             "output_hash": self.output_hash,
             "risk_level": self.risk_level.value,
             "guard_decision": _sanitize(self.guard_decision),
+        }
+
+
+@dataclass(frozen=True)
+class AgentRun:
+    agent_name: str
+    mission_id: str
+    status: MissionStatus
+    started_at: str = field(default_factory=_now_iso)
+    finished_at: str = ""
+    tool_calls: list[ToolCall] = field(default_factory=list)
+
+    def to_contract(self) -> dict[str, Any]:
+        return {
+            "agent_name": self.agent_name,
+            "mission_id": self.mission_id,
+            "status": self.status.value,
+            "started_at": self.started_at,
+            "finished_at": self.finished_at,
+            "tool_calls": [call.to_contract() for call in self.tool_calls],
         }
 
 
@@ -323,10 +349,7 @@ def build_action_proposal(
 ) -> ActionProposal:
     tool = get_tool_policy(tool_name)
     normalized_action = action.strip().upper()
-    if normalized_action in _OFFICIAL_ACTION_NAMES:
-        risk = RiskLevel.FORBIDDEN
-    else:
-        risk = tool.risk_level
+    risk = RiskLevel.FORBIDDEN if normalized_action in _OFFICIAL_ACTION_NAMES else tool.risk_level
     return ActionProposal(
         proposal_id=new_proposal_id(),
         mission_id=mission_id,
@@ -353,7 +376,7 @@ def evaluate_action_proposal(
     if proposal.action not in tool.allowed_actions:
         guard = GuardResult(
             permitido=False,
-            decisao="bloqueado",  # type: ignore[arg-type]
+            decisao=GuardDecision.BLOQUEADO,
             motivo="Acao fora do escopo da ferramenta registrada.",
             acao=proposal.action,
             revisao_humana_obrigatoria=True,
@@ -441,24 +464,3 @@ def build_supervised_mission(
             )
         ],
     )
-
-
-def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def _sanitize(value: Any) -> Any:
-    if isinstance(value, dict):
-        sanitized: dict[str, Any] = {}
-        for key, item in value.items():
-            key_text = str(key).lower()
-            if any(marker in key_text for marker in _SENSITIVE_KEYS):
-                sanitized[str(key)] = "[REDACTED]"
-            else:
-                sanitized[str(key)] = _sanitize(item)
-        return sanitized
-    if isinstance(value, list):
-        return [_sanitize(item) for item in value]
-    if isinstance(value, tuple):
-        return [_sanitize(item) for item in value]
-    return value
