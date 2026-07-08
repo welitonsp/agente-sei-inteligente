@@ -45,10 +45,18 @@ def db_env(tmp_path, monkeypatch):
             motivo="Mock",
         )
     
-    # Mocking as funcoes internas utilizadas pelo grafo
+    from app.intelligence.ai_reasoning import ReviewVerdict
+
+    # Mocking as funcoes internas utilizadas pelo grafo (camada de IA sob guarda)
     monkeypatch.setattr("app.dashboard.local_app.analyze_text", mock_analyze)
-    monkeypatch.setattr("app.intelligence.graph.nodes.analyze_with_gemini", mock_analyze)
-    monkeypatch.setattr("app.intelligence.graph.nodes.review_with_gemini", lambda *a, **k: {"aprovado": True, "feedback": ""})
+    monkeypatch.setattr(
+        "app.intelligence.graph.nodes.summarize_process",
+        lambda *a, **k: "Resumo mockado seguro",
+    )
+    monkeypatch.setattr(
+        "app.intelligence.graph.nodes.review_minuta",
+        lambda *a, **k: ReviewVerdict(disponivel=True, aprovado=True, feedback=""),
+    )
 
     return db, models
 
