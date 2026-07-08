@@ -45,3 +45,6 @@ jobs:
 
       - name: Run agent readiness evaluations
         run: python scripts/run_agent_evals.py
+
+      - name: Run premium readiness gate
+        run: python scripts/run_premium_readiness.py
