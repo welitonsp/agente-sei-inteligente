@@ -415,3 +415,14 @@
   box-shadow: 0 4px 12px rgba(162, 89, 255, 0.4) !important;
   filter: brightness(1.1) !important;
 }
+
+.agente-sei-statusbar {
+  margin: 12px 24px 0 !important;
+  padding: 10px 12px !important;
+  border: 1px solid rgba(16, 185, 129, 0.22) !important;
+  border-radius: 12px !important;
+  background: rgba(16, 185, 129, 0.08) !important;
+  color: #bbf7d0 !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+}
