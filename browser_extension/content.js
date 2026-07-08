@@ -61,9 +61,11 @@
         <button data-intent="providencia" class="agente-sei-chip" type="button">Providencia</button>
         <button data-intent="minuta" class="agente-sei-chip" type="button">Minuta</button>
         <button data-intent="interesse_19crpm" class="agente-sei-chip agente-sei-chip-strong" type="button">19 CRPM</button>
-        <button id="agente-sei-upload-pdf" class="agente-sei-chip" type="button" title="Gere o processo em PDF no SEI e carregue aqui para leitura profunda">📎 Ler PDF do Processo</button>
+        <label id="agente-sei-upload-pdf" class="agente-sei-chip" for="agente-sei-file-input" title="Gere o processo em PDF no SEI e carregue aqui para leitura profunda">Anexar PDF</label>
       </div>
       <input type="file" id="agente-sei-file-input" accept=".pdf" style="display:none" />
+
+      <div class="agente-sei-statusbar">Somente leitura. Backend local ativo quando disponivel. Revisao humana obrigatoria. Login, senha, cookie e atos oficiais ficam fora.</div>
 
       <div class="agente-sei-composer">
         <textarea id="agente-sei-prompt" rows="2" placeholder="Pergunte sobre o processo aberto no SEI..."></textarea>
@@ -82,7 +84,6 @@
   const copyButton = root.querySelector("#agente-sei-copy");
   const promptInput = root.querySelector("#agente-sei-prompt");
   const messages = root.querySelector("#agente-sei-messages");
-  const uploadPdfBtn = root.querySelector("#agente-sei-upload-pdf");
   const fileInput = root.querySelector("#agente-sei-file-input");
 
   launchButton.addEventListener("click", () => {
@@ -130,8 +131,6 @@
     }
   });
 
-  uploadPdfBtn.addEventListener("click", () => fileInput.click());
-
   fileInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -172,21 +171,7 @@
     reader.readAsDataURL(file);
   });
 
-  // Gatilho de RPA (Leitura Autonoma) apos reload da pagina
-  if (sessionStorage.getItem("agente_sei_auto_read") === "true") {
-    sessionStorage.removeItem("agente_sei_auto_read");
-    root.classList.add("agente-sei-open");
-    addMessage("assistant", "Processo aberto! Lendo autonomamente TODOS os documentos do processo...");
-    setBusy(true);
-    scrapeEntireProcess().then(fullText => {
-      setBusy(false);
-      addMessage("assistant", "Leitura concluida. Analisando o contexto geral...");
-      runAnalysis("Faca um resumo geral consolidado deste processo", "resumo", fullText);
-    });
-  } else {
-    // Inject Smart Button in SEI Toolbar if available
-    injectSeiToolbarButton();
-  }
+  injectSeiToolbarButton();
 
   function injectSeiToolbarButton() {
     // Procura as barras de comando padrão do SEI
@@ -234,24 +219,12 @@
       return;
     }
     
-    // Se o usuario digitou apenas um numero de processo (ex: 202600002080361)
+    // Numero de processo digitado serve apenas como contexto; a navegacao no SEI continua manual.
     const justNumbers = prompt.replace(/\D/g, "");
     if (justNumbers.length >= 10 && justNumbers.length <= 25 && justNumbers === prompt.trim()) {
       promptInput.value = "";
       addMessage("user", prompt);
-      addMessage("assistant", "Detectei um numero de processo. Iniciando busca automatica e leitura autonoma no SEI...");
-      const searchInput = document.getElementById("txtPesquisaRapida") || document.querySelector("input[name='pesquisa_rapida']");
-      if (searchInput) {
-        sessionStorage.setItem("agente_sei_auto_read", "true");
-        searchInput.value = prompt;
-        const searchForm = searchInput.closest("form");
-        if (searchForm) {
-          setTimeout(() => searchForm.submit(), 800);
-          return;
-        }
-      }
-      sessionStorage.removeItem("agente_sei_auto_read");
-      addMessage("assistant", "Nao consegui localizar a barra de pesquisa nesta tela para fazer a busca automatica.", true);
+      addMessage("assistant", "Numero registrado apenas para referencia. Abra o processo manualmente e use Capturar, Resumo ou 19 CRPM.");
       return;
     }
 
@@ -400,7 +373,7 @@
       ? triage.interesse_19crpm
       : "interesse a confirmar pelo 19 CRPM";
     const lines = [
-      `Processo: ${processInput.value || guessProcessNumber() || "nao identificado"}`,
+      `Processo: ${guessProcessNumber() || "nao identificado"}`,
       `Interesse 19 CRPM: ${interest}`,
       `Assunto/tipo: ${analysis.tipo_provavel || "nao classificado"}`,
       `Resumo: ${analysis.resumo_curto || "resumo nao gerado"}`,
@@ -446,42 +419,6 @@
     item.textContent = text;
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
-  }
-
-  async function scrapeEntireProcess() {
-    return new Promise((resolve) => {
-      let attempts = 0;
-      const checkInterval = setInterval(async () => {
-        attempts++;
-        const ifrArvore = document.getElementById("ifrArvore");
-        if (ifrArvore && ifrArvore.contentDocument && ifrArvore.contentDocument.querySelectorAll("a").length > 2) {
-          clearInterval(checkInterval);
-          
-          const treeDoc = ifrArvore.contentDocument;
-          const links = Array.from(treeDoc.querySelectorAll("a[href*='acao=documento_visualizar'], a.ancoraArvore[href*='controlador.php?acao=']"));
-          const uniqueUrls = [...new Set(links.map(l => l.href))].filter(href => !href.includes("acao=procedimento_trabalhar"));
-          
-          if (uniqueUrls.length === 0) {
-            resolve("Processo vazio ou estrutura nao reconhecida.");
-            return;
-          }
-          
-          let fullText = "";
-          for (let i = 0; i < Math.min(uniqueUrls.length, 15); i++) {
-            try {
-              const res = await fetch(uniqueUrls[i]);
-              const html = await res.text();
-              const doc = new DOMParser().parseFromString(html, "text/html");
-              fullText += "\\n\\n--- DOCUMENTO " + (i+1) + " ---\\n" + doc.body.innerText;
-            } catch(e) {}
-          }
-          resolve(fullText.trim().slice(0, MAX_TEXT_CHARS));
-        } else if (attempts > 30) {
-          clearInterval(checkInterval);
-          resolve("Tempo esgotado ao tentar carregar a arvore do processo.");
-        }
-      }, 500);
-    });
   }
 
   function setBusy(isBusy) {

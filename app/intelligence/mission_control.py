@@ -10,8 +10,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from app.intelligence.local_minutador import DraftRequest
-from app.intelligence.local_triage import TriageRequest
+from app.intelligence.institutional_analyzer import analyze_document_rules
+from app.intelligence.local_minutador import DraftRequest, generate_draft
+from app.intelligence.local_triage import TriageRequest, analyze_triage
 from app.intelligence.swarm import SwarmCoordinator
 
 
@@ -89,7 +90,7 @@ DraftFn = Callable[[DraftRequest], Any]
 
 
 
-def execute_mission(
+def _execute_mission_swarm_legacy(
     request: MissionRequest,
     *,
     analisar: AnalyzeFn | None = None,
@@ -142,6 +143,102 @@ def execute_mission(
         minuta={"texto": state.minuta_rascunho, "tipo_minuta": state.tipo_minuta},
         campos_pendentes=campos_pendentes,
         audit_log_ids=[],
+        mission_trace_id=request.mission_trace_id,
+    )
+
+
+def execute_mission(
+    request: MissionRequest,
+    *,
+    analisar: AnalyzeFn | None = None,
+    triar: TriageFn | None = None,
+    minutador: DraftFn | None = None,
+) -> MissionResult:
+    """Executa a missao supervisionada com analise, triagem e minuta locais."""
+    texto = request.texto.strip()
+    titulo = request.titulo.strip()
+    if not (texto or titulo):
+        return _empty_result(["titulo", "texto"], request.mission_trace_id)
+
+    analyze_fn = analisar or analyze_document_rules
+    triage_fn = triar or analyze_triage
+    draft_fn = minutador or generate_draft
+
+    analise = analyze_fn("\n\n".join(part for part in [titulo, texto] if part))
+    triagem_contract = _as_contract(
+        triage_fn(
+            TriageRequest(
+                assunto=titulo,
+                texto=texto,
+                processo_sei=request.processo_sei,
+                usuario_local=request.usuario_local,
+                estacao=request.estacao,
+                origem=request.origem,
+            )
+        )
+    )
+    triagem = triagem_contract.get("resultado", {})
+    unidade_sugerida = str(triagem.get("unidade_sugerida", "") or "").strip()
+    tipo_minuta = (
+        request.tipo_minuta.strip()
+        or str(triagem.get("tipo_minuta_sugerido", "") or "").strip()
+        or _draft_type_from_analysis(analise)
+    )
+    prazo = _first_deadline(analise)
+    providencia = (
+        str(triagem.get("providencia_sugerida", "") or "").strip()
+        or str(analise.get("providencia_sugerida", "") or "").strip()
+    )
+    unidade_destino = request.unidade_destino.strip() or unidade_sugerida
+
+    minuta_contract = _as_contract(
+        draft_fn(
+            DraftRequest(
+                assunto=titulo or str(analise.get("tipo_provavel", "") or ""),
+                resumo=str(analise.get("resumo_curto", "") or ""),
+                texto_base=texto,
+                processo_sei=request.processo_sei,
+                tipo_minuta=tipo_minuta,
+                unidade_destino=unidade_destino,
+                destinatario=unidade_destino,
+                providencia=providencia,
+                prazo=prazo,
+                usuario_local=request.usuario_local,
+                estacao=request.estacao,
+                origem=request.origem,
+            )
+        )
+    )
+    minuta = minuta_contract.get("resultado", {})
+
+    campos_pendentes = _pending_fields(request, triagem_contract, minuta_contract)
+    prontidao = _readiness_score(
+        request, analise, triagem_contract, minuta_contract, campos_pendentes
+    )
+    etapa = _recommended_step(campos_pendentes, minuta_contract, prontidao)
+    status = (
+        "pronto_para_revisao"
+        if prontidao >= 0.7 and not campos_pendentes
+        else "precisa_complemento"
+    )
+
+    return MissionResult(
+        status=status,
+        prontidao_operacional=prontidao,
+        etapa_recomendada=etapa,
+        plano_operacional=_mission_plan(
+            etapa,
+            bool(request.unidade_destino.strip() or unidade_sugerida),
+            bool(prazo or analise.get("prazo_detectado")),
+        ),
+        riscos=_risk_markers(
+            analise, triagem_contract, minuta_contract, campos_pendentes
+        ),
+        analise=analise,
+        triagem=triagem,
+        minuta=minuta,
+        campos_pendentes=campos_pendentes,
+        audit_log_ids=_log_ids(triagem_contract, minuta_contract),
         mission_trace_id=request.mission_trace_id,
     )
 
