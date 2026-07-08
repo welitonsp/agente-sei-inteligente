@@ -16,11 +16,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.core.config import get_settings
-from app.sei.api_discovery import discover_public_api
-
 
 def main() -> int:
+    from app.core.config import get_settings
+    from app.sei.api_discovery import discover_public_api
+
     settings = get_settings()
     print("Diagnostico seguro de API SEI/WSSEI")
     print(f"Base SEI: {settings.sei_base_url}")
