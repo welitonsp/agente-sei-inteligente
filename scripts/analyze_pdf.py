@@ -26,7 +26,7 @@ def main():
     analysis_result = analyze_pdf_pipeline_result(pipeline_result)
     
     print("=== Resultado da Análise Institucional ===")
-    print(f"Status do Arquivo: SUCESSO")
+    print("Status do Arquivo: SUCESSO")
     print(f"Páginas lidas: {pipeline_result.get('page_count')}")
     print(f"OCR Necessário: {pipeline_result.get('ocr_required')}")
     print("-" * 40)

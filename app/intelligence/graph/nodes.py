@@ -1,26 +1,17 @@
 from typing import Any
 from app.intelligence.graph.state import MissionState
-from app.intelligence.llm_gemini import analyze_with_gemini, review_with_gemini
-from app.intake.manual_text import ManualTextRequest
+from app.intelligence.ai_reasoning import review_minuta, summarize_process
 from app.intelligence.local_minutador import DraftRequest, generate_draft
 from app.intelligence.local_triage import TriageRequest, analyze_triage
 
 def analyzer_node(state: MissionState) -> dict[str, Any]:
-    """Lê o processo e gera o resumo executivo."""
+    """Lê o processo e gera o resumo executivo (via camada de IA sob guarda)."""
     # Se ja tem resumo, pula
     if state.get("resumo"):
         return {}
-        
-    request = ManualTextRequest(
-        titulo=state["titulo"],
-        texto=state["texto_original"],
-        processo_sei=state["processo_sei"],
-        usuario_local=state["usuario_local"],
-        estacao="",
-        origem="langgraph"
-    )
-    result = analyze_with_gemini(request)
-    return {"resumo": result.resumo_executivo}
+
+    resumo = summarize_process(state["titulo"], state["texto_original"])
+    return {"resumo": resumo}
 
 def triage_node(state: MissionState) -> dict[str, Any]:
     """Define a unidade de destino e o tipo de minuta se nao fornecidos."""
@@ -120,46 +111,82 @@ def draft_node(state: MissionState) -> dict[str, Any]:
     }
 
 def critic_node(state: MissionState) -> dict[str, Any]:
-    """Critica a minuta gerada para garantir que nao ha alucinacoes e violações de RAG."""
+    """Critica a minuta gerada contra alucinacoes e violacoes de RAG.
+
+    FAIL-CLOSED: se a auditoria automatica nao estiver disponivel (offline) ou
+    falhar, NUNCA declaramos a minuta aprovada — sinalizamos indisponibilidade e
+    reforcamos a revisao humana, sem travar o pipeline num loop infinito.
+    """
     tentativas = state.get("tentativas_critica", 0) + 1
-    
-    # Avaliacao via LLM Auditor
-    avaliacao = review_with_gemini(
+
+    verdict = review_minuta(
         texto_base=state.get("texto_original", ""),
         minuta_gerada=state.get("minuta_texto", ""),
-        contexto=state.get("contexto_institucional", "")
+        contexto=state.get("contexto_institucional", ""),
     )
-    
-    if not avaliacao["aprovado"] and tentativas < 3:
+
+    if not verdict.disponivel:
+        return {
+            "status": "pronto_para_revisao",
+            "tentativas_critica": tentativas,
+            "revisao_humana_obrigatoria": True,
+            "alertas": [
+                "AVISO: auditoria automatica de IA indisponivel — revisao "
+                f"humana reforcada. {verdict.feedback}"
+            ],
+        }
+
+    if not verdict.aprovado and tentativas < 3:
         # Reprova e devolve para o draft_node
         return {
-            "status": "rejeitado_pelo_critico", 
+            "status": "rejeitado_pelo_critico",
             "tentativas_critica": tentativas,
-            "alertas": [f"TENTATIVA {tentativas}: {avaliacao['feedback']}"]
+            "alertas": [f"TENTATIVA {tentativas}: {verdict.feedback}"],
         }
-        
+
     return {
-        "status": "pronto_para_revisao", 
-        "tentativas_critica": tentativas, 
+        "status": "pronto_para_revisao",
+        "tentativas_critica": tentativas,
         "revisao_humana_obrigatoria": True,
-        "alertas": ["Auditoria de IA: Minuta Aprovada"] if avaliacao["aprovado"] else [f"AVISO: Aprovado com ressalvas após 3 tentativas. Erro: {avaliacao['feedback']}"]
+        "alertas": (
+            ["Auditoria de IA: Minuta Aprovada"]
+            if verdict.aprovado
+            else [
+                "AVISO: Aprovado com ressalvas apos 3 tentativas. "
+                f"Erro: {verdict.feedback}"
+            ]
+        ),
     }
 
 def audit_node(state: MissionState) -> dict[str, Any]:
-    """Salva o estado final para rastreabilidade e auditoria (Tracing)."""
-    import json
+    """Persiste o estado final para rastreabilidade real (auditoria)."""
+    import logging
+    from datetime import datetime, timezone
 
-    log_data = {
-        "timestamp": "now",
-        "processo_sei": state.get("processo_sei"),
-        "usuario_local": state.get("usuario_local"),
-        "unidade_destino": state.get("unidade_destino"),
-        "tipo_minuta": state.get("tipo_minuta"),
-        "status_final": state.get("status"),
-        "tentativas_critica": state.get("tentativas_critica"),
-        "revisao_humana_obrigatoria": state.get("revisao_humana_obrigatoria")
-    }
-    
-    print(f"\\n=== LOG DE AUDITORIA DO AGENTE 19 ===\\n{json.dumps(log_data, indent=2)}\\n======================================\\n")
-    
-    return {}
+    from app.core import audit
+
+    try:
+        audit_id = audit.record(
+            action="MISSAO_GRAFO_CONCLUIDA",
+            result=state.get("status", "desconhecido"),
+            actor_id=state.get("usuario_local") or None,
+            target_type="processo_sei",
+            target_id=state.get("processo_sei") or None,
+            reason="Fluxo cognitivo LangGraph concluido; revisao humana obrigatoria.",
+            metadata={
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "unidade_destino": state.get("unidade_destino"),
+                "tipo_minuta": state.get("tipo_minuta"),
+                "tentativas_critica": state.get("tentativas_critica"),
+                "revisao_humana_obrigatoria": state.get(
+                    "revisao_humana_obrigatoria", True
+                ),
+                "texto_integral_persistido": False,
+            },
+        )
+        return {"alertas": [f"Auditoria registrada (id={audit_id})."]}
+    except Exception as exc:  # auditoria nunca deve derrubar o fluxo
+        logging.getLogger("agente19.audit").warning(
+            "Falha ao persistir auditoria do grafo: %s", exc
+        )
+        return {"alertas": [f"AVISO: auditoria nao persistida ({exc})."]}

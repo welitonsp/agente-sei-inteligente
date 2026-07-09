@@ -2,6 +2,33 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.5.0-auditoria-nucleo-ia] - 2026-07-08
+
+### Alterado
+
+1. Grafo cognitivo LangGraph (`analyzer_node`, `critic_node`) roteado pela
+   camada de provedor (`ai_provider`), respeitando a decisao de Claude como
+   provedor padrao e a barreira do `sei_action_guard` antes de toda geracao.
+2. Novo modulo `app/intelligence/ai_reasoning.py` (resumo, revisao e analise de
+   texto) substituindo `app/intelligence/llm_gemini.py`, que foi removido junto
+   do pacote deprecado `google-generativeai` como motor direto.
+3. `audit_node` agora persiste auditoria real (`app/core/audit.record`) com
+   timestamp UTC, em vez de `print` com timestamp fixo.
+4. Shadow Mode: confianca normalizada para a escala 0..1 em `app/agent/agent19.py`.
+
+### Seguranca
+
+1. No critico agora e **fail-closed**: erro/indisponibilidade da auditoria
+   automatica nunca marca a minuta como aprovada; exige revisao humana reforcada.
+2. Parsing de veredicto por JSON estruturado (fim do `split("\\n")` literal).
+
+### Adicionado
+
+1. System prompts versionados em `knowledge_base/prompts/`
+   (`resumidor_administrativo.md`, `guardiao_seguranca.md`).
+2. `tests/test_graph_workflow.py`: cobertura do grafo e da camada de raciocinio
+   (roteamento sob guarda, fail-closed, loop de auto-correcao, auditoria).
+
 ## [0.4.15-knowledge-base-inicial-19crpm] - 2026-06-29
 
 ### Adicionado

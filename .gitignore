@@ -32,6 +32,9 @@ temp/
 downloads/
 *.pdf
 
+# Shadow Mode runtime logs (artefato gerado em execucao/testes)
+.shadow_logs/
+
 # OS/editor
 .DS_Store
 Thumbs.db

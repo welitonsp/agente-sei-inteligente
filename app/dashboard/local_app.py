@@ -12,7 +12,7 @@ import json
 from http import HTTPStatus
 from typing import Any
 import uvicorn
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
@@ -22,15 +22,13 @@ from app.core.auth import AuthError, apply_auth_to_payload, authorize_dashboard_
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger, log_event
 from app.core.safety import assert_safe_environment
-from app.intelligence.mission_control import MissionRequest, execute_mission
 from app.intelligence.local_minutador import DraftRequest, generate_draft
 from app.intelligence.local_triage import TriageRequest, analyze_triage
 from app.intake.manual_text import ManualTextRequest
-from app.intelligence.llm_gemini import analyze_with_gemini as analyze_text
+from app.intelligence.ai_reasoning import analyze_manual_text as analyze_text
 from app.intake.pdf_upload import PdfUploadRequest, analyze_pdf
 from app.storage.db import init_db
 from app.dashboard.shadow_dashboard import SHADOW_HTML
-from pathlib import Path
 
 
 INDEX_HTML = """<!doctype html>
