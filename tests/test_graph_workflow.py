@@ -115,7 +115,9 @@ def test_review_fail_closed_quando_json_invalido():
 # --- Grafo -------------------------------------------------------------------
 
 
-def test_checklist_para_quando_falta_campo(echo_env):
+def test_checklist_para_quando_falta_campo(echo_env, db_env):
+    # triage_node roda antes do checklist e audita -> precisa de banco (o CI nao
+    # tem a pasta data/ do DB padrao).
     from app.intelligence.graph.workflow import create_agent_graph
 
     app = create_agent_graph()
