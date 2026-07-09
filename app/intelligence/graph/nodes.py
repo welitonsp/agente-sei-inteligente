@@ -67,6 +67,18 @@ def rag_node(state: MissionState) -> dict[str, Any]:
     # Regras adicionais mockadas para Nível 3/4
     contexto.append("DIRETRIZ DE SEGURANÇA: Nenhuma senha ou dado pessoal deve ser exposto na minuta.")
     contexto.append("LEI MILITAR: O tom deve ser formal, respeitoso e hierárquico (Padrão 19 CRPM).")
+
+    # RAG real: inteligência dos manuais (SEI + Redação de Goiás), com fonte.
+    from app.intelligence.manual_retriever import retrieve_context
+
+    query = " ".join(
+        part
+        for part in [state.get("titulo", ""), tipo, state.get("resumo", "")]
+        if part
+    )
+    manual_ctx = retrieve_context(query, k=4)
+    if manual_ctx:
+        contexto.append(manual_ctx)
     
     return {"contexto_institucional": "\n\n".join(contexto)}
 

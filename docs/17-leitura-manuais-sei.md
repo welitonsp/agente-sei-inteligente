@@ -193,3 +193,21 @@ Os manuais devem ser usados de duas formas:
 O `manual_do_usuario_sei2.pdf` pode entrar integralmente em uma base RAG. O `SEI-WebServices-v4.0.pdf` tambem pode entrar, mas com metadados de risco, para impedir que a IA recomende ou execute operacoes sensiveis sem o guarda de permissoes.
 
 No estado atual do projeto, WebServices deve ser tratado como referencia tecnica controlada e nao como plano de implementacao de escrita no SEI.
+
+## Base curada e retriever RAG (2026-07-08)
+
+As regras extraidas aqui foram transformadas em base curada retrievavel, sem
+copiar o PDF integral:
+
+1. `knowledge_base/manual_sei/regras_operacionais.md` — regras do Manual do
+   Usuario SEI (processo x documento, niveis de acesso, minuta, ciencia, tipo
+   documental, prazos, lista de perigo, WebServices read-only).
+2. `knowledge_base/redacao_goias/regras_redacao.md` — regras do Manual de
+   Redacao do Governo de Goias (impessoalidade, clareza, forma de tratamento,
+   estrutura, fecho, nao inventar dados).
+
+O retriever local `app/intelligence/manual_retriever.py` (custo zero,
+deterministico, ponderado por IDF) ranqueia essas regras e injeta as mais
+relevantes no `rag_node` do grafo, com a fonte citada. Principio mantido:
+**conhecimento nao vira permissao** — o `sei_action_guard` continua sendo a
+barreira final.
