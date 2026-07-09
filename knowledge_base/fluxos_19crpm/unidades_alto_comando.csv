@@ -1,1 +1,3 @@
 codigo,nome,tipo,ativo,observacao
+EXEMPLO_CG,EXEMPLO - Comando-Geral,alto_comando,false,Copie troque pelos dados reais e mude ativo para true.
+EXEMPLO_EMG,EXEMPLO - Estado-Maior Geral,alto_comando,false,Orgao de direcao relevante; ative ao preencher.

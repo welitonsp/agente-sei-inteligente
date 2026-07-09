@@ -2,6 +2,24 @@
 
 Todas as entregas relevantes do projeto devem ser registradas aqui.
 
+## [0.5.1-telegram-e-plano-sucesso] - 2026-07-08
+
+### Adicionado
+
+1. Servico de alertas Telegram em `app/integrations/telegram_service.py`:
+   backend dry-run por padrao e backend real via `urllib` (custo/dependencia
+   zero), inerte ate configurar `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID`.
+   Mensagens padronizadas por tipo (prazo/evento/minuta/erro/info), com numero
+   de processo mascarado e sem documento integral. Auditoria resiliente.
+2. `tests/test_telegram_service.py` (9 testes).
+3. `docs/64-plano-de-sucesso.md`: plano ativo em duas trilhas (dados x engenharia).
+4. Esqueleto da knowledge base do 19 CRPM: linhas de EXEMPLO inertes
+   (`ativo=false`) e guia `knowledge_base/fluxos_19crpm/COMO_PREENCHER.md`.
+
+### Alterado
+
+1. `docs/36-relatorio-status-projeto.md` atualizado (297 testes, estado atual).
+
 ## [0.5.0-auditoria-nucleo-ia] - 2026-07-08
 
 ### Alterado
