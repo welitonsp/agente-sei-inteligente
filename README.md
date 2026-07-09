@@ -295,6 +295,7 @@ Agente 19 Desktop:
 | [docs/61-nucleo-agente-ia-agente19.md](docs/61-nucleo-agente-ia-agente19.md) | Nucleo explicito de Agente de IA do Agente 19 |
 | [docs/62-tracing-ferramentas-agente19.md](docs/62-tracing-ferramentas-agente19.md) | Tracing operacional e ferramentas seguras do Agente 19 |
 | [docs/63-knowledge-base-inicial-19crpm.md](docs/63-knowledge-base-inicial-19crpm.md) | Knowledge base inicial e evidencias de regra do Agente 19 |
+| [docs/64-plano-de-sucesso.md](docs/64-plano-de-sucesso.md) | Plano ativo para tornar o Agente 19 operacional (duas trilhas) |
 
 ## Estrutura-alvo
 

@@ -1,6 +1,19 @@
 # Relatorio de status do projeto
 
-Data: 2026-06-23
+Atualizado em: 2026-07-08 (ver o plano ativo em `docs/64-plano-de-sucesso.md`).
+
+Novidades desde 2026-06-23:
+- Nucleo de IA auditado: grafo LangGraph roteado pela camada `ai_provider`
+  (Claude padrao), critico fail-closed e auditoria persistida (ver `docs/33`).
+- Servico de alertas Telegram entregue em dry-run
+  (`app/integrations/telegram_service.py`), inerte ate configurar token/chat.
+- Esqueleto da knowledge base do 19 CRPM pronto para preenchimento
+  (`knowledge_base/fluxos_19crpm/COMO_PREENCHER.md`).
+- Suite: 297 testes passando; ruff limpo.
+
+---
+
+Data (registro original): 2026-06-23
 Branch: `feat/fundacao-agenda-ics`
 PR: https://github.com/welitonsp/agente-sei-inteligente/pull/1
 Status geral: fundacao tecnica, painel local, intake texto/PDF, Agente 19 Desktop seguro, estrategia zero custo, minutador local zero custo, knowledge base local 19 CRPM, UI chat V2 da extensao SEI read-only, novo enquadramento arquitetural particular/local, PATCH 4 de hardening da FASE 5A, FASE 5B-homologacao e diagnostico seguro de API SEI/WSSEI implementados. Operacao real ainda depende de homologacao e autorizacoes.
@@ -85,7 +98,7 @@ remoto.
 - [x] Pipeline roda em Python 3.11 e 3.13.
 - [x] Scanner de segredos criado em `scripts/check_no_secrets.py`.
 - [x] Scanner bloqueia `.env`, tokens, client secrets, URL ICS e chaves concretas.
-- [x] Suite automatizada com 150 testes passando.
+- [x] Suite automatizada com 297 testes passando (atualizado em 2026-07-08).
 - [x] PR #1 aberto em modo draft.
 - [x] Checks remotos aprovados no GitHub Actions.
 
@@ -349,13 +362,13 @@ remoto.
 
 ### Telegram e alertas
 
-- [ ] Criar bot Telegram.
-- [ ] Definir chat/grupo oficial.
-- [ ] Implementar servico Telegram.
-- [ ] Enviar alerta informativo.
-- [ ] Enviar alerta urgente.
-- [ ] Registrar envio e falha.
-- [ ] Garantir que alertas nao contenham documento completo.
+- [ ] Criar bot Telegram (voce: gerar token no @BotFather).
+- [ ] Definir chat/grupo oficial (voce: `TELEGRAM_CHAT_ID`).
+- [x] Implementar servico Telegram (`app/integrations/telegram_service.py`, dry-run por padrao).
+- [x] Enviar alerta informativo/prazo/evento/erro (tipos padronizados).
+- [x] Registrar envio e falha (auditoria resiliente).
+- [x] Garantir que alertas nao contenham documento completo (mascara + truncagem).
+- [ ] Ativar envio real apos autorizacao do canal.
 
 ### E-mail institucional
 

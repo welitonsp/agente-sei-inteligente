@@ -1,2 +1,5 @@
 codigo,nome,tipo,ativo,observacao
 19CRPM,PM/19 CRPM,comando_regional,true,Unidade padrao do projeto para triagem supervisionada.
+EXEMPLO_BPM,EXEMPLO - 00 BPM,batalhao,false,Copie a linha troque pelos dados reais e mude ativo para true.
+EXEMPLO_CIPM,EXEMPLO - 00 CIPM,companhia,false,Companhia subordinada; ative ao preencher com dado real.
+EXEMPLO_PEL,EXEMPLO - Pelotao Xyz,pelotao,false,Fracao subordinada; ative ao preencher com dado real.
