@@ -3,11 +3,18 @@
 ## Últimas Atualizações (Julho 2026)
 O projeto deixou de ser um MVP de "leitura heurística engessada" e foi oficialmente elevado ao patamar **Autônomo com Inteligência Artificial de Nível Big Tech**.
 
-### 1. Novo Motor de IA
-* **Remoção de Heurísticas:** Desligamos o analisador local de expressões regulares (`manual_text.py` legado).
-* **Integração LLM Oficial:** Implementamos a conexão direta com o motor do Google (`google-generativeai`).
-* **Modelo Utilizado:** **Gemini 2.5 Flash**. Optou-se pela versão Flash porque ela tem a cota gratuita dimensionada para suportar a quantidade massiva de leitura de processos, além de ser excepcionalmente veloz. (O Gemini 2.5 Pro bloqueou o acesso por esgotamento de cota do Free Tier).
-* **Autenticação:** O sistema agora exige uma `GEMINI_API_KEY` válida configurada no arquivo `.env`.
+### 1. Motor de IA (auditoria de julho/2026: camada de provedor sob guarda)
+* **Camada de provedor com papéis lógicos:** toda geração passa por
+  `app/intelligence/ai_provider.py` (`get_ai_provider`), que consulta o
+  `sei_action_guard` ANTES de qualquer chamada de rede. O prompt nunca é a barreira.
+* **Claude é o provedor padrão** (`claude-opus-4-8`); Gemini e `EchoProvider`
+  (offline/custo zero) continuam disponíveis por configuração.
+* **Grafo LangGraph roteado pelo provedor:** `analyzer_node` e `critic_node`
+  usam `app/intelligence/ai_reasoning.py` (substituiu o antigo `llm_gemini.py`,
+  removido). O nó crítico é **fail-closed** e o `audit_node` persiste auditoria real.
+* **Prompts versionados:** system prompts em `knowledge_base/prompts/`.
+* **Offline por padrão nos testes:** `AI_PROVIDER=echo`; credencial só é exigida
+  quando o provedor real é selecionado.
 
 ### 2. Leitura Autônoma de Processo (RPA + Scraping)
 * **Funcionalidade:** Quando o usuário joga um Número Único de Processo (NUP) no chat minimalista da extensão, o bot (Javascript - `content.js`) identifica o NUP e automaticamente:
@@ -19,7 +26,7 @@ O projeto deixou de ser um MVP de "leitura heurística engessada" e foi oficialm
 
 ### 3. Próximos Passos (Amanhã)
 1. **Validar Resposta do Gemini:** Com o servidor reiniciado utilizando o `Gemini 2.5 Flash`, avaliar a qualidade do "resumo executivo" gerado e se ele atende à precisão militar exigida.
-2. **Engenharia de Prompt Avançada:** Refinar as instruções (system prompt) dentro de `app/intelligence/llm_gemini.py` para que o Gemini responda exatamente como um Oficial do Estado-Maior, com tópicos diretos: Fato, Prazo e Providências Sugeridas (minutas).
+2. **Engenharia de Prompt Avançada:** Refinar os system prompts versionados em `knowledge_base/prompts/` (`resumidor_administrativo.md`, `guardiao_seguranca.md`) para que a IA responda como um Oficial do Estado-Maior, com tópicos diretos: Fato, Prazo e Providências Sugeridas (minutas).
 3. **Persistência de Memória de Chat (Opcional):** Hoje a cada reload de tela o chat fica limpo. Se necessário, armazenar o contexto da conversa.
 
 ## Como retomar os trabalhos amanhã

@@ -143,7 +143,11 @@ def run_agent19(request: AgentRequest) -> AgentResult:
     try:
         logger = ShadowModeLogger()
         raw_conf = str(mission.get("confianca", "0.0") or "0.0")
-        confidence = float(raw_conf.replace("%", ""))
+        confidence = float(raw_conf.replace("%", "").strip())
+        # Normaliza para a escala 0..1: valores vindos como "85%"/85 viram 0.85.
+        if confidence > 1.0:
+            confidence = confidence / 100.0
+        confidence = max(0.0, min(confidence, 1.0))
         acao_proposta = "analisar_e_alertar" if "precisa_revisao" in mission.get("status", "") else "executar_proximo_passo"
         logger.record_proposal(
             trace_id=trace.trace_id,
