@@ -48,10 +48,14 @@ def triage_node(state: MissionState) -> dict[str, Any]:
 def checklist_node(state: MissionState) -> dict[str, Any]:
     """Verifica se todos os campos para a minuta estao presentes."""
     pendentes = []
-    if not state.get("processo_sei"): pendentes.append("processo_sei")
-    if not state.get("unidade_destino"): pendentes.append("unidade_destino")
-    if not state.get("tipo_minuta"): pendentes.append("tipo_minuta")
-    if not state.get("texto_original") and not state.get("resumo"): pendentes.append("texto")
+    if not state.get("processo_sei"):
+        pendentes.append("processo_sei")
+    if not state.get("unidade_destino"):
+        pendentes.append("unidade_destino")
+    if not state.get("tipo_minuta"):
+        pendentes.append("tipo_minuta")
+    if not state.get("texto_original") and not state.get("resumo"):
+        pendentes.append("texto")
     
     status = "precisa_complemento" if pendentes else "pronto_para_rag"
     return {"campos_pendentes": pendentes, "status": status}
@@ -72,6 +76,18 @@ def rag_node(state: MissionState) -> dict[str, Any]:
     # Regras adicionais mockadas para Nível 3/4
     contexto.append("DIRETRIZ DE SEGURANÇA: Nenhuma senha ou dado pessoal deve ser exposto na minuta.")
     contexto.append("LEI MILITAR: O tom deve ser formal, respeitoso e hierárquico (Padrão 19 CRPM).")
+
+    # RAG real: inteligência dos manuais (SEI + Redação de Goiás), com fonte.
+    from app.intelligence.manual_retriever import retrieve_context
+
+    query = " ".join(
+        part
+        for part in [state.get("titulo", ""), tipo, state.get("resumo", "")]
+        if part
+    )
+    manual_ctx = retrieve_context(query, k=4)
+    if manual_ctx:
+        contexto.append(manual_ctx)
     
     return {"contexto_institucional": "\n\n".join(contexto)}
 
@@ -131,10 +147,8 @@ def critic_node(state: MissionState) -> dict[str, Any]:
 
 def audit_node(state: MissionState) -> dict[str, Any]:
     """Salva o estado final para rastreabilidade e auditoria (Tracing)."""
-    import logging
     import json
-    
-    logger = logging.getLogger("agente19.audit")
+
     log_data = {
         "timestamp": "now",
         "processo_sei": state.get("processo_sei"),
