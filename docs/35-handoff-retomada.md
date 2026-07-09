@@ -7,6 +7,40 @@ Ultima atualizacao: 2026-06-23
 Branch de trabalho: `feat/fundacao-agenda-ics`
 Repositorio: https://github.com/welitonsp/agente-sei-inteligente
 
+## Retomada rapida — sessao 2026-07-08 (LEIA PRIMEIRO)
+
+Tudo abaixo JA ESTA NO `main` (fila de PRs zerada). Suite verde. Ao rodar testes,
+valide em modo "CI-safe": `DATABASE_URL` apontando para um diretorio inexistente
+(o CI nao tem a pasta `data/`), para pegar testes que precisam de banco.
+
+Entregue nesta sessao (na ordem, tudo mergeado):
+
+1. **Auditoria do nucleo de IA** — grafo roteado por `app/intelligence/ai_reasoning.py`
+   (Claude via `ai_provider`), critico FAIL-CLOSED, `audit_node` persiste auditoria
+   real, confianca do Shadow Mode normalizada 0..1. `llm_gemini.py` removido.
+2. **Alertas Telegram (dry-run)** — `app/integrations/telegram_service.py` (inerte
+   sem token/chat) + `docs/64-plano-de-sucesso.md` + esqueleto da KB do 19 CRPM
+   (`knowledge_base/fluxos_19crpm/COMO_PREENCHER.md`).
+3. **Inteligencia dos manuais** — `app/intelligence/manual_retriever.py` (RAG local)
+   sobre `knowledge_base/manual_sei/` e `knowledge_base/redacao_goias/`, ligado ao
+   `rag_node`; `app/intelligence/redacao_goias_policy.py` (guardrail de redacao).
+4. **Runtime de ferramentas guardado** — `app/agent/tool_runtime.py` (catalogo tipo
+   n8n com allow-list + guard + auditoria por chamada).
+5. **Loop de tool-calling com Claude** — `app/agent/tool_calling_agent.py` (o modelo
+   escolhe/invoca ferramentas; cada chamada passa pelo runtime/guard).
+
+**Proximo passo (escolher):**
+- (A) **Cockpit da FASE 65** (`docs/65`, PR 1): UI da missao (timeline + evidencias +
+  editor de minuta), Modo 1 Manual seguro, sem automacao no SEI. Maior impacto visivel.
+- (B) Ampliar o `tool_runtime` com `alertar_prazo` (Telegram ja no main) e fiar o
+  agente/policy ao grafo/cockpit.
+
+**Gargalo que depende do usuario (nao e codigo):** preencher a KB real do 19 CRPM
+(unidades, regras, palavras-chave) + 5 casos anonimizados. Sem isso a triagem fica
+limitada.
+
+---
+
 > Observacao de processo: o padrao de branch definido em `docs/28` e
 > `codex/<tipo>-<descricao>`. A branch atual usa o prefixo `feat/`; manter assim
 > ate o merge para nao quebrar referencias ja publicadas. Proximas branches
